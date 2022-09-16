@@ -1,0 +1,17 @@
+{
+    "name": "macbook/jobplace",
+    "description": "test for creating plugin",
+    "type": "react",
+    "autoload": {
+        "psr-4": {
+            "Macbook\\Jobplace\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Alan Kazek"
+        }
+    ],
+    "require": {}
+}
+
