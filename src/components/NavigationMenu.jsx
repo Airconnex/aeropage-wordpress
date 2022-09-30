@@ -46,12 +46,11 @@ export const aeroSvg = (
 
 const Dashboard = () => {
 
-  useEffect(()=>{
-    fetch('http://localhost/wordpress/wp-json/wp/v2/posts')
-    .then(response => response.json())
-    .then(posts => console.log(posts));
-  }, [])
- 
+  // useEffect(()=>{
+  //   fetch('http://localhost/wordpress/wp-json/wp/v2/posts')
+  //   .then(response => response.json())
+  //   .then(posts => console.log(posts));
+  // }, [])
     return (
         <div style={{background: "white", height: "1000px"}}>
       <div style={{display: "flex", justifyContent: "center"}}>
@@ -102,13 +101,15 @@ const Dashboard = () => {
         <h2
           style={{
             paddingTop: "15px",
-            textAlign: "center",
             paddingLeft: "15px",
             paddingRight: "15px",
           }}
         >
-          General Tools
+         Custom Post Syncronizer
         </h2>
+        <button style={{background: "#633CE3", color: "white", borderRadius: "8px", outline: "none"}}>
+          Add a Post
+        </button>
         <div
           style={{
             display: "flex",
