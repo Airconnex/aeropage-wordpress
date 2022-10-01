@@ -6414,7 +6414,8 @@ const App = () => {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "aeroSvg": function() { return /* binding */ aeroSvg; }
+/* harmony export */   "aeroSvg": function() { return /* binding */ aeroSvg; },
+/* harmony export */   "tickIcon": function() { return /* binding */ tickIcon; }
 /* harmony export */ });
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
@@ -6433,6 +6434,20 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+const tickIcon = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
+  xmlns: "http://www.w3.org/2000/svg",
+  width: "14",
+  height: "14",
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "#22BB33",
+  "stroke-width": "2",
+  "stroke-linecap": "round",
+  "stroke-linejoin": "round",
+  class: "feather feather-check"
+}, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("polyline", {
+  points: "20 6 9 17 4 12"
+}));
 const aeroSvg = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
   width: "140",
   height: "29.75",
@@ -6720,7 +6735,13 @@ const AddPost = () => {
     style: {
       minHeight: "90px"
     }
-  }, (response === null || response === void 0 ? void 0 : (_response$status2 = response.status) === null || _response$status2 === void 0 ? void 0 : _response$status2.type) === "success" && status === false ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+  }, (response === null || response === void 0 ? void 0 : (_response$status2 = response.status) === null || _response$status2 === void 0 ? void 0 : _response$status2.type) === "success" && status === false ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    style: {
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center"
+    }
+  }, tickIcon, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     style: {
       color: "#22BB33",
       fontFamily: "'Inter', sans-serif",
@@ -6728,9 +6749,9 @@ const AddPost = () => {
       fontWeight: "500",
       fontSize: "12px",
       lineHeight: "24px",
-      margin: "0 0 0 0"
+      margin: "0 0 0 5px"
     }
-  }, "Success") : null, (response === null || response === void 0 ? void 0 : response.type) === "PAGE_NOT_FOUND" && status === false ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+  }, "Success")) : null, (response === null || response === void 0 ? void 0 : response.type) === "PAGE_NOT_FOUND" && status === false ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     style: {
       fontFamily: "'Inter', sans-serif",
       fontStyle: "normal",

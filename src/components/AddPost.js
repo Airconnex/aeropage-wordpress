@@ -5,6 +5,23 @@ import { Link } from "react-router-dom";
 import { Oval } from "react-loader-spinner";
 import axios from "axios";
 
+export const tickIcon = (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#22BB33"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class="feather feather-check"
+  >
+    <polyline points="20 6 9 17 4 12"></polyline>
+  </svg>
+);
+
 export const aeroSvg = (
   <svg
     width="140"
@@ -333,19 +350,30 @@ const AddPost = () => {
               ></textarea>
               <div style={{ minHeight: "90px" }}>
                 {response?.status?.type === "success" && status === false ? (
-                  <p
+                  <div
                     style={{
-                      color: "#22BB33",
-                      fontFamily: "'Inter', sans-serif",
-                      fontStyle: "normal",
-                      fontWeight: "500",
-                      fontSize: "12px",
-                      lineHeight: "24px",
-                      margin: "0 0 0 0",
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
                     }}
                   >
-                    Success
-                  </p>
+                    {tickIcon}
+
+                    <p
+                      style={{
+                        color: "#22BB33",
+                        fontFamily: "'Inter', sans-serif",
+                        fontStyle: "normal",
+                        fontWeight: "500",
+                        fontSize: "12px",
+                        lineHeight: "24px",
+
+                        margin: "0 0 0 5px",
+                      }}
+                    >
+                      Success
+                    </p>
+                  </div>
                 ) : null}
 
                 {response?.type === "PAGE_NOT_FOUND" && status === false ? (
