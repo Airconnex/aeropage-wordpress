@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import ReactJson from "react-json-view";
+import Header from "./header";
+import { Link } from "react-router-dom";
+import { Oval } from "react-loader-spinner";
 
 export const aeroSvg = (
   <svg
@@ -46,29 +49,58 @@ export const aeroSvg = (
 );
 
 const AddPost = () => {
-  const JSON = { status: "Initial JSON" };
+  const JSON = {
+    status: "Initial JSON",
+    instruction: "Here we can put a instruction",
+  };
 
   const [btnState, setBtnState] = useState(true);
   const [inputValue, setInputValue] = useState("");
-  const [status, setStatus] = useState(false);
-
-  const [validationStatus, setValidationStatus] = useState("Checking");
+  const [status, setStatus] = useState(true);
+  const [title, setTitle] = useState(null);
+  const [dynamic, setDynamic] = useState(null);
   const [response, setResponse] = useState(JSON);
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // const formData = {
+    //   title: "test1",
+    //   content: "content",
+    //   status: "publish",
+    // };
+
+    // const wordPressSiteUrl = "http://localhost/wordpress";
+  };
+
   const handleChange = (e) => {
+    setStatus(true);
     setInputValue(e.target.value);
   };
+
+  const titleOnChange = (e) => {
+    setTitle(e.target.value);
+  };
+
+  const dynamicOnChange = (e) => {
+    setDynamic(e.target.value);
+  };
+
+  const handleMyClick = () => {
+    console.log("clicked");
+  };
+
+  console.log(title);
+  console.log(dynamic);
 
   useEffect(() => {
     fetch(inputValue)
       .then((response) => response.json())
       .then((data) => setResponse(data));
-
-    setStatus(true);
   }, [inputValue]);
 
   useEffect(() => {
-    if (response?.status?.type === "success") setBtnState(false);
+    if (response?.status?.type === "success") setStatus(false);
+    if (response?.type === "PAGE_NOT_FOUND") setStatus(false);
   }, [response]);
 
   console.log(response);
@@ -86,16 +118,11 @@ const AddPost = () => {
             width: "100%",
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              paddingTop: "10px",
-              paddingBottom: "10px",
-            }}
-          >
-            {aeroSvg}
-          </div>
+          <Header
+            toolType={"Aeropage Plugin"}
+            toolName={"Add a Post"}
+            pathLevel={1}
+          ></Header>
 
           <div
             style={{
@@ -107,120 +134,366 @@ const AddPost = () => {
         </div>
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          flexDirection: "row",
-        }}
-      >
+      <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
         <div
           style={{
-            maxWidth: "30%",
-            padding: "25px 25px 25px 100px",
-          }}
-        >
-          <h2>Create Dynamic Pages</h2>
-          <p>
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s, when an unknown printer took a galley of type
-            and scrambled it to make a type specimen book. It has survived not
-            only five centuries, but also the leap into electronic typesetting.
-          </p>
-          <form>
-            <p>Title</p>
-            <input placeholder="Title *"></input>
-            <p>Dynamic URL</p>
-            <input placeholder="Dynamic URL"></input> /{" "}
-            <select>
-              <option value="record_id">[record_id]</option>
-              <option value="name">[name]</option>
-            </select>
-          </form>
-          <h3>Connection URL</h3>
-          <p>
-            To create a connection please <a>click here...</a>
-          </p>
-
-          <textarea
-            value={inputValue}
-            onChange={handleChange}
-            style={{ width: "100%", minHeight: "70px", marginBottom: "15px" }}
-          >
-            At w3schools.com you will learn how to make a website. They offer
-            free tutorials in all web development technologies.
-          </textarea>
-
-          <div style={{ minHeight: "70px" }}>
-            {inputValue && status ? (
-              <p style={{ margin: "0 0 0 0" }}>Checking</p>
-            ) : null}
-
-            {response?.status?.type === "success" ? (
-              <p style={{ color: "#22BB33", margin: "0 0 0 0" }}>Success</p>
-            ) : null}
-
-            {response?.type === "PAGE_NOT_FOUND" ? (
-              <>
-                <p style={{ color: "red", margin: "0 0 0 0" }}>
-                  {response?.source + " "}
-                  {response?.type}
-                </p>
-
-                <p
-                  style={{ color: "red", fontSize: "10px", margin: "0 0 0 0" }}
-                >
-                  {response?.description}
-                </p>
-                <p
-                  style={{ color: "red", fontSize: "10px", margin: "0 0 0 0" }}
-                >
-                  {response?.message}
-                </p>
-              </>
-            ) : null}
-          </div>
-
-          <button
-            disabled={btnState}
-            style={{
-              background: !btnState ? "#633CE3" : "#bbaaf3",
-              color: "white",
-              padding: "10px 15px 10px 15px",
-              border: "none",
-              borderRadius: "3px",
-            }}
-            onClick={() => {
-              handleClick();
-            }}
-          >
-            Add a Post
-          </button>
-        </div>
-
-        <div
-          style={{
-            marginTop: "50px",
-            marginBottom: "50px",
-            width: "50%",
             display: "flex",
+            minWidth: "40%",
             flexDirection: "row",
-            justifyContent: "center",
           }}
         >
-          {" "}
           <div
             style={{
-              boxShadow: "0px 0px 10px -4px rgba(66, 68, 90, 1)",
-              width: "500px",
-              padding: "20px 20px 20px 20px",
-              borderRadius: "8px",
-              maxHeight: "600px",
-              overflow: "scroll",
+              padding: "25px 25px 25px 50px",
             }}
           >
-            {response ? <ReactJson src={response} /> : null}
+            <p
+              style={{
+                color: "#595B5C",
+                fontFamily: "'Inter', sans-serif",
+                fontStyle: "normal",
+                fontWeight: "600",
+                fontSize: "14px",
+                lineHeight: "120%",
+              }}
+            >
+              Create Dynamic Pagess
+            </p>
+            <p
+              style={{
+                color: "#595B5C",
+                fontFamily: "'Inter', sans-serif",
+                fontStyle: "normal",
+                fontWeight: "400",
+                fontSize: "10px",
+                lineHeight: "175%",
+              }}
+            >
+              Lorem Ipsum is simply dummy text of the printing and typesetting
+              industry. Lorem Ipsum has been the industry's standard dummy text
+              ever since the 1500s, when an unknown printer took a galley of
+              type and scrambled it to make a type specimen book. It has
+              survived not only five centuries, but also the leap into
+              electronic typesetting.
+            </p>
+            <form>
+              <p
+                style={{
+                  color: "#595B5C",
+                  fontFamily: "'Inter', sans-serif",
+                  fontStyle: "normal",
+                  fontWeight: "500",
+                  fontSize: "12px",
+                  lineHeight: "175%",
+                }}
+              >
+                Title
+              </p>
+              <input
+                value={title}
+                onChange={titleOnChange}
+                style={{
+                  height: "32px",
+                  padding: "7px 10px 7px 10px",
+                  borderRadius: "6px",
+                  backgroundColor: "#F4F5F8",
+                  fontFamily: "'Inter', sans-serif",
+                  fontStyle: "normal",
+                  fontWeight: "400",
+                  fontSize: "12px",
+                  lineHeight: "150%",
+                  border: "none",
+                }}
+                placeholder="Title *"
+              ></input>
+              <p
+                style={{
+                  color: "#595B5C",
+                  fontFamily: "'Inter', sans-serif",
+                  fontStyle: "normal",
+                  fontWeight: "500",
+                  fontSize: "12px",
+                  lineHeight: "175%",
+                }}
+              >
+                Dynamic URL
+              </p>
+              <input
+                value={dynamic}
+                onChange={dynamicOnChange}
+                style={{
+                  height: "32px",
+                  padding: "7px 10px 7px 10px",
+                  borderRadius: "6px",
+                  backgroundColor: "#F4F5F8",
+                  fontFamily: "'Inter', sans-serif",
+                  fontStyle: "normal",
+                  fontWeight: "400",
+                  fontSize: "12px",
+                  lineHeight: "150%",
+                  border: "none",
+                }}
+                placeholder="Dynamic URL"
+              ></input>{" "}
+              /{" "}
+              <select
+                style={{
+                  height: "32px",
+                  borderRadius: "6px",
+                  backgroundColor: "white",
+                  color: "#595B5C",
+
+                  fontFamily: "'Inter', sans-serif",
+                  fontStyle: "normal",
+                  fontWeight: "400",
+                  width: "100px",
+                  border: "1px solid lightGray",
+                  fontSize: "12px",
+                  lineHeight: "18px",
+                }}
+              >
+                <option
+                  style={{
+                    borderRadius: "6px",
+                    color: "#595B5C",
+                    fontFamily: "'Inter', sans-serif",
+                    fontStyle: "normal",
+                    fontWeight: "400",
+                    fontSize: "12px",
+                    lineHeight: "150%",
+                  }}
+                  value="record_id"
+                >
+                  [record_id]
+                </option>
+                <option
+                  style={{
+                    borderRadius: "6px",
+                    color: "#595B5C",
+                    fontFamily: "'Inter', sans-serif",
+                    fontStyle: "normal",
+                    fontWeight: "400",
+                    fontSize: "12px",
+                    lineHeight: "150%",
+                  }}
+                  value="name"
+                >
+                  [name]
+                </option>
+              </select>
+            </form>
+            <p
+              style={{
+                color: "#595B5C",
+                fontFamily: "'Inter', sans-serif",
+                fontStyle: "normal",
+                fontWeight: "500",
+                fontSize: "12px",
+                lineHeight: "175%",
+              }}
+            >
+              Connection URL
+            </p>
+            <p
+              style={{
+                color: "#595B5C",
+                fontFamily: "'Inter', sans-serif",
+                fontStyle: "normal",
+                fontWeight: "400",
+                fontSize: "10px",
+                lineHeight: "175%",
+              }}
+            >
+              To create a connection please{" "}
+              <a
+                style={{ textDecoration: "none" }}
+                href="https://tools.aeropage.io/api-connector/"
+              >
+                click here...
+              </a>
+            </p>
+
+            <textarea
+              value={inputValue}
+              onChange={handleChange}
+              style={{
+                color: "#595B5C",
+                fontFamily: "'Inter', sans-serif",
+                fontStyle: "normal",
+                fontWeight: "400",
+                fontSize: "12px",
+                lineHeight: "150%",
+                width: "100%",
+                minHeight: "70px",
+                marginBottom: "15px",
+              }}
+            ></textarea>
+
+            <div style={{ minHeight: "90px" }}>
+              {response?.status?.type === "success" && status === false ? (
+                <p
+                  style={{
+                    color: "#22BB33",
+                    fontFamily: "'Inter', sans-serif",
+                    fontStyle: "normal",
+                    fontWeight: "500",
+                    fontSize: "12px",
+                    lineHeight: "24px",
+                    margin: "0 0 0 0",
+                  }}
+                >
+                  Success
+                </p>
+              ) : null}
+
+              {response?.type === "PAGE_NOT_FOUND" && status === false ? (
+                <>
+                  <p
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontStyle: "normal",
+                      fontWeight: "500",
+                      fontSize: "12px",
+                      lineHeight: "24px",
+                      color: "red",
+                      margin: "0 0 0 0",
+                    }}
+                  >
+                    {response?.source + " "}
+                    {response?.type}
+                  </p>
+
+                  <p
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontStyle: "normal",
+                      fontWeight: "400",
+                      lineHeight: "175%",
+                      color: "red",
+                      fontSize: "10px",
+                      margin: "0 0 0 0",
+                    }}
+                  >
+                    {response?.description}
+                  </p>
+                  <p
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontStyle: "normal",
+                      fontWeight: "400",
+                      fontSize: "10px",
+                      lineHeight: "175%",
+                      color: "red",
+                      margin: "0 0 0 0",
+                    }}
+                  >
+                    {response?.message}
+                  </p>
+                </>
+              ) : null}
+
+              {status && inputValue ? (
+                <>
+                  <div style={{ display: "flex", flexDirection: "row" }}>
+                    <Oval
+                      height={15}
+                      width={15}
+                      color="#4fa94d"
+                      wrapperStyle={{}}
+                      wrapperClass=""
+                      visible={true}
+                      ariaLabel="oval-loading"
+                      secondaryColor="#4fa94d"
+                      strokeWidth={2}
+                      strokeWidthSecondary={2}
+                    />
+                    <span
+                      style={{
+                        color: "#595B5C",
+                        fontFamily: "'Inter', sans-serif",
+                        fontStyle: "normal",
+                        fontWeight: "400",
+                        marginTop: "2.5px",
+                        fontSize: "10px",
+                        lineHeight: "175%",
+                      }}
+                    >
+                      Checking
+                    </span>
+                  </div>
+                </>
+              ) : // <p
+              //   style={{
+              //     color: "#595B5C",
+              //     fontFamily: "'Inter', sans-serif",
+              //     fontStyle: "normal",
+              //     fontWeight: "400",
+              //     fontSize: "10px",
+              //     lineHeight: "175%",
+              //     margin: "0 0 0 0",
+              //   }}
+              // >
+              //   Checking
+              // </p>
+              null}
+            </div>
+            <button
+              disabled={
+                !response?.status?.type === "success" ||
+                dynamic === null ||
+                dynamic === "" ||
+                title === null ||
+                title === ""
+              }
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontStyle: "normal",
+                fontWeight: "500",
+                fontSize: "12px",
+                lineHeight: "24px",
+                background:
+                  response?.status?.type === "success" &&
+                  !(dynamic === null || dynamic === "") &&
+                  !(title === null || title === "")
+                    ? "#633CE3"
+                    : "#bbaaf3",
+                color: "white",
+                padding: "8px 13px 8px 13px",
+                border: "none",
+                borderRadius: "6px",
+              }}
+              onClick={() => {
+                handleMyClick();
+              }}
+            >
+              Add a Post
+            </button>
+          </div>
+
+          <div
+            style={{
+              marginTop: "50px",
+              marginBottom: "50px",
+              minWidth: "60%",
+              maxWidth: "60%",
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+            }}
+          >
+            {" "}
+            <div
+              style={{
+                boxShadow: "0px 0px 10px -4px rgba(66, 68, 90, 1)",
+                width: "60%",
+                padding: "20px 20px 20px 20px",
+                borderRadius: "6px",
+                maxHeight: "600px",
+                overflow: "scroll",
+              }}
+            >
+              {response ? <ReactJson src={response} /> : null}
+            </div>
           </div>
         </div>
       </div>
