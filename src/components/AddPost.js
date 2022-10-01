@@ -3,6 +3,7 @@ import ReactJson from "react-json-view";
 import Header from "./header";
 import { Link } from "react-router-dom";
 import { Oval } from "react-loader-spinner";
+import axios from "axios";
 
 export const aeroSvg = (
   <svg
@@ -63,13 +64,17 @@ const AddPost = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // const formData = {
-    //   title: "test1",
-    //   content: "content",
-    //   status: "publish",
-    // };
+    console.log(MYSCRIPT.ajaxUrl);
 
-    // const wordPressSiteUrl = "http://localhost/wordpress";
+    // const reactAppData = window.wpRoomDesigner || {};
+    // const { ajax_url } = reactAppData;
+    var params = new URLSearchParams();
+    params.append("action", "myAction");
+    params.append("name", title);
+
+    axios.post(MYSCRIPT.ajaxUrl, params).then(function (response) {
+      console.log(response.data);
+    });
   };
 
   const handleChange = (e) => {
@@ -176,7 +181,7 @@ const AddPost = () => {
               survived not only five centuries, but also the leap into
               electronic typesetting.
             </p>
-            <form>
+            <form onSubmit={handleSubmit}>
               <p
                 style={{
                   color: "#595B5C",
@@ -281,193 +286,191 @@ const AddPost = () => {
                   [name]
                 </option>
               </select>
-            </form>
-            <p
-              style={{
-                color: "#595B5C",
-                fontFamily: "'Inter', sans-serif",
-                fontStyle: "normal",
-                fontWeight: "500",
-                fontSize: "12px",
-                lineHeight: "175%",
-              }}
-            >
-              Connection URL
-            </p>
-            <p
-              style={{
-                color: "#595B5C",
-                fontFamily: "'Inter', sans-serif",
-                fontStyle: "normal",
-                fontWeight: "400",
-                fontSize: "10px",
-                lineHeight: "175%",
-              }}
-            >
-              To create a connection please{" "}
-              <a
-                style={{ textDecoration: "none" }}
-                href="https://tools.aeropage.io/api-connector/"
+              <p
+                style={{
+                  color: "#595B5C",
+                  fontFamily: "'Inter', sans-serif",
+                  fontStyle: "normal",
+                  fontWeight: "500",
+                  fontSize: "12px",
+                  lineHeight: "175%",
+                }}
               >
-                click here...
-              </a>
-            </p>
-
-            <textarea
-              value={inputValue}
-              onChange={handleChange}
-              style={{
-                color: "#595B5C",
-                fontFamily: "'Inter', sans-serif",
-                fontStyle: "normal",
-                fontWeight: "400",
-                fontSize: "12px",
-                lineHeight: "150%",
-                width: "100%",
-                minHeight: "70px",
-                marginBottom: "15px",
-              }}
-            ></textarea>
-
-            <div style={{ minHeight: "90px" }}>
-              {response?.status?.type === "success" && status === false ? (
-                <p
-                  style={{
-                    color: "#22BB33",
-                    fontFamily: "'Inter', sans-serif",
-                    fontStyle: "normal",
-                    fontWeight: "500",
-                    fontSize: "12px",
-                    lineHeight: "24px",
-                    margin: "0 0 0 0",
-                  }}
+                Connection URL
+              </p>
+              <p
+                style={{
+                  color: "#595B5C",
+                  fontFamily: "'Inter', sans-serif",
+                  fontStyle: "normal",
+                  fontWeight: "400",
+                  fontSize: "10px",
+                  lineHeight: "175%",
+                }}
+              >
+                To create a connection please{" "}
+                <a
+                  style={{ textDecoration: "none" }}
+                  href="https://tools.aeropage.io/api-connector/"
                 >
-                  Success
-                </p>
-              ) : null}
-
-              {response?.type === "PAGE_NOT_FOUND" && status === false ? (
-                <>
+                  click here...
+                </a>
+              </p>
+              <textarea
+                value={inputValue}
+                onChange={handleChange}
+                style={{
+                  color: "#595B5C",
+                  fontFamily: "'Inter', sans-serif",
+                  fontStyle: "normal",
+                  fontWeight: "400",
+                  fontSize: "12px",
+                  lineHeight: "150%",
+                  width: "100%",
+                  minHeight: "70px",
+                  marginBottom: "15px",
+                }}
+              ></textarea>
+              <div style={{ minHeight: "90px" }}>
+                {response?.status?.type === "success" && status === false ? (
                   <p
                     style={{
+                      color: "#22BB33",
                       fontFamily: "'Inter', sans-serif",
                       fontStyle: "normal",
                       fontWeight: "500",
                       fontSize: "12px",
                       lineHeight: "24px",
-                      color: "red",
                       margin: "0 0 0 0",
                     }}
                   >
-                    {response?.source + " "}
-                    {response?.type}
+                    Success
                   </p>
+                ) : null}
 
-                  <p
-                    style={{
-                      fontFamily: "'Inter', sans-serif",
-                      fontStyle: "normal",
-                      fontWeight: "400",
-                      lineHeight: "175%",
-                      color: "red",
-                      fontSize: "10px",
-                      margin: "0 0 0 0",
-                    }}
-                  >
-                    {response?.description}
-                  </p>
-                  <p
-                    style={{
-                      fontFamily: "'Inter', sans-serif",
-                      fontStyle: "normal",
-                      fontWeight: "400",
-                      fontSize: "10px",
-                      lineHeight: "175%",
-                      color: "red",
-                      margin: "0 0 0 0",
-                    }}
-                  >
-                    {response?.message}
-                  </p>
-                </>
-              ) : null}
-
-              {status && inputValue ? (
-                <>
-                  <div style={{ display: "flex", flexDirection: "row" }}>
-                    <Oval
-                      height={15}
-                      width={15}
-                      color="#4fa94d"
-                      wrapperStyle={{}}
-                      wrapperClass=""
-                      visible={true}
-                      ariaLabel="oval-loading"
-                      secondaryColor="#4fa94d"
-                      strokeWidth={2}
-                      strokeWidthSecondary={2}
-                    />
-                    <span
+                {response?.type === "PAGE_NOT_FOUND" && status === false ? (
+                  <>
+                    <p
                       style={{
-                        color: "#595B5C",
+                        fontFamily: "'Inter', sans-serif",
+                        fontStyle: "normal",
+                        fontWeight: "500",
+                        fontSize: "12px",
+                        lineHeight: "24px",
+                        color: "red",
+                        margin: "0 0 0 0",
+                      }}
+                    >
+                      {response?.source + " "}
+                      {response?.type}
+                    </p>
+
+                    <p
+                      style={{
                         fontFamily: "'Inter', sans-serif",
                         fontStyle: "normal",
                         fontWeight: "400",
-                        marginTop: "2.5px",
-                        fontSize: "10px",
                         lineHeight: "175%",
+                        color: "red",
+                        fontSize: "10px",
+                        margin: "0 0 0 0",
                       }}
                     >
-                      Checking
-                    </span>
-                  </div>
-                </>
-              ) : // <p
-              //   style={{
-              //     color: "#595B5C",
-              //     fontFamily: "'Inter', sans-serif",
-              //     fontStyle: "normal",
-              //     fontWeight: "400",
-              //     fontSize: "10px",
-              //     lineHeight: "175%",
-              //     margin: "0 0 0 0",
-              //   }}
-              // >
-              //   Checking
-              // </p>
-              null}
-            </div>
-            <button
-              disabled={
-                !response?.status?.type === "success" ||
-                dynamic === null ||
-                dynamic === "" ||
-                title === null ||
-                title === ""
-              }
-              style={{
-                fontFamily: "'Inter', sans-serif",
-                fontStyle: "normal",
-                fontWeight: "500",
-                fontSize: "12px",
-                lineHeight: "24px",
-                background:
-                  response?.status?.type === "success" &&
-                  !(dynamic === null || dynamic === "") &&
-                  !(title === null || title === "")
-                    ? "#633CE3"
-                    : "#bbaaf3",
-                color: "white",
-                padding: "8px 13px 8px 13px",
-                border: "none",
-                borderRadius: "6px",
-              }}
-              onClick={() => {
-                handleMyClick();
-              }}
-            >
-              Add a Post
-            </button>
+                      {response?.description}
+                    </p>
+                    <p
+                      style={{
+                        fontFamily: "'Inter', sans-serif",
+                        fontStyle: "normal",
+                        fontWeight: "400",
+                        fontSize: "10px",
+                        lineHeight: "175%",
+                        color: "red",
+                        margin: "0 0 0 0",
+                      }}
+                    >
+                      {response?.message}
+                    </p>
+                  </>
+                ) : null}
+
+                {status && inputValue ? (
+                  <>
+                    <div style={{ display: "flex", flexDirection: "row" }}>
+                      <Oval
+                        height={15}
+                        width={15}
+                        color="#4fa94d"
+                        wrapperStyle={{}}
+                        wrapperClass=""
+                        visible={true}
+                        ariaLabel="oval-loading"
+                        secondaryColor="#4fa94d"
+                        strokeWidth={2}
+                        strokeWidthSecondary={2}
+                      />
+                      <span
+                        style={{
+                          color: "#595B5C",
+                          fontFamily: "'Inter', sans-serif",
+                          fontStyle: "normal",
+                          fontWeight: "400",
+                          marginTop: "2.5px",
+                          fontSize: "10px",
+                          lineHeight: "175%",
+                        }}
+                      >
+                        Checking
+                      </span>
+                    </div>
+                  </>
+                ) : // <p
+                //   style={{
+                //     color: "#595B5C",
+                //     fontFamily: "'Inter', sans-serif",
+                //     fontStyle: "normal",
+                //     fontWeight: "400",
+                //     fontSize: "10px",
+                //     lineHeight: "175%",
+                //     margin: "0 0 0 0",
+                //   }}
+                // >
+                //   Checking
+                // </p>
+                null}
+              </div>
+              <button
+                disabled={
+                  !response?.status?.type === "success" ||
+                  dynamic === null ||
+                  dynamic === "" ||
+                  title === null ||
+                  title === ""
+                }
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontStyle: "normal",
+                  fontWeight: "500",
+                  fontSize: "12px",
+                  lineHeight: "24px",
+                  background:
+                    response?.status?.type === "success" &&
+                    !(dynamic === null || dynamic === "") &&
+                    !(title === null || title === "")
+                      ? "#633CE3"
+                      : "#bbaaf3",
+                  color: "white",
+                  padding: "8px 13px 8px 13px",
+                  border: "none",
+                  borderRadius: "6px",
+                }}
+                // onClick={() => {
+                //   handleMyClick();
+                // }}
+              >
+                Add a Post
+              </button>
+            </form>
           </div>
 
           <div

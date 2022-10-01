@@ -55,11 +55,12 @@ export const aeroSvg = (
 );
 
 const Dashboard = () => {
-  // useEffect(()=>{
-  //   fetch('http://localhost/wordpress/wp-json/wp/v2/posts')
-  //   .then(response => response.json())
-  //   .then(posts => console.log(posts));
-  // }, [])
+  useEffect(() => {
+    fetch("http://localhost/wordpress/wp-json/wp/v2/posts")
+      .then((response) => response.json())
+      .then((posts) => console.log(posts));
+  }, []);
+
   return (
     <div style={{ background: "white", height: "1000px" }}>
       <div style={{ display: "flex", justifyContent: "center" }}>
