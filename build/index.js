@@ -6496,7 +6496,8 @@ const AddPost = () => {
   const [inputValue, setInputValue] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
   const [status, setStatus] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
   const [title, setTitle] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
-  const [dynamic, setDynamic] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
+  const [slug, setSlug] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
+  const [dynamic, setDynamic] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("record_id");
   const [response, setResponse] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
 
   const handleSubmit = e => {
@@ -6505,9 +6506,10 @@ const AddPost = () => {
     // const { ajax_url } = reactAppData;
 
     var params = new URLSearchParams();
-    params.append("action", "myAction");
+    params.append("action", "myAction2");
     params.append("title", title);
     params.append("dynamic", dynamic);
+    params.append("slug", slug);
     params.append("token", inputValue);
     axios__WEBPACK_IMPORTED_MODULE_5___default().post(MYSCRIPT.ajaxUrl, params).then(function (response) {
       console.log(response.data);
@@ -6523,16 +6525,20 @@ const AddPost = () => {
     setTitle(e.target.value);
   };
 
+  const slugOnChange = e => {
+    setSlug(e.target.value);
+  };
+
   const dynamicOnChange = e => {
     setDynamic(e.target.value);
   };
 
   const handleMyClick = () => {
     console.log("clicked");
-  };
+  }; // console.log(title);
+  // console.log(dynamic);
 
-  console.log(title);
-  console.log(dynamic);
+
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
     fetch("https://api.aeropage.io/api/v3/token/" + inputValue).then(response => response.json()).then(data => setResponse(data));
   }, [inputValue]);
@@ -6651,8 +6657,8 @@ const AddPost = () => {
       marginTop: "25px"
     }
   }, "Dynamic URL"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("input", {
-    value: dynamic,
-    onChange: dynamicOnChange,
+    value: slug,
+    onChange: slugOnChange,
     style: {
       height: "32px",
       padding: "7px 10px 7px 10px",
@@ -6667,6 +6673,8 @@ const AddPost = () => {
     },
     placeholder: "Dynamic URL"
   }), " ", "/", " ", (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("select", {
+    value: dynamic,
+    onChange: dynamicOnChange,
     style: {
       height: "32px",
       borderRadius: "6px",
@@ -6898,7 +6906,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _header__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./header */ "./src/components/header.js");
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/dist/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/dist/index.js");
+
 
 
 
@@ -6944,9 +6955,22 @@ const aeroSvg = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement
 }));
 
 const Dashboard = () => {
+  const [response, setResponse] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)();
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-    fetch("http://localhost/wordpress/wp-json/wp/v2/posts").then(response => response.json()).then(posts => console.log(posts));
-  }, []);
+    // fetch("http://localhost/wordpress/wp-json/wp/v2/posts?type=aero-template")
+    //   .then((response) => response.json())
+    //   .then((posts) => console.log(posts));
+    var params = new URLSearchParams();
+    params.append("action", "myAction2");
+    params.append("title", "test");
+    axios__WEBPACK_IMPORTED_MODULE_3___default().post(MYSCRIPT.ajaxUrl, params).then(function (response) {
+      console.log(response.data); // setResponse(response.data);
+    });
+    console.log(test);
+  }, []); // useEffect(() => {
+  //   console.log(response);
+  // }, [response]);
+
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       background: "white",
@@ -7007,7 +7031,7 @@ const Dashboard = () => {
       justifyContent: "right",
       alignItems: "center"
     }
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_router_dom__WEBPACK_IMPORTED_MODULE_3__.Link, {
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_router_dom__WEBPACK_IMPORTED_MODULE_4__.Link, {
     to: "wordpress/wp-admin/addPost"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
     style: {

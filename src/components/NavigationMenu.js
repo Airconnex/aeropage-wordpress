@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "./header";
+import axios from "axios";
 
 import {
   BrowserRouter as Router,
@@ -55,11 +56,26 @@ export const aeroSvg = (
 );
 
 const Dashboard = () => {
+  const [response, setResponse] = useState();
+
   useEffect(() => {
-    fetch("http://localhost/wordpress/wp-json/wp/v2/posts")
-      .then((response) => response.json())
-      .then((posts) => console.log(posts));
+    // fetch("http://localhost/wordpress/wp-json/wp/v2/posts?type=aero-template")
+    //   .then((response) => response.json())
+    //   .then((posts) => console.log(posts));
+    var params = new URLSearchParams();
+    params.append("action", "myAction2");
+    params.append("title", "test");
+
+    axios.post(MYSCRIPT.ajaxUrl, params).then(function (response) {
+      console.log(response.data);
+      // setResponse(response.data);
+    });
+    console.log(test);
   }, []);
+
+  // useEffect(() => {
+  //   console.log(response);
+  // }, [response]);
 
   return (
     <div style={{ background: "white", minHeight: "800px", height: "80vh" }}>

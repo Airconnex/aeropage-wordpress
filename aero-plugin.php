@@ -87,19 +87,55 @@ function aeroFetchToken($dynamic, $token) {
     $response = json_decode($get_data, true);
     $errors = $response['response']['errors'];
     $data = $response['response']['data'][0];
-    print_r($response);
+    // print_r($response);
+   
+
+}
+
+function insertPost($title, $slug, $dynamic, $token){
+    $template_post = array(
+        'ID' => $id,
+        'post_title' => $title,
+        'post_name' => $slug,
+        'post_type' => 'aero-template',
+        'post_status' => 'private'
+    );
+
+    $pid = wp_insert_post($template_post);
+
+    if($pid){
+        update_post_meta($pid, 'aero_title', $title);    
+        update_post_meta($pid, 'aero_slug', $slug);
+        update_post_meta($pid, 'aero_dynamic', $dynamic);
+
+    }
 }
 
 function aeroplugin_myAction() {
     // echo "Hello World!";
     // echo $_POST['title'];
+    // echo $_POST['slug'];
     // echo $_POST['dynamic'];
     // echo $_POST['token'];
-    aeroFetchToken($_POST['dynamic'], $_POST['token'] );
+    // aeroFetchToken($_POST['dynamic'], $_POST['token'] );
+    echo "myAction!";
+
+    // $airconnex_posts = get_posts(['post_type' => 'aero-template','post_status' => 'private','numberposts' => -1]);
+    // print_r($airconnex_posts);
+    // insertPost($_POST['title'],$_POST['slug'],$_POST['dynamic'],$_POST['token']);
 
 }
 
+function aeroplugin_myAction2(){
+    echo "MyAction2";
+    $airconnex_posts = get_posts(['post_type' => 'aero-template','post_status' => 'private','numberposts' => -1]);
+    // print_r($airconnex_posts);
+    return $airconnex_posts;
+}
+
 add_action( 'wp_ajax_myAction', 'aeroplugin_myAction' );
+add_action( 'wp_ajax_myAction2', 'aeroplugin_myAction2' );
+
 
 
 

@@ -73,7 +73,8 @@ const AddPost = () => {
   const [inputValue, setInputValue] = useState("");
   const [status, setStatus] = useState(true);
   const [title, setTitle] = useState(null);
-  const [dynamic, setDynamic] = useState(null);
+  const [slug, setSlug] = useState(null);
+  const [dynamic, setDynamic] = useState("record_id");
   const [response, setResponse] = useState(null);
 
   const handleSubmit = (e) => {
@@ -83,9 +84,10 @@ const AddPost = () => {
     // const reactAppData = window.wpRoomDesigner || {};
     // const { ajax_url } = reactAppData;
     var params = new URLSearchParams();
-    params.append("action", "myAction");
+    params.append("action", "myAction2");
     params.append("title", title);
     params.append("dynamic", dynamic);
+    params.append("slug", slug);
     params.append("token", inputValue);
 
     axios.post(MYSCRIPT.ajaxUrl, params).then(function (response) {
@@ -102,6 +104,10 @@ const AddPost = () => {
     setTitle(e.target.value);
   };
 
+  const slugOnChange = (e) => {
+    setSlug(e.target.value);
+  };
+
   const dynamicOnChange = (e) => {
     setDynamic(e.target.value);
   };
@@ -110,8 +116,8 @@ const AddPost = () => {
     console.log("clicked");
   };
 
-  console.log(title);
-  console.log(dynamic);
+  // console.log(title);
+  // console.log(dynamic);
 
   useEffect(() => {
     fetch("https://api.aeropage.io/api/v3/token/" + inputValue)
@@ -257,8 +263,8 @@ const AddPost = () => {
                 Dynamic URL
               </p>
               <input
-                value={dynamic}
-                onChange={dynamicOnChange}
+                value={slug}
+                onChange={slugOnChange}
                 style={{
                   height: "32px",
                   padding: "7px 10px 7px 10px",
@@ -275,6 +281,8 @@ const AddPost = () => {
               ></input>{" "}
               /{" "}
               <select
+                value={dynamic}
+                onChange={dynamicOnChange}
                 style={{
                   height: "32px",
                   borderRadius: "6px",
