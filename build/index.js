@@ -6392,7 +6392,7 @@ const App = () => {
     className: "App"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_router_dom__WEBPACK_IMPORTED_MODULE_5__.Routes, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_router_dom__WEBPACK_IMPORTED_MODULE_5__.Route, {
     exact: true,
-    path: "/addPost",
+    path: "wordpress/wp-admin/addPost",
     element: (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_AddPost_js__WEBPACK_IMPORTED_MODULE_3__["default"], null)
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_router_dom__WEBPACK_IMPORTED_MODULE_5__.Route, {
     exact: true,
@@ -6491,16 +6491,13 @@ const aeroSvg = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement
 const AddPost = () => {
   var _response$status2, _response$status3, _response$status4;
 
-  const JSON = {
-    status: "Initial JSON",
-    instruction: "Here we can put a instruction"
-  };
+  const JSON = {};
   const [btnState, setBtnState] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
   const [inputValue, setInputValue] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
   const [status, setStatus] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
   const [title, setTitle] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
   const [dynamic, setDynamic] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
-  const [response, setResponse] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(JSON);
+  const [response, setResponse] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -6509,7 +6506,9 @@ const AddPost = () => {
 
     var params = new URLSearchParams();
     params.append("action", "myAction");
-    params.append("name", title);
+    params.append("title", title);
+    params.append("dynamic", dynamic);
+    params.append("token", inputValue);
     axios__WEBPACK_IMPORTED_MODULE_5___default().post(MYSCRIPT.ajaxUrl, params).then(function (response) {
       console.log(response.data);
     });
@@ -6535,7 +6534,7 @@ const AddPost = () => {
   console.log(title);
   console.log(dynamic);
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-    fetch(inputValue).then(response => response.json()).then(data => setResponse(data));
+    fetch("https://api.aeropage.io/api/v3/token/" + inputValue).then(response => response.json()).then(data => setResponse(data));
   }, [inputValue]);
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
     var _response$status;
@@ -6546,7 +6545,10 @@ const AddPost = () => {
   console.log(response);
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
-      background: "white"
+      background: "white",
+      minHeight: "800px",
+      height: "80vh",
+      width: "100%"
     }
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
@@ -6576,17 +6578,19 @@ const AddPost = () => {
     style: {
       display: "flex",
       flexDirection: "row",
-      width: "100%"
+      width: "100%",
+      justifyContent: "center"
     }
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       display: "flex",
       minWidth: "40%",
-      flexDirection: "row"
+      flexDirection: "row",
+      marginTop: "15px"
     }
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
-      padding: "25px 25px 25px 50px"
+      padding: "25px 25px 25px 80px"
     }
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     style: {
@@ -6597,7 +6601,7 @@ const AddPost = () => {
       fontSize: "14px",
       lineHeight: "120%"
     }
-  }, "Create Dynamic Pagess"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+  }, "Create Dynamic Pages"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     style: {
       color: "#595B5C",
       fontFamily: "'Inter', sans-serif",
@@ -6606,7 +6610,7 @@ const AddPost = () => {
       fontSize: "10px",
       lineHeight: "175%"
     }
-  }, "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting."), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("form", {
+  }, "We can now syncronize the data so you can use it in your website. Click the button below to begin syncronizing, and keep the window open while the process runs. It can take a little while depending how much data you have in the view."), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("form", {
     onSubmit: handleSubmit
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     style: {
@@ -6615,7 +6619,9 @@ const AddPost = () => {
       fontStyle: "normal",
       fontWeight: "500",
       fontSize: "12px",
-      lineHeight: "175%"
+      lineHeight: "175%",
+      marginBottom: "6px",
+      marginTop: "14px"
     }
   }, "Title"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("input", {
     value: title,
@@ -6640,7 +6646,9 @@ const AddPost = () => {
       fontStyle: "normal",
       fontWeight: "500",
       fontSize: "12px",
-      lineHeight: "175%"
+      lineHeight: "175%",
+      marginBottom: "6px",
+      marginTop: "25px"
     }
   }, "Dynamic URL"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("input", {
     value: dynamic,
@@ -6701,39 +6709,47 @@ const AddPost = () => {
       fontStyle: "normal",
       fontWeight: "500",
       fontSize: "12px",
-      lineHeight: "175%"
+      lineHeight: "175%",
+      marginBottom: "3px",
+      marginTop: "25px"
     }
-  }, "Connection URL"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+  }, "API Token"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     style: {
       color: "#595B5C",
       fontFamily: "'Inter', sans-serif",
       fontStyle: "normal",
       fontWeight: "400",
       fontSize: "10px",
-      lineHeight: "175%"
+      lineHeight: "175%",
+      marginTop: "0",
+      marginBottom: "6px"
     }
   }, "To create a connection please", " ", (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
     style: {
       textDecoration: "none"
     },
     href: "https://tools.aeropage.io/api-connector/"
-  }, "click here...")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("textarea", {
+  }, "click here...")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("input", {
     value: inputValue,
     onChange: handleChange,
     style: {
-      color: "#595B5C",
+      height: "32px",
+      padding: "7px 10px 7px 10px",
+      borderRadius: "6px",
+      backgroundColor: "#F4F5F8",
       fontFamily: "'Inter', sans-serif",
       fontStyle: "normal",
       fontWeight: "400",
       fontSize: "12px",
       lineHeight: "150%",
-      width: "100%",
-      minHeight: "70px",
-      marginBottom: "15px"
-    }
+      border: "none",
+      marginBottom: "10px",
+      width: "260px"
+    },
+    placeholder: "Token"
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
-      minHeight: "90px"
+      minHeight: "70px"
     }
   }, (response === null || response === void 0 ? void 0 : (_response$status2 = response.status) === null || _response$status2 === void 0 ? void 0 : _response$status2.type) === "success" && status === false ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
@@ -6828,6 +6844,7 @@ const AddPost = () => {
       fontWeight: "500",
       fontSize: "12px",
       lineHeight: "24px",
+      cursor: "pointer",
       background: (response === null || response === void 0 ? void 0 : (_response$status4 = response.status) === null || _response$status4 === void 0 ? void 0 : _response$status4.type) === "success" && !(dynamic === null || dynamic === "") && !(title === null || title === "") ? "#633CE3" : "#bbaaf3",
       color: "white",
       padding: "8px 13px 8px 13px",
@@ -6850,7 +6867,7 @@ const AddPost = () => {
   }, " ", (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       boxShadow: "0px 0px 10px -4px rgba(66, 68, 90, 1)",
-      width: "60%",
+      width: "500px",
       padding: "20px 20px 20px 20px",
       borderRadius: "6px",
       maxHeight: "600px",
@@ -6933,7 +6950,8 @@ const Dashboard = () => {
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       background: "white",
-      height: "1000px"
+      minHeight: "800px",
+      height: "80vh"
     }
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
@@ -6990,7 +7008,7 @@ const Dashboard = () => {
       alignItems: "center"
     }
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_router_dom__WEBPACK_IMPORTED_MODULE_3__.Link, {
-    to: "/addPost"
+    to: "wordpress/wp-admin/addPost"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
     style: {
       width: "100px",
@@ -7000,6 +7018,7 @@ const Dashboard = () => {
       fontSize: "12px",
       lineHeight: "24px",
       background: "#633CE3",
+      cursor: "pointer",
       color: "white",
       padding: "8px 13px 8px 13px",
       border: "none",
@@ -7198,7 +7217,7 @@ function Header(_ref) {
     style: {
       textDecoration: "none"
     },
-    to: "/"
+    to: "/wordpress/wp-admin/admin.php?page=aeroplugin"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     style: {
       width: "100px",

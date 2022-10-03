@@ -87,7 +87,10 @@ export default function Header({
           alignItems: "center",
         }}
       >
-        <Link style={{ textDecoration: "none" }} to="/">
+        <Link
+          style={{ textDecoration: "none" }}
+          to="/wordpress/wp-admin/admin.php?page=aeroplugin"
+        >
           <p
             style={{
               width: "100px",

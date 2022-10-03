@@ -19,7 +19,11 @@ const App = () => {
 
         <div className="App">
           <Routes>
-            <Route exact path="/addPost" element={<AddPost />} />
+            <Route
+              exact
+              path="wordpress/wp-admin/addPost"
+              element={<AddPost />}
+            />
             <Route exact path="/*" element={<NavigationMenu />} />
 
             {/* <Route path="*" element={<NotFound />} /> */}

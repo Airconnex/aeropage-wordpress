@@ -67,17 +67,14 @@ export const aeroSvg = (
 );
 
 const AddPost = () => {
-  const JSON = {
-    status: "Initial JSON",
-    instruction: "Here we can put a instruction",
-  };
+  const JSON = {};
 
   const [btnState, setBtnState] = useState(true);
   const [inputValue, setInputValue] = useState("");
   const [status, setStatus] = useState(true);
   const [title, setTitle] = useState(null);
   const [dynamic, setDynamic] = useState(null);
-  const [response, setResponse] = useState(JSON);
+  const [response, setResponse] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -87,7 +84,9 @@ const AddPost = () => {
     // const { ajax_url } = reactAppData;
     var params = new URLSearchParams();
     params.append("action", "myAction");
-    params.append("name", title);
+    params.append("title", title);
+    params.append("dynamic", dynamic);
+    params.append("token", inputValue);
 
     axios.post(MYSCRIPT.ajaxUrl, params).then(function (response) {
       console.log(response.data);
@@ -115,7 +114,7 @@ const AddPost = () => {
   console.log(dynamic);
 
   useEffect(() => {
-    fetch(inputValue)
+    fetch("https://api.aeropage.io/api/v3/token/" + inputValue)
       .then((response) => response.json())
       .then((data) => setResponse(data));
   }, [inputValue]);
@@ -128,7 +127,14 @@ const AddPost = () => {
   console.log(response);
 
   return (
-    <div style={{ background: "white" }}>
+    <div
+      style={{
+        background: "white",
+        minHeight: "800px",
+        height: "80vh",
+        width: "100%",
+      }}
+    >
       <div style={{ display: "flex", justifyContent: "center" }}>
         <div
           style={{
@@ -156,17 +162,25 @@ const AddPost = () => {
         </div>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          width: "100%",
+          justifyContent: "center",
+        }}
+      >
         <div
           style={{
             display: "flex",
             minWidth: "40%",
             flexDirection: "row",
+            marginTop: "15px",
           }}
         >
           <div
             style={{
-              padding: "25px 25px 25px 50px",
+              padding: "25px 25px 25px 80px",
             }}
           >
             <p
@@ -179,7 +193,7 @@ const AddPost = () => {
                 lineHeight: "120%",
               }}
             >
-              Create Dynamic Pagess
+              Create Dynamic Pages
             </p>
             <p
               style={{
@@ -191,12 +205,10 @@ const AddPost = () => {
                 lineHeight: "175%",
               }}
             >
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500s, when an unknown printer took a galley of
-              type and scrambled it to make a type specimen book. It has
-              survived not only five centuries, but also the leap into
-              electronic typesetting.
+              We can now syncronize the data so you can use it in your website.
+              Click the button below to begin syncronizing, and keep the window
+              open while the process runs. It can take a little while depending
+              how much data you have in the view.
             </p>
             <form onSubmit={handleSubmit}>
               <p
@@ -207,6 +219,8 @@ const AddPost = () => {
                   fontWeight: "500",
                   fontSize: "12px",
                   lineHeight: "175%",
+                  marginBottom: "6px",
+                  marginTop: "14px",
                 }}
               >
                 Title
@@ -236,6 +250,8 @@ const AddPost = () => {
                   fontWeight: "500",
                   fontSize: "12px",
                   lineHeight: "175%",
+                  marginBottom: "6px",
+                  marginTop: "25px",
                 }}
               >
                 Dynamic URL
@@ -311,9 +327,11 @@ const AddPost = () => {
                   fontWeight: "500",
                   fontSize: "12px",
                   lineHeight: "175%",
+                  marginBottom: "3px",
+                  marginTop: "25px",
                 }}
               >
-                Connection URL
+                API Token
               </p>
               <p
                 style={{
@@ -323,6 +341,8 @@ const AddPost = () => {
                   fontWeight: "400",
                   fontSize: "10px",
                   lineHeight: "175%",
+                  marginTop: "0",
+                  marginBottom: "6px",
                 }}
               >
                 To create a connection please{" "}
@@ -333,22 +353,26 @@ const AddPost = () => {
                   click here...
                 </a>
               </p>
-              <textarea
+              <input
                 value={inputValue}
                 onChange={handleChange}
                 style={{
-                  color: "#595B5C",
+                  height: "32px",
+                  padding: "7px 10px 7px 10px",
+                  borderRadius: "6px",
+                  backgroundColor: "#F4F5F8",
                   fontFamily: "'Inter', sans-serif",
                   fontStyle: "normal",
                   fontWeight: "400",
                   fontSize: "12px",
                   lineHeight: "150%",
-                  width: "100%",
-                  minHeight: "70px",
-                  marginBottom: "15px",
+                  border: "none",
+                  marginBottom: "10px",
+                  width: "260px",
                 }}
-              ></textarea>
-              <div style={{ minHeight: "90px" }}>
+                placeholder="Token"
+              ></input>
+              <div style={{ minHeight: "70px" }}>
                 {response?.status?.type === "success" && status === false ? (
                   <div
                     style={{
@@ -467,6 +491,7 @@ const AddPost = () => {
                 // </p>
                 null}
               </div>
+              {/* <Link to="/"> */}
               <button
                 disabled={
                   !response?.status?.type === "success" ||
@@ -481,6 +506,7 @@ const AddPost = () => {
                   fontWeight: "500",
                   fontSize: "12px",
                   lineHeight: "24px",
+                  cursor: "pointer",
                   background:
                     response?.status?.type === "success" &&
                     !(dynamic === null || dynamic === "") &&
@@ -498,6 +524,7 @@ const AddPost = () => {
               >
                 Add a Post
               </button>
+              {/* </Link> */}
             </form>
           </div>
 
@@ -516,10 +543,11 @@ const AddPost = () => {
             <div
               style={{
                 boxShadow: "0px 0px 10px -4px rgba(66, 68, 90, 1)",
-                width: "60%",
+                width: "500px",
                 padding: "20px 20px 20px 20px",
                 borderRadius: "6px",
                 maxHeight: "600px",
+
                 overflow: "scroll",
               }}
             >

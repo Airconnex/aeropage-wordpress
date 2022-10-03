@@ -62,7 +62,7 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div style={{ background: "white", height: "1000px" }}>
+    <div style={{ background: "white", minHeight: "800px", height: "80vh" }}>
       <div style={{ display: "flex", justifyContent: "center" }}>
         <div
           style={{
@@ -134,7 +134,7 @@ const Dashboard = () => {
               alignItems: "center",
             }}
           >
-            <Link to="/addPost">
+            <Link to="wordpress/wp-admin/addPost">
               <button
                 style={{
                   width: "100px",
@@ -144,6 +144,7 @@ const Dashboard = () => {
                   fontSize: "12px",
                   lineHeight: "24px",
                   background: "#633CE3",
+                  cursor: "pointer",
                   color: "white",
                   padding: "8px 13px 8px 13px",
                   border: "none",

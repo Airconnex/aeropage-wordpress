@@ -47,9 +47,56 @@ function aeroplugin_admin_enqueue_scripts() {
     ) ), 'before' );
 }
 
+
+function callAPI($method, $url, $data){
+    $curl = curl_init();
+    switch ($method){
+       case "POST":
+          curl_setopt($curl, CURLOPT_POST, 1);
+          if ($data)
+             curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+          break;
+       case "PUT":
+          curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+          if ($data)
+             curl_setopt($curl, CURLOPT_POSTFIELDS, $data);			 					
+          break;
+       default:
+          if ($data)
+             $url = sprintf("%s?%s", $url, http_build_query($data));
+    }
+    // OPTIONS:
+    curl_setopt($curl, CURLOPT_URL, $url);
+    curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+       'APIKEY: 111111111111111111111',
+       'Content-Type: application/json',
+    ));
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+    // EXECUTE:
+    $result = curl_exec($curl);
+    if(!$result){die("Connection Failure");}
+    curl_close($curl);
+    return $result;
+ }
+
+
+function aeroFetchToken($dynamic, $token) {
+    echo "AeroFetchToken from PHP";
+    $get_data = callAPI('GET', 'https://api.aeropage.io/api/v3/token/'.$token, false);
+    $response = json_decode($get_data, true);
+    $errors = $response['response']['errors'];
+    $data = $response['response']['data'][0];
+    print_r($response);
+}
+
 function aeroplugin_myAction() {
-    echo "Hello World!";
-    echo $_POST['name'];
+    // echo "Hello World!";
+    // echo $_POST['title'];
+    // echo $_POST['dynamic'];
+    // echo $_POST['token'];
+    aeroFetchToken($_POST['dynamic'], $_POST['token'] );
+
 }
 
 add_action( 'wp_ajax_myAction', 'aeroplugin_myAction' );
