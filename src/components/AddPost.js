@@ -75,7 +75,7 @@ const AddPost = () => {
   const [title, setTitle] = useState(null);
   const [slug, setSlug] = useState(null);
   const [dynamic, setDynamic] = useState("record_id");
-  const [response, setResponse] = useState(null);
+  const [responseAP, setResponseAP] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -90,8 +90,8 @@ const AddPost = () => {
     params.append("slug", slug);
     params.append("token", inputValue);
 
-    axios.post(MYSCRIPT.ajaxUrl, params).then(function (response) {
-      console.log(response.data);
+    axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
+      console.log(responseAP.data);
     });
   };
 
@@ -121,16 +121,16 @@ const AddPost = () => {
 
   useEffect(() => {
     fetch("https://api.aeropage.io/api/v3/token/" + inputValue)
-      .then((response) => response.json())
-      .then((data) => setResponse(data));
+      .then((responseAP) => responseAP.json())
+      .then((data) => setResponseAP(data));
   }, [inputValue]);
 
   useEffect(() => {
-    if (response?.status?.type === "success") setStatus(false);
-    if (response?.type === "PAGE_NOT_FOUND") setStatus(false);
-  }, [response]);
+    if (responseAP?.status?.type === "success") setStatus(false);
+    if (responseAP?.type === "PAGE_NOT_FOUND") setStatus(false);
+  }, [responseAP]);
 
-  console.log(response);
+  console.log(responseAP);
 
   return (
     <div
@@ -382,7 +382,7 @@ const AddPost = () => {
                 placeholder="Token"
               ></input>
               <div style={{ minHeight: "70px" }}>
-                {response?.status?.type === "success" && status === false ? (
+                {responseAP?.status?.type === "success" && status === false ? (
                   <div
                     style={{
                       display: "flex",
@@ -409,7 +409,7 @@ const AddPost = () => {
                   </div>
                 ) : null}
 
-                {response?.type === "PAGE_NOT_FOUND" && status === false ? (
+                {responseAP?.type === "PAGE_NOT_FOUND" && status === false ? (
                   <>
                     <p
                       style={{
@@ -422,8 +422,8 @@ const AddPost = () => {
                         margin: "0 0 0 0",
                       }}
                     >
-                      {response?.source + " "}
-                      {response?.type}
+                      {responseAP?.source + " "}
+                      {responseAP?.type}
                     </p>
 
                     <p
@@ -437,7 +437,7 @@ const AddPost = () => {
                         margin: "0 0 0 0",
                       }}
                     >
-                      {response?.description}
+                      {responseAP?.description}
                     </p>
                     <p
                       style={{
@@ -450,7 +450,7 @@ const AddPost = () => {
                         margin: "0 0 0 0",
                       }}
                     >
-                      {response?.message}
+                      {responseAP?.message}
                     </p>
                   </>
                 ) : null}
@@ -503,7 +503,7 @@ const AddPost = () => {
               {/* <Link to="/"> */}
               <button
                 disabled={
-                  !response?.status?.type === "success" ||
+                  !responseAP?.status?.type === "success" ||
                   dynamic === null ||
                   dynamic === "" ||
                   title === null ||
@@ -517,7 +517,7 @@ const AddPost = () => {
                   lineHeight: "24px",
                   cursor: "pointer",
                   background:
-                    response?.status?.type === "success" &&
+                    responseAP?.status?.type === "success" &&
                     !(dynamic === null || dynamic === "") &&
                     !(title === null || title === "")
                       ? "#633CE3"
@@ -560,7 +560,7 @@ const AddPost = () => {
                 overflow: "scroll",
               }}
             >
-              {response ? <ReactJson src={response} /> : null}
+              {responseAP ? <ReactJson src={responseAP} /> : null}
             </div>
           </div>
         </div>
