@@ -84,7 +84,7 @@ const AddPost = () => {
     // const reactAppData = window.wpRoomDesigner || {};
     // const { ajax_url } = reactAppData;
     var params = new URLSearchParams();
-    params.append("action", "myAction2");
+    params.append("action", "myAction");
     params.append("title", title);
     params.append("dynamic", dynamic);
     params.append("slug", slug);
@@ -356,6 +356,7 @@ const AddPost = () => {
                 To create a connection please{" "}
                 <a
                   style={{ textDecoration: "none" }}
+                  target="_blank"
                   href="https://tools.aeropage.io/api-connector/"
                 >
                   click here...

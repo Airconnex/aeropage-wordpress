@@ -10,6 +10,7 @@ import {
   BrowserRouter,
   Routes,
 } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 export const aeroSvg = (
   <svg
@@ -56,21 +57,19 @@ export const aeroSvg = (
 );
 
 const Dashboard = () => {
-  const [response, setResponse] = useState();
+  const [response, setResponse] = useState([]);
+
+  const [url, setUrl] = useState(true);
+  const [edit, setEdit] = useState("");
+
+  let [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     // fetch("http://localhost/wordpress/wp-json/wp/v2/posts?type=aero-template")
     //   .then((response) => response.json())
     //   .then((posts) => console.log(posts));
-    // XHR
-    // var xhr = new XMLHttpRequest();
-    // xhr.open("POST", "my-ajax.php");
-    // xhr.onload = function () {
-    //   var jsvar = this.response;
-    //   console.log(jsvar);
-    // };
-    // xhr.send();
-    //
+    // console.log(searchParams);
+
     console.log("use effect");
     // fetch("data.php")
     //   .then(function (response) {
@@ -84,13 +83,27 @@ const Dashboard = () => {
     params.append("title", "test");
     axios.post(MYSCRIPT.ajaxUrl, params).then(function (response) {
       // console.log(response.data);
-      setResponse(response.data);
+      let newString = response.data.slice(0, -1);
+      let json = JSON.parse(newString);
+      setResponse(json);
     });
   }, []);
 
   useEffect(() => {
-    console.log("response" + response);
+    console.log(response);
   }, [response]);
+
+  useEffect(() => {
+    // for (const entry of searchParams.entries()) {
+    //   console.log(entry);
+    // }
+    console.log(searchParams.get("edit"));
+    setEdit(searchParams.get("edit"));
+  }, [url]);
+
+  useEffect(() => {
+    console.log("edit status:" + edit);
+  }, [edit]);
 
   return (
     <div style={{ background: "white", minHeight: "800px", height: "80vh" }}>
@@ -160,13 +173,13 @@ const Dashboard = () => {
               width: "100%",
               display: "flex",
               // flexWrap: "wrap",
-
               justifyContent: "right",
               alignItems: "center",
             }}
           >
-            <Link to="wordpress/wp-admin/addPost">
+            <Link to="/wordpress/wp-admin/admin.php?page=aeroplugin?&edit=null">
               <button
+                onClick={() => setUrl(!url)}
                 style={{
                   width: "100px",
                   fontFamily: "'Inter', sans-serif",
@@ -193,83 +206,32 @@ const Dashboard = () => {
             display: "flex",
             flexDirection: "row",
             justifyContent: "center",
-            flexWrap: "wrap",
+            // flexWrap: "wrap",
             maxWidth: "80%",
           }}
         >
-          <div
-            className="defaultCursor"
-            style={{
-              border: "1px solid lightGray",
-              padding: "10px 10px 10px 10px",
-              maxWidth: "300px",
-              flex: "1 1 200px",
-              margin: "10px 10px 10px 10px",
-              borderRadius: "8px",
-            }}
-          >
-            <h4>Aero Wordpress Tool1</h4>
-            <p style={{ fontSize: "12px" }}>
-              Create rich html with images and buttons to use in emails. Export
-              to Airtable and send using any automation tools
-            </p>
-          </div>
-
-          <div
-            className="defaultCursor"
-            style={{
-              border: "1px solid lightGray",
-              padding: "10px 10px 10px 10px",
-              maxWidth: "300px",
-              flex: "1 1 200px",
-
-              margin: "10px 10px 10px 10px",
-              borderRadius: "8px",
-            }}
-          >
-            <h4>Aero Wordpress Tool2</h4>
-            <p style={{ fontSize: "12px" }}>
-              Create rich html with images and buttons to use in emails. Export
-              to Airtable and send using any automation tools
-            </p>
-          </div>
-
-          <div
-            className="defaultCursor"
-            style={{
-              border: "1px solid lightGray",
-              padding: "10px 10px 10px 10px",
-              maxWidth: "300px",
-              flex: "1 1 200px",
-
-              margin: "10px 10px 10px 10px",
-              borderRadius: "8px",
-            }}
-          >
-            <h4>Aero Wordpress Tool3</h4>
-            <p style={{ fontSize: "12px" }}>
-              Create rich html with images and buttons to use in emails. Export
-              to Airtable and send using any automation tools
-            </p>
-          </div>
-
-          <div
-            className="defaultCursor"
-            style={{
-              border: "1px solid lightGray",
-              padding: "10px 10px 10px 10px",
-              maxWidth: "300px",
-              flex: "1 1 200px",
-              margin: "10px 10px 10px 10px",
-              borderRadius: "8px",
-            }}
-          >
-            <h4>Aero Wordpress Tool4</h4>
-            <p style={{ fontSize: "12px" }}>
-              Create rich html with images and buttons to use in emails. Export
-              to Airtable and send using any automation tools
-            </p>
-          </div>
+          {edit === "null" ? <h1>edit null</h1> : <h1>not null</h1>}
+          {response.map((el) => {
+            return (
+              <div
+                className="defaultCursor"
+                style={{
+                  border: "1px solid lightGray",
+                  padding: "10px 10px 10px 10px",
+                  maxWidth: "300px",
+                  flex: "1 1 200px",
+                  margin: "10px 10px 10px 10px",
+                  borderRadius: "8px",
+                }}
+              >
+                <h4>{el?.post_title}</h4>
+                {/* <p style={{ fontSize: "12px" }}>
+                  Create rich html with images and buttons to use in emails.
+                  Export to Airtable and send using any automation tools
+                </p> */}
+              </div>
+            );
+          })}
         </div>
       </div>
       <div

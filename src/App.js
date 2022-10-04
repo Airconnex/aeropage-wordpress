@@ -19,11 +19,11 @@ const App = () => {
 
         <div className="App">
           <Routes>
-            <Route
+            {/* <Route
               exact
-              path="wordpress/wp-admin/addPost"
+              path="/wordpress/wp-admin/admin.php?page=aeroplugin?&edit=null"
               element={<AddPost />}
-            />
+            /> */}
             <Route exact path="/*" element={<NavigationMenu />} />
 
             {/* <Route path="*" element={<NotFound />} /> */}

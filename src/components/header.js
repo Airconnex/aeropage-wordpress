@@ -66,7 +66,7 @@ export default function Header({
         paddingRight: "15px",
       }}
     >
-      <Link to="/">
+      <Link to="/wordpress/wp-admin/admin.php?page=aeroplugin">
         <div
           style={{
             display: "flex",
