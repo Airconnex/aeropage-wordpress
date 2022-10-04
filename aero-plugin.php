@@ -127,10 +127,14 @@ function aeroplugin_myAction() {
 }
 
 function aeroplugin_myAction2(){
-    echo "MyAction2";
     $airconnex_posts = get_posts(['post_type' => 'aero-template','post_status' => 'private','numberposts' => -1]);
     // print_r($airconnex_posts);
-    return $airconnex_posts;
+    // $name = "David";
+
+    header('Content-Type: application/json');
+
+    echo json_encode($airconnex_posts);
+    // return $airconnex_posts;
 }
 
 add_action( 'wp_ajax_myAction', 'aeroplugin_myAction' );

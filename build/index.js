@@ -6960,17 +6960,34 @@ const Dashboard = () => {
     // fetch("http://localhost/wordpress/wp-json/wp/v2/posts?type=aero-template")
     //   .then((response) => response.json())
     //   .then((posts) => console.log(posts));
+    // XHR
+    // var xhr = new XMLHttpRequest();
+    // xhr.open("POST", "my-ajax.php");
+    // xhr.onload = function () {
+    //   var jsvar = this.response;
+    //   console.log(jsvar);
+    // };
+    // xhr.send();
+    //
+    console.log("use effect"); // fetch("data.php")
+    //   .then(function (response) {
+    //     return response.json();
+    //   })
+    //   .then(function (data) {
+    //     alert("hello" + data);
+    //   });
+
     var params = new URLSearchParams();
     params.append("action", "myAction2");
     params.append("title", "test");
     axios__WEBPACK_IMPORTED_MODULE_3___default().post(MYSCRIPT.ajaxUrl, params).then(function (response) {
-      console.log(response.data); // setResponse(response.data);
+      // console.log(response.data);
+      setResponse(response.data);
     });
-    console.log(test);
-  }, []); // useEffect(() => {
-  //   console.log(response);
-  // }, [response]);
-
+  }, []);
+  (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
+    console.log("response" + response);
+  }, [response]);
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       background: "white",

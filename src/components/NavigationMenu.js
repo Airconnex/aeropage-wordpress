@@ -62,20 +62,35 @@ const Dashboard = () => {
     // fetch("http://localhost/wordpress/wp-json/wp/v2/posts?type=aero-template")
     //   .then((response) => response.json())
     //   .then((posts) => console.log(posts));
+    // XHR
+    // var xhr = new XMLHttpRequest();
+    // xhr.open("POST", "my-ajax.php");
+    // xhr.onload = function () {
+    //   var jsvar = this.response;
+    //   console.log(jsvar);
+    // };
+    // xhr.send();
+    //
+    console.log("use effect");
+    // fetch("data.php")
+    //   .then(function (response) {
+    //     return response.json();
+    //   })
+    //   .then(function (data) {
+    //     alert("hello" + data);
+    //   });
     var params = new URLSearchParams();
     params.append("action", "myAction2");
     params.append("title", "test");
-
     axios.post(MYSCRIPT.ajaxUrl, params).then(function (response) {
-      console.log(response.data);
-      // setResponse(response.data);
+      // console.log(response.data);
+      setResponse(response.data);
     });
-    console.log(test);
   }, []);
 
-  // useEffect(() => {
-  //   console.log(response);
-  // }, [response]);
+  useEffect(() => {
+    console.log("response" + response);
+  }, [response]);
 
   return (
     <div style={{ background: "white", minHeight: "800px", height: "80vh" }}>
