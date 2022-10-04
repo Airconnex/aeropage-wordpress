@@ -48,13 +48,11 @@ export const aeroSvg = (
 export default function Header({
   toolName,
   toolType,
-  toolTable,
-  setToolTable,
-  isTablePicker,
-  setTipState,
+  resetView,
   pathLevel,
   projectName,
   resetCurrentTool,
+  mainMenuName,
 }) {
   return (
     <div
@@ -66,18 +64,18 @@ export default function Header({
         paddingRight: "15px",
       }}
     >
-      <Link to="/wordpress/wp-admin/admin.php?page=aeroplugin">
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            paddingTop: "10px",
-            paddingBottom: "10px",
-          }}
-        >
-          {aeroSvg}
-        </div>
-      </Link>
+      {/* <Link to="/wordpress/wp-admin/admin.php?page=aeroplugin"> */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          paddingTop: "10px",
+          paddingBottom: "10px",
+        }}
+      >
+        {aeroSvg}
+      </div>
+      {/* </Link> */}
 
       <div
         style={{
@@ -87,35 +85,43 @@ export default function Header({
           alignItems: "center",
         }}
       >
-        <Link
+        {/* <Link
           style={{ textDecoration: "none" }}
           to="/wordpress/wp-admin/admin.php?page=aeroplugin"
+        > */}
+
+        <Link
+          style={{ textDecoration: "none", border: "none" }}
+          to="wordpress/wp-admin/admin.php?page=aeroplugin"
+          onClick={() => resetView()}
         >
           <p
             style={{
               width: "100px",
               marginRight: "3px",
               color: "black",
+              cursor: "pointer",
               borderBottom: "none",
             }}
           >
             {" " + toolType + " "}
           </p>
         </Link>
+        {/* </Link> */}
         {pathLevel === 1 ? (
           <p style={{ width: "150px", fontWeight: "600" }}>
             {" / " + toolName}
           </p>
         ) : null}
 
-        {pathLevel === 2 ? (
+        {/* {pathLevel === 2 ? (
           <p onClick={() => resetCurrentTool()} style={{ marginRight: "3px" }}>
             {" / " + toolName + " "}
           </p>
         ) : null}
         {pathLevel === 2 ? (
           <p style={{ fontWeight: "600" }}>{" / " + projectName}</p>
-        ) : null}
+        ) : null} */}
 
         {/* <p>{toolName}</p> */}
       </div>

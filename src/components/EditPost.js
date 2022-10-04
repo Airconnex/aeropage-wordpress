@@ -66,15 +66,15 @@ export const aeroSvg = (
   </svg>
 );
 
-const AddPost = ({ resetView }) => {
+const EditPost = ({ resetView, id, editTitle, url, editDynamic }) => {
   const JSON = {};
 
   const [btnState, setBtnState] = useState(true);
   const [inputValue, setInputValue] = useState("");
   const [status, setStatus] = useState(true);
-  const [title, setTitle] = useState(null);
-  const [slug, setSlug] = useState(null);
-  const [dynamic, setDynamic] = useState("record_id");
+  const [title, setTitle] = useState(editTitle);
+  const [slug, setSlug] = useState(url);
+  const [dynamic, setDynamic] = useState(editDynamic);
   const [responseAP, setResponseAP] = useState(null);
 
   const handleSubmit = (e) => {
@@ -86,6 +86,7 @@ const AddPost = ({ resetView }) => {
     var params = new URLSearchParams();
     params.append("action", "myAction");
     params.append("title", title);
+    params.append("id", id);
     params.append("dynamic", dynamic);
     params.append("slug", slug);
     params.append("token", inputValue);
@@ -111,13 +112,6 @@ const AddPost = ({ resetView }) => {
   const dynamicOnChange = (e) => {
     setDynamic(e.target.value);
   };
-
-  const handleMyClick = () => {
-    console.log("clicked");
-  };
-
-  // console.log(title);
-  // console.log(dynamic);
 
   useEffect(() => {
     fetch("https://tools.aeropage.io/api-connector/" + inputValue)
@@ -154,7 +148,7 @@ const AddPost = ({ resetView }) => {
         >
           <Header
             toolType={"Aeropage Plugin"}
-            toolName={"Add a Post"}
+            toolName={`${title}`}
             pathLevel={1}
             resetView={resetView}
           ></Header>
@@ -532,7 +526,7 @@ const AddPost = ({ resetView }) => {
                 //   handleMyClick();
                 // }}
               >
-                Add a Post
+                Edit a Post
               </button>
               {/* </Link> */}
             </form>
@@ -570,4 +564,4 @@ const AddPost = ({ resetView }) => {
   );
 };
 
-export default AddPost;
+export default EditPost;

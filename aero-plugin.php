@@ -83,7 +83,7 @@ function callAPI($method, $url, $data){
 
 function aeroFetchToken($dynamic, $token) {
     echo "AeroFetchToken from PHP";
-    $get_data = callAPI('GET', 'https://api.aeropage.io/api/v3/token/'.$token, false);
+    $get_data = callAPI('GET', 'https://tools.aeropage.io/api-connector/'.$token, false);
     $response = json_decode($get_data, true);
     $errors = $response['response']['errors'];
     $data = $response['response']['data'][0];
@@ -92,7 +92,7 @@ function aeroFetchToken($dynamic, $token) {
 
 }
 
-function insertPost($title, $slug, $dynamic, $token){
+function insertPost($title, $slug, $dynamic, $token, $id){
     $template_post = array(
         'ID' => $id,
         'post_title' => $title,
@@ -118,7 +118,7 @@ function aeroplugin_myAction() {
 
     // $airconnex_posts = get_posts(['post_type' => 'aero-template','post_status' => 'private','numberposts' => -1]);
     // print_r($airconnex_posts);
-    insertPost($_POST['title'],$_POST['slug'],$_POST['dynamic'],$_POST['token']);
+    insertPost($_POST['title'],$_POST['slug'],$_POST['dynamic'],$_POST['token'],$_POST['id'] );
 
 }
 

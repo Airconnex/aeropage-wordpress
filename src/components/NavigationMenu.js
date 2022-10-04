@@ -10,8 +10,8 @@ import {
   Routes,
 } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
-import { Oval } from "react-loader-spinner";
-import ReactJson from "react-json-view";
+import AddPost from "./AddPost";
+import EditPost from "./EditPost";
 
 export const aeroSvg = (
   <svg
@@ -76,29 +76,26 @@ export const tickIcon = (
 
 const Dashboard = () => {
   const [response, setResponse] = useState([]);
-
   const [url, setUrl] = useState(true);
-  const [edit, setEdit] = useState(null);
+  const [path, setPath] = useState(null);
+  const [editID, setEditID] = useState(null);
+  const [idx, setIdx] = useState(null);
 
   let [searchParams, setSearchParams] = useSearchParams();
+  const link = `/wordpress/wp-admin/admin.php?page=aeroplugin?&path=editPost`;
 
-  // useEffect(() => {
-  //   // fetch("http://localhost/wordpress/wp-json/wp/v2/posts?type=aero-template")
-  //   //   .then((response) => response.json())
-  //   //   .then((posts) => console.log(posts));
-  //   // console.log(searchParams);
-
-  //   console.log("use effect");
-  //   var params = new URLSearchParams();
-  //   params.append("action", "myAction2");
-  //   params.append("title", "test");
-  //   axios.post(MYSCRIPT.ajaxUrl, params).then(function (response) {
-  //     // console.log(response.data);
-  //     let newString = response.data.slice(0, -1);
-  //     let json = JSON.parse(newString);
-  //     setResponse(json);
-  //   });
-  // }, []);
+  useEffect(() => {
+    console.log("use effect");
+    var params = new URLSearchParams();
+    params.append("action", "myAction2");
+    params.append("title", "test");
+    axios.post(MYSCRIPT.ajaxUrl, params).then(function (response) {
+      // console.log(response.data);
+      let newString = response.data.slice(0, -1);
+      let json = JSON.parse(newString);
+      setResponse(json);
+    });
+  }, []);
 
   useEffect(() => {
     console.log(response);
@@ -106,87 +103,19 @@ const Dashboard = () => {
 
   useEffect(() => {
     console.log(searchParams.get("path"));
-    setEdit(searchParams.get("path"));
+    setPath(searchParams.get("path"));
   }, [url]);
 
   useEffect(() => {
-    console.log("edit status:" + edit);
-  }, [edit]);
+    console.log("path status:" + path);
+  }, [path]);
 
-  //
-  //
-  //
-  //  ADDPOST STATE
-  //
-  //
-  //
-  const JSON = {};
-
-  const [btnState, setBtnState] = useState(true);
-  const [inputValue, setInputValue] = useState("");
-  const [status, setStatus] = useState(true);
-  const [title, setTitle] = useState(null);
-  const [slug, setSlug] = useState(null);
-  const [dynamic, setDynamic] = useState("record_id");
-  const [responseAP, setResponseAP] = useState(null);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(MYSCRIPT.ajaxUrl);
-
-    // const reactAppData = window.wpRoomDesigner || {};
-    // const { ajax_url } = reactAppData;
-    var params = new URLSearchParams();
-    params.append("action", "myAction");
-    params.append("title", title);
-    params.append("dynamic", dynamic);
-    params.append("slug", slug);
-    params.append("token", inputValue);
-
-    axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
-      console.log(responseAP.data);
-    });
+  const resetView = () => {
+    setPath(null);
   };
-
-  const handleChange = (e) => {
-    setStatus(true);
-    setInputValue(e.target.value);
-  };
-
-  const titleOnChange = (e) => {
-    setTitle(e.target.value);
-  };
-
-  const slugOnChange = (e) => {
-    setSlug(e.target.value);
-  };
-
-  const dynamicOnChange = (e) => {
-    setDynamic(e.target.value);
-  };
-
-  const handleMyClick = () => {
-    console.log("clicked");
-  };
-
-  // console.log(title);
-  // console.log(dynamic);
-
-  useEffect(() => {
-    fetch("https://api.aeropage.io/api/v3/token/" + inputValue)
-      .then((responseAP) => responseAP.json())
-      .then((data) => setResponseAP(data));
-  }, [inputValue]);
-
-  useEffect(() => {
-    if (responseAP?.status?.type === "success") setStatus(false);
-    if (responseAP?.type === "PAGE_NOT_FOUND") setStatus(false);
-  }, [responseAP]);
-
-  console.log(responseAP);
 
   const conditionalRender = () => {
-    if (edit === null) {
+    if (path === null) {
       return (
         <div
           style={{ background: "white", minHeight: "800px", height: "80vh" }}
@@ -294,25 +223,38 @@ const Dashboard = () => {
                 maxWidth: "80%",
               }}
             >
-              {response.map((el) => {
+              {response.map((el, idx) => {
                 return (
-                  <div
-                    className="defaultCursor"
-                    style={{
-                      border: "1px solid lightGray",
-                      padding: "10px 10px 10px 10px",
-                      maxWidth: "300px",
-                      flex: "1 1 200px",
-                      margin: "10px 10px 10px 10px",
-                      borderRadius: "8px",
+                  <Link
+                    onClick={() => {
+                      setUrl(!url);
+                      setEditID(el.ID);
+                      setIdx(idx);
                     }}
+                    style={{
+                      textDecoration: "none",
+                      color: "black",
+                    }}
+                    to={link}
                   >
-                    <h4>{el?.post_title}</h4>
-                    {/* <p style={{ fontSize: "12px" }}>
+                    <div
+                      style={{
+                        border: "1px solid lightGray",
+                        padding: "10px 10px 10px 10px",
+                        maxWidth: "300px",
+                        flex: "1 1 200px",
+                        cursor: "pointer",
+                        margin: "10px 10px 10px 10px",
+                        borderRadius: "8px",
+                      }}
+                    >
+                      <h4>{el?.post_title}</h4>
+                      {/* <p style={{ fontSize: "12px" }}>
                   Create rich html with images and buttons to use in emails.
                   Export to Airtable and send using any automation tools
                 </p> */}
-                  </div>
+                    </div>
+                  </Link>
                 );
               })}
             </div>
@@ -366,443 +308,16 @@ const Dashboard = () => {
           </div>
         </div>
       );
-    } else if (edit === "addPost") {
+    } else if (path === "addPost") {
+      return <AddPost resetView={resetView} />;
+    } else if (path === "editPost") {
       return (
-        <div
-          style={{
-            background: "white",
-            minHeight: "800px",
-            height: "80vh",
-            width: "100%",
-          }}
-        >
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <div
-              style={{
-                borderBottom: "1px solid lightGray",
-                display: "flex",
-                flexDirection: "row",
-                paddingLeft: "15px",
-                paddingRight: "15px",
-                width: "100%",
-              }}
-            >
-              <Header
-                toolType={"Aeropage Plugin"}
-                toolName={"Add a Post"}
-                pathLevel={1}
-              ></Header>
-
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  width: "100%",
-                }}
-              ></div>
-            </div>
-          </div>
-
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              width: "100%",
-              justifyContent: "center",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                minWidth: "40%",
-                flexDirection: "row",
-                marginTop: "15px",
-              }}
-            >
-              <div
-                style={{
-                  padding: "25px 25px 25px 80px",
-                }}
-              >
-                <p
-                  style={{
-                    color: "#595B5C",
-                    fontFamily: "'Inter', sans-serif",
-                    fontStyle: "normal",
-                    fontWeight: "600",
-                    fontSize: "14px",
-                    lineHeight: "120%",
-                  }}
-                >
-                  Create Dynamic Pages
-                </p>
-                <p
-                  style={{
-                    color: "#595B5C",
-                    fontFamily: "'Inter', sans-serif",
-                    fontStyle: "normal",
-                    fontWeight: "400",
-                    fontSize: "10px",
-                    lineHeight: "175%",
-                  }}
-                >
-                  We can now syncronize the data so you can use it in your
-                  website. Click the button below to begin syncronizing, and
-                  keep the window open while the process runs. It can take a
-                  little while depending how much data you have in the view.
-                </p>
-                <form onSubmit={handleSubmit}>
-                  <p
-                    style={{
-                      color: "#595B5C",
-                      fontFamily: "'Inter', sans-serif",
-                      fontStyle: "normal",
-                      fontWeight: "500",
-                      fontSize: "12px",
-                      lineHeight: "175%",
-                      marginBottom: "6px",
-                      marginTop: "14px",
-                    }}
-                  >
-                    Title
-                  </p>
-                  <input
-                    value={title}
-                    onChange={titleOnChange}
-                    style={{
-                      height: "32px",
-                      padding: "7px 10px 7px 10px",
-                      borderRadius: "6px",
-                      backgroundColor: "#F4F5F8",
-                      fontFamily: "'Inter', sans-serif",
-                      fontStyle: "normal",
-                      fontWeight: "400",
-                      fontSize: "12px",
-                      lineHeight: "150%",
-                      border: "none",
-                    }}
-                    placeholder="Title *"
-                  ></input>
-                  <p
-                    style={{
-                      color: "#595B5C",
-                      fontFamily: "'Inter', sans-serif",
-                      fontStyle: "normal",
-                      fontWeight: "500",
-                      fontSize: "12px",
-                      lineHeight: "175%",
-                      marginBottom: "6px",
-                      marginTop: "25px",
-                    }}
-                  >
-                    Dynamic URL
-                  </p>
-                  <input
-                    value={slug}
-                    onChange={slugOnChange}
-                    style={{
-                      height: "32px",
-                      padding: "7px 10px 7px 10px",
-                      borderRadius: "6px",
-                      backgroundColor: "#F4F5F8",
-                      fontFamily: "'Inter', sans-serif",
-                      fontStyle: "normal",
-                      fontWeight: "400",
-                      fontSize: "12px",
-                      lineHeight: "150%",
-                      border: "none",
-                    }}
-                    placeholder="Dynamic URL"
-                  ></input>{" "}
-                  /{" "}
-                  <select
-                    value={dynamic}
-                    onChange={dynamicOnChange}
-                    style={{
-                      height: "32px",
-                      borderRadius: "6px",
-                      backgroundColor: "white",
-                      color: "#595B5C",
-
-                      fontFamily: "'Inter', sans-serif",
-                      fontStyle: "normal",
-                      fontWeight: "400",
-                      width: "100px",
-                      border: "1px solid lightGray",
-                      fontSize: "12px",
-                      lineHeight: "18px",
-                    }}
-                  >
-                    <option
-                      style={{
-                        borderRadius: "6px",
-                        color: "#595B5C",
-                        fontFamily: "'Inter', sans-serif",
-                        fontStyle: "normal",
-                        fontWeight: "400",
-                        fontSize: "12px",
-                        lineHeight: "150%",
-                      }}
-                      value="record_id"
-                    >
-                      [record_id]
-                    </option>
-                    <option
-                      style={{
-                        borderRadius: "6px",
-                        color: "#595B5C",
-                        fontFamily: "'Inter', sans-serif",
-                        fontStyle: "normal",
-                        fontWeight: "400",
-                        fontSize: "12px",
-                        lineHeight: "150%",
-                      }}
-                      value="name"
-                    >
-                      [name]
-                    </option>
-                  </select>
-                  <p
-                    style={{
-                      color: "#595B5C",
-                      fontFamily: "'Inter', sans-serif",
-                      fontStyle: "normal",
-                      fontWeight: "500",
-                      fontSize: "12px",
-                      lineHeight: "175%",
-                      marginBottom: "3px",
-                      marginTop: "25px",
-                    }}
-                  >
-                    API Token
-                  </p>
-                  <p
-                    style={{
-                      color: "#595B5C",
-                      fontFamily: "'Inter', sans-serif",
-                      fontStyle: "normal",
-                      fontWeight: "400",
-                      fontSize: "10px",
-                      lineHeight: "175%",
-                      marginTop: "0",
-                      marginBottom: "6px",
-                    }}
-                  >
-                    To create a connection please{" "}
-                    <a
-                      style={{ textDecoration: "none" }}
-                      target="_blank"
-                      href="https://tools.aeropage.io/api-connector/"
-                    >
-                      click here...
-                    </a>
-                  </p>
-                  <input
-                    value={inputValue}
-                    onChange={handleChange}
-                    style={{
-                      height: "32px",
-                      padding: "7px 10px 7px 10px",
-                      borderRadius: "6px",
-                      backgroundColor: "#F4F5F8",
-                      fontFamily: "'Inter', sans-serif",
-                      fontStyle: "normal",
-                      fontWeight: "400",
-                      fontSize: "12px",
-                      lineHeight: "150%",
-                      border: "none",
-                      marginBottom: "10px",
-                      width: "260px",
-                    }}
-                    placeholder="Token"
-                  ></input>
-                  <div style={{ minHeight: "70px" }}>
-                    {responseAP?.status?.type === "success" &&
-                    status === false ? (
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          alignItems: "center",
-                        }}
-                      >
-                        {tickIcon}
-
-                        <p
-                          style={{
-                            color: "#22BB33",
-                            fontFamily: "'Inter', sans-serif",
-                            fontStyle: "normal",
-                            fontWeight: "500",
-                            fontSize: "12px",
-                            lineHeight: "24px",
-
-                            margin: "0 0 0 5px",
-                          }}
-                        >
-                          Success
-                        </p>
-                      </div>
-                    ) : null}
-
-                    {responseAP?.type === "PAGE_NOT_FOUND" &&
-                    status === false ? (
-                      <>
-                        <p
-                          style={{
-                            fontFamily: "'Inter', sans-serif",
-                            fontStyle: "normal",
-                            fontWeight: "500",
-                            fontSize: "12px",
-                            lineHeight: "24px",
-                            color: "red",
-                            margin: "0 0 0 0",
-                          }}
-                        >
-                          {responseAP?.source + " "}
-                          {responseAP?.type}
-                        </p>
-
-                        <p
-                          style={{
-                            fontFamily: "'Inter', sans-serif",
-                            fontStyle: "normal",
-                            fontWeight: "400",
-                            lineHeight: "175%",
-                            color: "red",
-                            fontSize: "10px",
-                            margin: "0 0 0 0",
-                          }}
-                        >
-                          {responseAP?.description}
-                        </p>
-                        <p
-                          style={{
-                            fontFamily: "'Inter', sans-serif",
-                            fontStyle: "normal",
-                            fontWeight: "400",
-                            fontSize: "10px",
-                            lineHeight: "175%",
-                            color: "red",
-                            margin: "0 0 0 0",
-                          }}
-                        >
-                          {responseAP?.message}
-                        </p>
-                      </>
-                    ) : null}
-
-                    {status && inputValue ? (
-                      <>
-                        <div style={{ display: "flex", flexDirection: "row" }}>
-                          <Oval
-                            height={15}
-                            width={15}
-                            color="#4fa94d"
-                            wrapperStyle={{}}
-                            wrapperClass=""
-                            visible={true}
-                            ariaLabel="oval-loading"
-                            secondaryColor="#4fa94d"
-                            strokeWidth={2}
-                            strokeWidthSecondary={2}
-                          />
-                          <span
-                            style={{
-                              color: "#595B5C",
-                              fontFamily: "'Inter', sans-serif",
-                              fontStyle: "normal",
-                              fontWeight: "400",
-                              marginTop: "2.5px",
-                              fontSize: "10px",
-                              lineHeight: "175%",
-                            }}
-                          >
-                            Checking
-                          </span>
-                        </div>
-                      </>
-                    ) : // <p
-                    //   style={{
-                    //     color: "#595B5C",
-                    //     fontFamily: "'Inter', sans-serif",
-                    //     fontStyle: "normal",
-                    //     fontWeight: "400",
-                    //     fontSize: "10px",
-                    //     lineHeight: "175%",
-                    //     margin: "0 0 0 0",
-                    //   }}
-                    // >
-                    //   Checking
-                    // </p>
-                    null}
-                  </div>
-                  {/* <Link to="/"> */}
-                  <button
-                    disabled={
-                      !responseAP?.status?.type === "success" ||
-                      dynamic === null ||
-                      dynamic === "" ||
-                      title === null ||
-                      title === ""
-                    }
-                    style={{
-                      fontFamily: "'Inter', sans-serif",
-                      fontStyle: "normal",
-                      fontWeight: "500",
-                      fontSize: "12px",
-                      lineHeight: "24px",
-                      cursor: "pointer",
-                      background:
-                        responseAP?.status?.type === "success" &&
-                        !(dynamic === null || dynamic === "") &&
-                        !(title === null || title === "")
-                          ? "#633CE3"
-                          : "#bbaaf3",
-                      color: "white",
-                      padding: "8px 13px 8px 13px",
-                      border: "none",
-                      borderRadius: "6px",
-                    }}
-                    // onClick={() => {
-                    //   handleMyClick();
-                    // }}
-                  >
-                    Add a Post
-                  </button>
-                  {/* </Link> */}
-                </form>
-              </div>
-
-              <div
-                style={{
-                  marginTop: "50px",
-                  marginBottom: "50px",
-                  minWidth: "60%",
-                  maxWidth: "60%",
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "center",
-                }}
-              >
-                {" "}
-                <div
-                  style={{
-                    boxShadow: "0px 0px 10px -4px rgba(66, 68, 90, 1)",
-                    width: "500px",
-                    padding: "20px 20px 20px 20px",
-                    borderRadius: "6px",
-                    maxHeight: "600px",
-
-                    overflow: "scroll",
-                  }}
-                >
-                  {responseAP ? <ReactJson src={responseAP} /> : null}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <EditPost
+          id={editID}
+          editTitle={response[idx].post_title}
+          url={response[idx].post_name}
+          editDynamic={response[idx].post_excerpt}
+        />
       );
     }
   };
