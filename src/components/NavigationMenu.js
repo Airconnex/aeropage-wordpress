@@ -92,6 +92,25 @@ export const trashIcon = (
   </svg>
 );
 
+export const refreshIcon = (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#633CE3"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class="feather feather-refresh-cw"
+  >
+    <polyline points="23 4 23 10 17 10"></polyline>
+    <polyline points="1 20 1 14 7 14"></polyline>
+    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+  </svg>
+);
+
 const Dashboard = () => {
   const [response, setResponse] = useState([]);
   const [url, setUrl] = useState(true);
@@ -100,7 +119,7 @@ const Dashboard = () => {
   const [idx, setIdx] = useState(null);
 
   let [searchParams, setSearchParams] = useSearchParams();
-  const link = `/wordpress/wp-admin/admin.php?page=aeroplugin?&path=editPost`;
+  const link = `/wordpress/wp-admin/admin.php?page=aeroplugin&path=editPost`;
 
   useEffect(() => {
     console.log("use effect");
@@ -133,14 +152,9 @@ const Dashboard = () => {
   };
 
   const handleClick = (id) => {
-    // console.log("e: " + e);
-
     console.log("id: " + id);
-    // e.preventDefault();
     console.log(MYSCRIPT.ajaxUrl);
 
-    // const reactAppData = window.wpRoomDesigner || {};
-    // const { ajax_url } = reactAppData;
     var params = new URLSearchParams();
     params.append("action", "myAction3");
     params.append("id", id);
@@ -226,7 +240,7 @@ const Dashboard = () => {
                   alignItems: "center",
                 }}
               >
-                <Link to="/wordpress/wp-admin/admin.php?page=aeroplugin?&path=addPost">
+                <Link to="/wp-admin/admin.php?page=aeroplugin&path=addPost">
                   <button
                     onClick={() => setUrl(!url)}
                     style={{
@@ -261,86 +275,111 @@ const Dashboard = () => {
             >
               {response.map((el, idx) => {
                 return (
-                  // <Link
-                  //   className="link"
-                  //   onClick={() => {
-                  //     setUrl(!url);
-                  //     setEditID(el.ID);
-                  //     setIdx(idx);
-                  //   }}
-                  //   style={{
-                  //     textDecoration: "none",
-                  //     color: "black",
-                  //   }}
-                  //   to={link}
-                  // >
-                  <div
-                    style={{
-                      border: "1px solid #B9B9B9",
-                      padding: "5px 15px 5px 15px",
-                      width: "250px",
-                      height: "130px",
-                      display: "flex",
-                      flexDirection: "column",
-                      boxShadow: "0px 4px 4px 0px #00000040",
-                      flex: "1 1 200px",
-                      cursor: "pointer",
-                      margin: "10px 10px 10px 10px",
-                      borderRadius: "8px",
+                  <Link
+                    className="link"
+                    onClick={() => {
+                      setUrl(!url);
+                      setEditID(el.ID);
+                      setIdx(idx);
                     }}
+                    style={{
+                      textDecoration: "none",
+                      color: "black",
+                    }}
+                    to={link}
                   >
                     <div
                       style={{
-                        height: "100%",
-                        borderBottom: "1px solid #F4F5F8",
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontFamily: "'Inter', sans-serif",
-                          fontStyle: "normal",
-                          fontWeight: "600",
-                          color: "#595B5C",
-                          marginTop: "20px",
-                          fontSize: "12px",
-                          lineHeight: "16.8px",
-                          cursor: "pointer",
-                        }}
-                      >
-                        {el?.post_title}
-                      </span>
-                      <button onClick={() => handleClick(el?.ID)}>
-                        Refresh
-                      </button>
-                    </div>
-
-                    <div
-                      style={{
-                        height: "100%",
+                        border: "1px solid #B9B9B9",
+                        padding: "5px 15px 5px 15px",
+                        width: "250px",
+                        height: "130px",
                         display: "flex",
-                        alignItems: "center",
+                        flexDirection: "column",
+                        boxShadow: "0px 4px 4px 0px #00000040",
+                        flex: "1 1 200px",
+                        cursor: "pointer",
+                        margin: "10px 10px 10px 10px",
+                        borderRadius: "8px",
                       }}
                     >
-                      <span
+                      <div
                         style={{
-                          color: "#595B5C",
-                          fontFamily: "'Inter', sans-serif",
-                          fontStyle: "normal",
-                          fontWeight: "400",
-                          fontSize: "10px",
-                          lineHeight: "17.5px",
+                          height: "100%",
+                          borderBottom: "1px solid #F4F5F8",
+                          display: "flex",
+                          alignItems: "center",
                         }}
                       >
-                        Updated 12:22pm, 13/03/2022
-                      </span>
-                    </div>
+                        <span
+                          style={{
+                            fontFamily: "'Inter', sans-serif",
+                            fontStyle: "normal",
+                            fontWeight: "600",
+                            whiteSpace: "nowrap",
+                            width: "fit-content",
+                            color: "#595B5C",
+                            fontSize: "12px",
+                            lineHeight: "16.8px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {el?.post_title}
+                        </span>
+                        {/* <button onClick={() => handleClick(el?.ID)}>
+                        Refresh
+                      </button> */}
+                        <div
+                          style={{
+                            display: "flex",
+                            width: "100%",
+                            justifyContent: "right",
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              width: "28px",
+                              height: "28px",
+                              borderRadius: "3px",
+                              background: "#633CE31A",
+                            }}
+                            onClick={() => handleClick(el?.ID)}
+                          >
+                            {refreshIcon}
+                          </div>
+                        </div>
+                      </div>
 
-                    {/* <p style={{ fontSize: "12px" }}>
+                      <div
+                        style={{
+                          height: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        <span
+                          style={{
+                            color: "#595B5C",
+                            fontFamily: "'Inter', sans-serif",
+                            fontStyle: "normal",
+                            fontWeight: "400",
+                            fontSize: "10px",
+                            lineHeight: "17.5px",
+                          }}
+                        >
+                          Updated 12:22pm, 13/03/2022
+                        </span>
+                      </div>
+
+                      {/* <p style={{ fontSize: "12px" }}>
                   Create rich html with images and buttons to use in emails.
                   Export to Airtable and send using any automation tools
                 </p> */}
-                  </div>
-                  // </Link>
+                    </div>{" "}
+                  </Link>
                 );
               })}
             </div>

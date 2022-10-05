@@ -76,6 +76,7 @@ const AddPost = ({ resetView }) => {
   const [slug, setSlug] = useState(null);
   const [dynamic, setDynamic] = useState("record_id");
   const [responseAP, setResponseAP] = useState(null);
+  const [responseMessage, setResponseMessage] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -92,6 +93,8 @@ const AddPost = ({ resetView }) => {
 
     axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
       console.log(responseAP.data);
+      if (responseAP?.status?.type === "success")
+        setResponseMessage("Post was added sucessfully!");
     });
   };
 
@@ -130,7 +133,7 @@ const AddPost = ({ resetView }) => {
     if (responseAP?.type === "PAGE_NOT_FOUND") setStatus(false);
   }, [responseAP]);
 
-  console.log(responseAP);
+  // console.log(responseAP);
 
   return (
     <div
@@ -500,8 +503,25 @@ const AddPost = ({ resetView }) => {
                 //   Checking
                 // </p>
                 null}
+                {responseMessage === "Post was added sucessfully!" ? (
+                  <p
+                    style={{
+                      color: "#595B5C",
+                      fontFamily: "'Inter', sans-serif",
+                      fontStyle: "normal",
+                      fontWeight: "400",
+                      fontSize: "10px",
+                      lineHeight: "175%",
+                    }}
+                  >
+                    Post was added sucessfully!
+                  </p>
+                ) : null}
               </div>
-              {/* <Link to="/"> */}
+              {/* <Link
+                onClick={() => resetView()}
+                to="/wordpress/wp-admin/admin.php?page=aeroplugin"
+              > */}
               <button
                 disabled={
                   !responseAP?.status?.type === "success" ||

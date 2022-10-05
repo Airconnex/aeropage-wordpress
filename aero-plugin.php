@@ -114,11 +114,11 @@ function aeroplugin_myAction() {
     // echo $_POST['dynamic'];
     // echo $_POST['token'];
     // aeroFetchToken($_POST['dynamic'], $_POST['token'] );
-    echo "myAction!";
 
     // $airconnex_posts = get_posts(['post_type' => 'aero-template','post_status' => 'private','numberposts' => -1]);
     // print_r($airconnex_posts);
     insertPost($_POST['title'],$_POST['slug'],$_POST['dynamic'],$_POST['token'],$_POST['id'] );
+
 
 }
 
@@ -128,13 +128,15 @@ function aeroplugin_myAction2(){
     echo json_encode($aero_posts);
 }
 
+add_action( 'wp_ajax_myAction', 'aeroplugin_myAction' );
+add_action( 'wp_ajax_myAction2', 'aeroplugin_myAction2' );
+
 function aeroplugin_myAction3(){
     echo "myAction3";
     aeropageSync($_POST['id']);
 }
 
-add_action( 'wp_ajax_myAction', 'aeroplugin_myAction' );
-add_action( 'wp_ajax_myAction2', 'aeroplugin_myAction2' );
+
 add_action( 'wp_ajax_myAction3', 'aeroplugin_myAction3' );
 
 function aeropageSync($id){
