@@ -5,3 +5,20 @@
         margin-bottom: 1em;
     }
 } 
+
+
+
+.link {
+    &:active {
+        border: none;
+        outline: 0;
+        box-shadow: none;
+
+    }
+    &:focus {
+        border: none;
+        outline: 0;
+        box-shadow: none;
+
+    }
+}

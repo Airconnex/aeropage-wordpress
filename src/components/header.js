@@ -91,7 +91,13 @@ export default function Header({
         > */}
 
         <Link
-          style={{ textDecoration: "none", border: "none" }}
+          className="link"
+          style={{
+            textDecoration: "none",
+            border: "none",
+            outline: "none",
+            borderStyle: "none",
+          }}
           to="wordpress/wp-admin/admin.php?page=aeroplugin"
           onClick={() => resetView()}
         >

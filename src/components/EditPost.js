@@ -114,7 +114,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic }) => {
   };
 
   useEffect(() => {
-    fetch("https://tools.aeropage.io/api-connector/" + inputValue)
+    fetch("https://tools.aeropage.io/api/token/" + inputValue + "/")
       .then((responseAP) => responseAP.json())
       .then((data) => setResponseAP(data));
   }, [inputValue]);

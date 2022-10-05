@@ -6539,7 +6539,7 @@ const AddPost = _ref => {
 
 
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-    fetch("https://tools.aeropage.io/api-connector/" + inputValue).then(responseAP => responseAP.json()).then(data => setResponseAP(data));
+    fetch("https://tools.aeropage.io/api/token/" + inputValue + "/").then(responseAP => responseAP.json()).then(data => setResponseAP(data));
   }, [inputValue]);
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
     var _responseAP$status;
@@ -7028,7 +7028,7 @@ const EditPost = _ref => {
   };
 
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-    fetch("https://tools.aeropage.io/api-connector/" + inputValue).then(responseAP => responseAP.json()).then(data => setResponseAP(data));
+    fetch("https://tools.aeropage.io/api/token/" + inputValue + "/").then(responseAP => responseAP.json()).then(data => setResponseAP(data));
   }, [inputValue]);
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
     var _responseAP$status;
@@ -7390,7 +7390,8 @@ const EditPost = _ref => {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "aeroSvg": function() { return /* binding */ aeroSvg; },
-/* harmony export */   "tickIcon": function() { return /* binding */ tickIcon; }
+/* harmony export */   "tickIcon": function() { return /* binding */ tickIcon; },
+/* harmony export */   "trashIcon": function() { return /* binding */ trashIcon; }
 /* harmony export */ });
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
@@ -7463,6 +7464,22 @@ const tickIcon = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElemen
 }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("polyline", {
   points: "20 6 9 17 4 12"
 }));
+const trashIcon = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
+  xmlns: "http://www.w3.org/2000/svg",
+  width: "24",
+  height: "24",
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  "stroke-width": "2",
+  "stroke-linecap": "round",
+  "stroke-linejoin": "round",
+  class: "feather feather-trash"
+}, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("polyline", {
+  points: "3 6 5 6 21 6"
+}), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("path", {
+  d: "M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+}));
 
 const Dashboard = () => {
   const [response, setResponse] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)([]);
@@ -7497,6 +7514,21 @@ const Dashboard = () => {
 
   const resetView = () => {
     setPath(null);
+  };
+
+  const handleClick = id => {
+    // console.log("e: " + e);
+    console.log("id: " + id); // e.preventDefault();
+
+    console.log(MYSCRIPT.ajaxUrl); // const reactAppData = window.wpRoomDesigner || {};
+    // const { ajax_url } = reactAppData;
+
+    var params = new URLSearchParams();
+    params.append("action", "myAction3");
+    params.append("id", id);
+    axios__WEBPACK_IMPORTED_MODULE_3___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
+      console.log(responseAP.data);
+    });
   };
 
   const conditionalRender = () => {
@@ -7584,32 +7616,73 @@ const Dashboard = () => {
           display: "flex",
           flexDirection: "row",
           justifyContent: "center",
-          // flexWrap: "wrap",
+          flexWrap: "wrap",
           maxWidth: "80%"
         }
       }, response.map((el, idx) => {
-        return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_router_dom__WEBPACK_IMPORTED_MODULE_6__.Link, {
-          onClick: () => {
-            setUrl(!url);
-            setEditID(el.ID);
-            setIdx(idx);
-          },
-          style: {
-            textDecoration: "none",
-            color: "black"
-          },
-          to: link
-        }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-          style: {
-            border: "1px solid lightGray",
-            padding: "10px 10px 10px 10px",
-            maxWidth: "300px",
-            flex: "1 1 200px",
-            cursor: "pointer",
-            margin: "10px 10px 10px 10px",
-            borderRadius: "8px"
-          }
-        }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h4", null, el === null || el === void 0 ? void 0 : el.post_title)));
+        return (// <Link
+          //   className="link"
+          //   onClick={() => {
+          //     setUrl(!url);
+          //     setEditID(el.ID);
+          //     setIdx(idx);
+          //   }}
+          //   style={{
+          //     textDecoration: "none",
+          //     color: "black",
+          //   }}
+          //   to={link}
+          // >
+          (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+            style: {
+              border: "1px solid #B9B9B9",
+              padding: "5px 15px 5px 15px",
+              width: "250px",
+              height: "130px",
+              display: "flex",
+              flexDirection: "column",
+              boxShadow: "0px 4px 4px 0px #00000040",
+              flex: "1 1 200px",
+              cursor: "pointer",
+              margin: "10px 10px 10px 10px",
+              borderRadius: "8px"
+            }
+          }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+            style: {
+              height: "100%",
+              borderBottom: "1px solid #F4F5F8"
+            }
+          }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
+            style: {
+              fontFamily: "'Inter', sans-serif",
+              fontStyle: "normal",
+              fontWeight: "600",
+              color: "#595B5C",
+              marginTop: "20px",
+              fontSize: "12px",
+              lineHeight: "16.8px",
+              cursor: "pointer"
+            }
+          }, el === null || el === void 0 ? void 0 : el.post_title), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
+            onClick: () => handleClick(el === null || el === void 0 ? void 0 : el.ID)
+          }, "Refresh")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+            style: {
+              height: "100%",
+              display: "flex",
+              alignItems: "center"
+            }
+          }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
+            style: {
+              color: "#595B5C",
+              fontFamily: "'Inter', sans-serif",
+              fontStyle: "normal",
+              fontWeight: "400",
+              fontSize: "10px",
+              lineHeight: "17.5px"
+            }
+          }, "Updated 12:22pm, 13/03/2022"))) // </Link>
+
+        );
       }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
         style: {
           display: "flex",
@@ -7747,9 +7820,12 @@ function Header(_ref) {
       alignItems: "center"
     }
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_router_dom__WEBPACK_IMPORTED_MODULE_2__.Link, {
+    className: "link",
     style: {
       textDecoration: "none",
-      border: "none"
+      border: "none",
+      outline: "none",
+      borderStyle: "none"
     },
     to: "wordpress/wp-admin/admin.php?page=aeroplugin",
     onClick: () => resetView()

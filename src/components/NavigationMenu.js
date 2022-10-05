@@ -74,6 +74,24 @@ export const tickIcon = (
   </svg>
 );
 
+export const trashIcon = (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class="feather feather-trash"
+  >
+    <polyline points="3 6 5 6 21 6"></polyline>
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+  </svg>
+);
+
 const Dashboard = () => {
   const [response, setResponse] = useState([]);
   const [url, setUrl] = useState(true);
@@ -112,6 +130,24 @@ const Dashboard = () => {
 
   const resetView = () => {
     setPath(null);
+  };
+
+  const handleClick = (id) => {
+    // console.log("e: " + e);
+
+    console.log("id: " + id);
+    // e.preventDefault();
+    console.log(MYSCRIPT.ajaxUrl);
+
+    // const reactAppData = window.wpRoomDesigner || {};
+    // const { ajax_url } = reactAppData;
+    var params = new URLSearchParams();
+    params.append("action", "myAction3");
+    params.append("id", id);
+
+    axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
+      console.log(responseAP.data);
+    });
   };
 
   const conditionalRender = () => {
@@ -219,42 +255,92 @@ const Dashboard = () => {
                 display: "flex",
                 flexDirection: "row",
                 justifyContent: "center",
-                // flexWrap: "wrap",
+                flexWrap: "wrap",
                 maxWidth: "80%",
               }}
             >
               {response.map((el, idx) => {
                 return (
-                  <Link
-                    onClick={() => {
-                      setUrl(!url);
-                      setEditID(el.ID);
-                      setIdx(idx);
-                    }}
+                  // <Link
+                  //   className="link"
+                  //   onClick={() => {
+                  //     setUrl(!url);
+                  //     setEditID(el.ID);
+                  //     setIdx(idx);
+                  //   }}
+                  //   style={{
+                  //     textDecoration: "none",
+                  //     color: "black",
+                  //   }}
+                  //   to={link}
+                  // >
+                  <div
                     style={{
-                      textDecoration: "none",
-                      color: "black",
+                      border: "1px solid #B9B9B9",
+                      padding: "5px 15px 5px 15px",
+                      width: "250px",
+                      height: "130px",
+                      display: "flex",
+                      flexDirection: "column",
+                      boxShadow: "0px 4px 4px 0px #00000040",
+                      flex: "1 1 200px",
+                      cursor: "pointer",
+                      margin: "10px 10px 10px 10px",
+                      borderRadius: "8px",
                     }}
-                    to={link}
                   >
                     <div
                       style={{
-                        border: "1px solid lightGray",
-                        padding: "10px 10px 10px 10px",
-                        maxWidth: "300px",
-                        flex: "1 1 200px",
-                        cursor: "pointer",
-                        margin: "10px 10px 10px 10px",
-                        borderRadius: "8px",
+                        height: "100%",
+                        borderBottom: "1px solid #F4F5F8",
                       }}
                     >
-                      <h4>{el?.post_title}</h4>
-                      {/* <p style={{ fontSize: "12px" }}>
+                      <span
+                        style={{
+                          fontFamily: "'Inter', sans-serif",
+                          fontStyle: "normal",
+                          fontWeight: "600",
+                          color: "#595B5C",
+                          marginTop: "20px",
+                          fontSize: "12px",
+                          lineHeight: "16.8px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {el?.post_title}
+                      </span>
+                      <button onClick={() => handleClick(el?.ID)}>
+                        Refresh
+                      </button>
+                    </div>
+
+                    <div
+                      style={{
+                        height: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      <span
+                        style={{
+                          color: "#595B5C",
+                          fontFamily: "'Inter', sans-serif",
+                          fontStyle: "normal",
+                          fontWeight: "400",
+                          fontSize: "10px",
+                          lineHeight: "17.5px",
+                        }}
+                      >
+                        Updated 12:22pm, 13/03/2022
+                      </span>
+                    </div>
+
+                    {/* <p style={{ fontSize: "12px" }}>
                   Create rich html with images and buttons to use in emails.
                   Export to Airtable and send using any automation tools
                 </p> */}
-                    </div>
-                  </Link>
+                  </div>
+                  // </Link>
                 );
               })}
             </div>

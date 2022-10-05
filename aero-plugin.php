@@ -83,7 +83,7 @@ function callAPI($method, $url, $data){
 
 function aeroFetchToken($dynamic, $token) {
     echo "AeroFetchToken from PHP";
-    $get_data = callAPI('GET', 'https://tools.aeropage.io/api-connector/'.$token, false);
+    $get_data = callAPI('GET', 'https://tools.aeropage.io/api/token/'.$token+'/', false);
     $response = json_decode($get_data, true);
     $errors = $response['response']['errors'];
     $data = $response['response']['data'][0];
@@ -128,8 +128,25 @@ function aeroplugin_myAction2(){
     echo json_encode($aero_posts);
 }
 
+function aeroplugin_myAction3(){
+    echo "myAction3";
+    aeropageSync($_POST['id']);
+}
+
 add_action( 'wp_ajax_myAction', 'aeroplugin_myAction' );
 add_action( 'wp_ajax_myAction2', 'aeroplugin_myAction2' );
+add_action( 'wp_ajax_myAction3', 'aeroplugin_myAction3' );
+
+function aeropageSync($id){
+echo($id);
+$response = array(); 
+sleep(3); 
+$response[‘status’] = ‘success’; 
+// $response[‘status’] = ‘error’;
+echo(json_encode($response)); 
+}
+
+
 
 
 
