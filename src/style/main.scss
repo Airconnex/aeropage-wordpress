@@ -22,3 +22,28 @@
 
     }
 }
+
+#trash:hover svg {
+    stroke: #C22525;
+  }
+
+#settings:hover svg {
+    stroke: #633CE3;
+}
+
+#refresh:hover svg {
+    stroke: #633CE3;
+}
+  
+@keyframes rotate {
+    from {transform: rotate(0deg)}
+    to {transform: rotate(360deg)}
+    }
+
+.refresh-start {
+animation-name: rotate;
+animation-duration: 1s;
+animation-iteration-count: infinite;
+animation-timing-function: linear;
+animation-play-state: running;  
+}

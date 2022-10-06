@@ -96,18 +96,20 @@ const AddPost = ({ resetView }) => {
     params.append("slug", slug);
     params.append("token", inputValue);
 
-    axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
-      if(responseAP?.data?.status === "success"){
-        console.log("YES THIS WORKS...");
-        setResponseMessage("Post was added sucessfully!");
-        window.location = `${MYSCRIPT.plugin_admin_path}admin.php?page=aeroplugin`;
-      }else{
-        //ADD AN ERROR CODE THAT HANDLES IT.
-        setError(response?.data?.message);
-      }
-      setLoading(false);
-    })
-      .catch(err => {
+    axios
+      .post(MYSCRIPT.ajaxUrl, params)
+      .then(function (responseAP) {
+        if (responseAP?.data?.status === "success") {
+          console.log("YES THIS WORKS...");
+          setResponseMessage("Post was added sucessfully!");
+          window.location = `${MYSCRIPT.plugin_admin_path}admin.php?page=aeroplugin`;
+        } else {
+          //ADD AN ERROR CODE THAT HANDLES IT.
+          setError(response?.data?.message);
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
         setLoading(false);
         setError(err?.message);
       });
@@ -402,6 +404,43 @@ const AddPost = ({ resetView }) => {
                 }}
                 placeholder="Token"
               ></input>
+              <a
+                onClick={(e) => {
+                  if (responseAP?.status?.type !== "success") {
+                    e.preventDefault();
+                  } else {
+                    window.open(
+                      `https://tools.aeropage.io/api/token/${inputValue}/`
+                    );
+                  }
+                }}
+                target="_blank"
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontStyle: "normal",
+                  fontWeight: "500",
+                  fontSize: "12px",
+                  textDecoration: "none",
+                  lineHeight: "24px",
+                  cursor: "pointer",
+                  marginLeft: "5px",
+                  background:
+                    responseAP?.status?.type === "success"
+                      ? "#505c6c"
+                      : "rgba(80, 92, 108, 0.33)",
+                  color: "white",
+                  padding: "8px 13px 8px 13px",
+                  border: "none",
+                  borderRadius: "6px",
+                  // pointerEvents:
+                  //   responseAP?.status?.type === "success" ? "" : "none",
+                }}
+                // onClick={() => {
+                //   handleMyClick();
+                // }}
+              >
+                Open
+              </a>
               <div style={{ minHeight: "70px" }}>
                 {responseAP?.status?.type === "success" && status === false ? (
                   <div
@@ -534,7 +573,7 @@ const AddPost = ({ resetView }) => {
                     Post was added sucessfully!
                   </p>
                 ) : null}
-                { error && (
+                {error && (
                   <p
                     style={{
                       fontFamily: "'Inter', sans-serif",
@@ -548,7 +587,7 @@ const AddPost = ({ resetView }) => {
                   >
                     {error}
                   </p>
-                ) }
+                )}
               </div>
               {/* <Link
                 onClick={() => resetView()}
@@ -571,7 +610,7 @@ const AddPost = ({ resetView }) => {
                   background:
                     responseAP?.status?.type === "success" &&
                     dynamic &&
-                    title && 
+                    title &&
                     slug
                       ? "#633CE3"
                       : "#bbaaf3",

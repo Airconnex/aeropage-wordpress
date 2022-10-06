@@ -4,7 +4,6 @@ import Header from "./header";
 import { Link } from "react-router-dom";
 import { Oval } from "react-loader-spinner";
 import axios from "axios";
-import { convertToSlug } from "./utils";
 
 export const tickIcon = (
   <svg
@@ -77,14 +76,11 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic }) => {
   const [slug, setSlug] = useState(url);
   const [dynamic, setDynamic] = useState(editDynamic);
   const [responseAP, setResponseAP] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [responseMessage, setResponseMessage] = useState("");
-  const [error, setError] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(MYSCRIPT.ajaxUrl);
-    setLoading(true);
+
     // const reactAppData = window.wpRoomDesigner || {};
     // const { ajax_url } = reactAppData;
     var params = new URLSearchParams();
@@ -96,15 +92,8 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic }) => {
     params.append("token", inputValue);
 
     axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
-      if(responseAP?.data?.status === "success"){
-        setResponseMessage("Post updated sucessfully!");
-      }
-      setLoading(false);
-    })
-      .catch(err => {
-        setLoading(false);
-        setError(err?.message);
-      });
+      console.log(responseAP.data);
+    });
   };
 
   const handleChange = (e) => {
@@ -114,8 +103,6 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic }) => {
 
   const titleOnChange = (e) => {
     setTitle(e.target.value);
-    let a = convertToSlug(e.target.value);
-    setSlug(a);
   };
 
   const slugOnChange = (e) => {
@@ -138,17 +125,6 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic }) => {
     if (responseAP?.type === "PAGE_NOT_FOUND") setStatus(false);
   }, [responseAP]);
 
-  useEffect(() => {
-    var params = new URLSearchParams();
-    params.append("action", "get_token");
-    params.append("id", id);
-    axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
-      if(responseAP?.data?.token){
-        console.log("THERE'S A TOKEN");
-        setInputValue(responseAP?.data?.token[0])
-      }
-    });
-  }, [])
   console.log(responseAP);
 
   return (
@@ -401,6 +377,43 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic }) => {
                 }}
                 placeholder="Token"
               ></input>
+              <a
+                onClick={(e) => {
+                  if (responseAP?.status?.type !== "success") {
+                    e.preventDefault();
+                  } else {
+                    window.open(
+                      `https://tools.aeropage.io/api/token/${inputValue}/`
+                    );
+                  }
+                }}
+                target="_blank"
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontStyle: "normal",
+                  fontWeight: "500",
+                  fontSize: "12px",
+                  textDecoration: "none",
+                  lineHeight: "24px",
+                  cursor: "pointer",
+                  marginLeft: "5px",
+                  background:
+                    responseAP?.status?.type === "success"
+                      ? "#505c6c"
+                      : "rgba(80, 92, 108, 0.33)",
+                  color: "white",
+                  padding: "8px 13px 8px 13px",
+                  border: "none",
+                  borderRadius: "6px",
+                  // pointerEvents:
+                  //   responseAP?.status?.type === "success" ? "" : "none",
+                }}
+                // onClick={() => {
+                //   handleMyClick();
+                // }}
+              >
+                Open
+              </a>
               <div style={{ minHeight: "70px" }}>
                 {responseAP?.status?.type === "success" && status === false ? (
                   <div
@@ -519,43 +532,15 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic }) => {
                 //   Checking
                 // </p>
                 null}
-                {responseMessage && (
-                  <p
-                    style={{
-                      color: "#595B5C",
-                      fontFamily: "'Inter', sans-serif",
-                      fontStyle: "normal",
-                      fontWeight: "400",
-                      fontSize: "10px",
-                      lineHeight: "175%",
-                    }}
-                  >
-                    {responseMessage}
-                  </p>
-                )}
-                { error && (
-                  <p
-                    style={{
-                      fontFamily: "'Inter', sans-serif",
-                      fontStyle: "normal",
-                      fontWeight: "400",
-                      fontSize: "10px",
-                      lineHeight: "175%",
-                      color: "red",
-                      margin: "0 0 0 0",
-                    }}
-                  >
-                    {error}
-                  </p>
-                ) }
               </div>
               {/* <Link to="/"> */}
               <button
                 disabled={
                   !responseAP?.status?.type === "success" ||
-                  !dynamic ||
-                  !title ||
-                  !slug
+                  dynamic === null ||
+                  dynamic === "" ||
+                  title === null ||
+                  title === ""
                 }
                 style={{
                   fontFamily: "'Inter', sans-serif",
@@ -565,10 +550,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic }) => {
                   lineHeight: "24px",
                   cursor: "pointer",
                   background:
-                    responseAP?.status?.type === "success" &&
-                    dynamic &&
-                    title && 
-                    slug
+                    responseAP?.status?.type === "success"
                       ? "#633CE3"
                       : "#bbaaf3",
                   color: "white",
@@ -580,7 +562,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic }) => {
                 //   handleMyClick();
                 // }}
               >
-                {loading ? "Submitting..." : "Edit a Post"}
+                Edit a Post
               </button>
               {/* </Link> */}
             </form>

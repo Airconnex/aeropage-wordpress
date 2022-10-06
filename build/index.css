@@ -18,4 +18,46 @@
   box-shadow: none;
 }
 
+#trash:hover svg {
+  stroke: #C22525;
+}
+
+#settings:hover svg {
+  stroke: #633CE3;
+}
+
+#refresh:hover svg {
+  stroke: #633CE3;
+}
+
+@-webkit-keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.refresh-start {
+  -webkit-animation-name: rotate;
+          animation-name: rotate;
+  -webkit-animation-duration: 1s;
+          animation-duration: 1s;
+  -webkit-animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
+  -webkit-animation-timing-function: linear;
+          animation-timing-function: linear;
+  -webkit-animation-play-state: running;
+          animation-play-state: running;
+}
+
 /*# sourceMappingURL=index.css.map*/
