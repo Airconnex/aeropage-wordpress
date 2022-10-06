@@ -176,7 +176,8 @@ foreach ($apiData['records'] as $record)
 {
 
 $record_id = $record['id'];
-$record_name = $record['id']; //CHANGE THIS TO NAME LATER.
+$record_name = $record['name']; 
+$record_slug = $record['slug']; 
 $post_type = $parent->post_name;
 $field_names = array_column($apiData['fields'], 'name'); // get just the types
 
@@ -189,7 +190,7 @@ if ($existing){$existing_id = $existing[0]->id;}
 $record_post = array(
         'ID' => $existing_id,
         'post_title' => $record_name,
-        'post_name' => $record_name,
+        'post_name' => $record_slug,
 		'post_parent' => '',
         'post_type' => $post_type,
         'post_status' => 'publish'
@@ -197,18 +198,17 @@ $record_post = array(
 	
 $record_post_id = wp_insert_post($record_post);
 
-
 update_post_meta ($record_post_id, '_aero_cpt', $parentId);
 update_post_meta ($record_post_id, '_aero_id', $record_id);
 
 
 if ($existing)
 {
-$response['message'] .= "<br>record $record_id already exists as $record_post_id and is being updated.";
+$response['message'] .= "<br>record $record_id : $record_name already exists as $record_post_id and is being updated.";
 }
 else
 {
-$response['message'] .= "<br>record $record_id has been created as $record_post_id.";
+$response['message'] .= "<br>record $record_id : $record_name has been created as $record_post_id.";
 }
 
 
