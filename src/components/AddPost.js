@@ -4,6 +4,7 @@ import Header from "./header";
 import { Link, useNavigate } from "react-router-dom";
 import { Oval } from "react-loader-spinner";
 import axios from "axios";
+import { convertToSlug } from "./utils";
 
 export const tickIcon = (
   <svg
@@ -79,6 +80,7 @@ const AddPost = ({ resetView }) => {
   const [responseAP, setResponseAP] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [responseMessage, setResponseMessage] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -97,6 +99,7 @@ const AddPost = ({ resetView }) => {
     axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
       if(responseAP?.data?.status === "success"){
         console.log("YES THIS WORKS...");
+        setResponseMessage("Post was added sucessfully!");
         window.location = `${MYSCRIPT.plugin_admin_path}admin.php?page=aeroplugin`;
       }else{
         //ADD AN ERROR CODE THAT HANDLES IT.
@@ -117,6 +120,8 @@ const AddPost = ({ resetView }) => {
 
   const titleOnChange = (e) => {
     setTitle(e.target.value);
+    let a = convertToSlug(e.target.value);
+    setSlug(a);
   };
 
   const slugOnChange = (e) => {
@@ -145,14 +150,8 @@ const AddPost = ({ resetView }) => {
     if (responseAP?.type === "PAGE_NOT_FOUND") setStatus(false);
   }, [responseAP]);
 
-  // console.log(responseAP, dynamic, slug);
-  // console.log(!responseAP?.status?.type === "success" ||
-  // dynamic === null ||
-  // dynamic === "" ||
-  // title === null ||
-  // title === "" || 
-  // slug === null ||
-  // slug === "")
+  // console.log(responseAP);
+
   return (
     <div
       style={{
@@ -521,6 +520,20 @@ const AddPost = ({ resetView }) => {
                 //   Checking
                 // </p>
                 null}
+                {responseMessage === "Post was added sucessfully!" ? (
+                  <p
+                    style={{
+                      color: "#595B5C",
+                      fontFamily: "'Inter', sans-serif",
+                      fontStyle: "normal",
+                      fontWeight: "400",
+                      fontSize: "10px",
+                      lineHeight: "175%",
+                    }}
+                  >
+                    Post was added sucessfully!
+                  </p>
+                ) : null}
                 { error && (
                   <p
                     style={{
@@ -537,16 +550,16 @@ const AddPost = ({ resetView }) => {
                   </p>
                 ) }
               </div>
-              {/* <Link to="/"> */}
+              {/* <Link
+                onClick={() => resetView()}
+                to="/wordpress/wp-admin/admin.php?page=aeroplugin"
+              > */}
               <button
                 disabled={
                   !responseAP?.status?.type === "success" ||
-                  dynamic === null ||
-                  dynamic === "" ||
-                  title === null ||
-                  title === "" || 
-                  slug === null ||
-                  slug === ""
+                  !dynamic ||
+                  !title ||
+                  !slug
                 }
                 style={{
                   fontFamily: "'Inter', sans-serif",
@@ -557,8 +570,9 @@ const AddPost = ({ resetView }) => {
                   cursor: "pointer",
                   background:
                     responseAP?.status?.type === "success" &&
-                    !(dynamic === null || dynamic === "") &&
-                    !(title === null || title === "") && slug
+                    dynamic &&
+                    title && 
+                    slug
                       ? "#633CE3"
                       : "#bbaaf3",
                   color: "white",

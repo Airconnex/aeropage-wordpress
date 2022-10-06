@@ -134,11 +134,15 @@ function aeroplugin_myAction2(){
     die();
 }
 
+add_action( 'wp_ajax_myAction', 'aeroplugin_myAction' );
+add_action( 'wp_ajax_myAction2', 'aeroplugin_myAction2' );
+
 function aeroplugin_myAction3(){
     echo "myAction3";
     aeropageSync($_POST['id']);
 }
 
+//Gets the aero page token when in the edit post
 function aeroplugin_get_token(){
   $pid = $_POST["id"];
   $token = get_post_meta($pid, "aero_token");
