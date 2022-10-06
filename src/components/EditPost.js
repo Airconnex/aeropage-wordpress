@@ -124,6 +124,17 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic }) => {
     if (responseAP?.type === "PAGE_NOT_FOUND") setStatus(false);
   }, [responseAP]);
 
+  useEffect(() => {
+    var params = new URLSearchParams();
+    params.append("action", "get_token");
+    params.append("id", id);
+    axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
+      if(responseAP?.data?.token){
+        console.log("THERE'S A TOKEN");
+        setInputValue(responseAP?.data?.token[0])
+      }
+    });
+  }, [])
   console.log(responseAP);
 
   return (

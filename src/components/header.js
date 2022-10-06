@@ -98,7 +98,7 @@ export default function Header({
             outline: "none",
             borderStyle: "none",
           }}
-          to="wordpress/wp-admin/admin.php?page=aeroplugin"
+          to={`${MYSCRIPT.plugin_admin_path}admin.php?page=aeroplugin`}
           onClick={() => resetView()}
         >
           <p

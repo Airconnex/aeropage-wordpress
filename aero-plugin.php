@@ -9,7 +9,6 @@
 * Text-Domain: react-aero
 **/
 
-
 add_action( 'admin_menu', 'aeroplugin_init_menu' );
 
 /**
@@ -43,6 +42,7 @@ function aeroplugin_admin_enqueue_scripts() {
     wp_enqueue_script( 'aeroplugin-script', plugin_dir_url( __FILE__ ) . 'build/index.js', array( 'wp-element' ), '1.0.0', true );
     wp_add_inline_script( 'aeroplugin-script', 'const MYSCRIPT = ' . json_encode( array(
         'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+        'plugin_admin_path' => parse_url(admin_url())["path"],
         'otherParam' => 'some value',
     ) ), 'before' );
 }
@@ -101,10 +101,9 @@ function insertPost($title, $slug, $dynamic, $token, $id){
         'post_type' => 'aero-template',
         'post_status' => 'private'
     );
-
     $pid = wp_insert_post($template_post);
-
-  
+    $post_meta = add_post_meta($pid, "aero_token", $token);
+    return $pid;
 }
 
 function aeroplugin_myAction() {
@@ -114,18 +113,25 @@ function aeroplugin_myAction() {
     // echo $_POST['dynamic'];
     // echo $_POST['token'];
     // aeroFetchToken($_POST['dynamic'], $_POST['token'] );
-    echo "myAction!";
+    header('Content-Type: application/json');
 
+    try{
+      $pid = insertPost($_POST['title'],$_POST['slug'],$_POST['dynamic'],$_POST['token'],$_POST['id'] );
+      echo json_encode(array("status" => "success", "post_id" => $pid));
+    }catch(Exception $e){
+      echo json_encode(array("status" => "error", "message" => $e->getMessage()));
+    }
+
+    die();
     // $airconnex_posts = get_posts(['post_type' => 'aero-template','post_status' => 'private','numberposts' => -1]);
     // print_r($airconnex_posts);
-    insertPost($_POST['title'],$_POST['slug'],$_POST['dynamic'],$_POST['token'],$_POST['id'] );
-
 }
 
 function aeroplugin_myAction2(){
     $aero_posts = get_posts(['post_type' => 'aero-template','post_status' => 'private','numberposts' => -1]);
     header('Content-Type: application/json');
     echo json_encode($aero_posts);
+    die();
 }
 
 function aeroplugin_myAction3(){
@@ -133,17 +139,25 @@ function aeroplugin_myAction3(){
     aeropageSync($_POST['id']);
 }
 
+function aeroplugin_get_token(){
+  $pid = $_POST["id"];
+  $token = get_post_meta($pid, "aero_token");
+  die(json_encode(array("token" => $token)));
+}
+
 add_action( 'wp_ajax_myAction', 'aeroplugin_myAction' );
 add_action( 'wp_ajax_myAction2', 'aeroplugin_myAction2' );
 add_action( 'wp_ajax_myAction3', 'aeroplugin_myAction3' );
+add_action( 'wp_ajax_get_token', 'aeroplugin_get_token');
 
 function aeropageSync($id){
-echo($id);
-$response = array(); 
-sleep(3); 
-$response[‘status’] = ‘success’; 
-// $response[‘status’] = ‘error’;
-echo(json_encode($response)); 
+  echo($id);
+  $response = array(); 
+  sleep(3); 
+  $response["status"] = "success"; 
+  // $response[‘status’] = ‘error’;
+  echo(json_encode($response));
+  die();
 }
 
 

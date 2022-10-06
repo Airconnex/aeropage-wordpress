@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ReactJson from "react-json-view";
 import Header from "./header";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Oval } from "react-loader-spinner";
 import axios from "axios";
 
@@ -68,6 +68,7 @@ export const aeroSvg = (
 
 const AddPost = ({ resetView }) => {
   const JSON = {};
+  const navigate = useNavigate();
 
   const [btnState, setBtnState] = useState(true);
   const [inputValue, setInputValue] = useState("");
@@ -76,9 +77,12 @@ const AddPost = ({ resetView }) => {
   const [slug, setSlug] = useState(null);
   const [dynamic, setDynamic] = useState("record_id");
   const [responseAP, setResponseAP] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setLoading(true);
     console.log(MYSCRIPT.ajaxUrl);
 
     // const reactAppData = window.wpRoomDesigner || {};
@@ -91,8 +95,19 @@ const AddPost = ({ resetView }) => {
     params.append("token", inputValue);
 
     axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
-      console.log(responseAP.data);
-    });
+      if(responseAP?.data?.status === "success"){
+        console.log("YES THIS WORKS...");
+        window.location = `${MYSCRIPT.plugin_admin_path}admin.php?page=aeroplugin`;
+      }else{
+        //ADD AN ERROR CODE THAT HANDLES IT.
+        setError(response?.data?.message);
+      }
+      setLoading(false);
+    })
+      .catch(err => {
+        setLoading(false);
+        setError(err?.message);
+      });
   };
 
   const handleChange = (e) => {
@@ -130,8 +145,14 @@ const AddPost = ({ resetView }) => {
     if (responseAP?.type === "PAGE_NOT_FOUND") setStatus(false);
   }, [responseAP]);
 
-  console.log(responseAP);
-
+  // console.log(responseAP, dynamic, slug);
+  // console.log(!responseAP?.status?.type === "success" ||
+  // dynamic === null ||
+  // dynamic === "" ||
+  // title === null ||
+  // title === "" || 
+  // slug === null ||
+  // slug === "")
   return (
     <div
       style={{
@@ -500,6 +521,21 @@ const AddPost = ({ resetView }) => {
                 //   Checking
                 // </p>
                 null}
+                { error && (
+                  <p
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontStyle: "normal",
+                      fontWeight: "400",
+                      fontSize: "10px",
+                      lineHeight: "175%",
+                      color: "red",
+                      margin: "0 0 0 0",
+                    }}
+                  >
+                    {error}
+                  </p>
+                ) }
               </div>
               {/* <Link to="/"> */}
               <button
@@ -508,7 +544,9 @@ const AddPost = ({ resetView }) => {
                   dynamic === null ||
                   dynamic === "" ||
                   title === null ||
-                  title === ""
+                  title === "" || 
+                  slug === null ||
+                  slug === ""
                 }
                 style={{
                   fontFamily: "'Inter', sans-serif",
@@ -520,7 +558,7 @@ const AddPost = ({ resetView }) => {
                   background:
                     responseAP?.status?.type === "success" &&
                     !(dynamic === null || dynamic === "") &&
-                    !(title === null || title === "")
+                    !(title === null || title === "") && slug
                       ? "#633CE3"
                       : "#bbaaf3",
                   color: "white",
@@ -532,7 +570,7 @@ const AddPost = ({ resetView }) => {
                 //   handleMyClick();
                 // }}
               >
-                Add a Post
+                {loading ? "Submitting..." : "Add a Post"}
               </button>
               {/* </Link> */}
             </form>
