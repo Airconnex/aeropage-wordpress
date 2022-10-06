@@ -102,7 +102,7 @@ const AddPost = ({ resetView }) => {
         if (responseAP?.data?.status === "success") {
           console.log("YES THIS WORKS...");
           setResponseMessage("Post was added sucessfully!");
-          window.location = `${MYSCRIPT.plugin_admin_path}admin.php?page=aeroplugin`;
+          window.location = `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}`;
         } else {
           //ADD AN ERROR CODE THAT HANDLES IT.
           setError(response?.data?.message);

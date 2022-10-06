@@ -6524,7 +6524,7 @@ const AddPost = _ref => {
       if ((responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data = responseAP.data) === null || _responseAP$data === void 0 ? void 0 : _responseAP$data.status) === "success") {
         console.log("YES THIS WORKS...");
         setResponseMessage("Post was added sucessfully!");
-        window.location = `${MYSCRIPT.plugin_admin_path}admin.php?page=aeroplugin`;
+        window.location = `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}`;
       } else {
         var _response, _response$data;
 
@@ -6989,6 +6989,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_loader_spinner__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-loader-spinner */ "./node_modules/react-loader-spinner/dist/esm/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./utils */ "./src/components/utils.js");
+
 
 
 
@@ -7068,10 +7070,15 @@ const EditPost = _ref => {
   const [slug, setSlug] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(url);
   const [dynamic, setDynamic] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(editDynamic);
   const [responseAP, setResponseAP] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
+  const [responseMessage, setResponseMessage] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
+  const [error, setError] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
+  const [loading, setLoading] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
 
   const handleSubmit = e => {
     e.preventDefault();
-    console.log(MYSCRIPT.ajaxUrl); // const reactAppData = window.wpRoomDesigner || {};
+    console.log(MYSCRIPT.ajaxUrl);
+    setLoading(true);
+    setResponseMessage(""); // const reactAppData = window.wpRoomDesigner || {};
     // const { ajax_url } = reactAppData;
 
     var params = new URLSearchParams();
@@ -7082,7 +7089,16 @@ const EditPost = _ref => {
     params.append("slug", slug);
     params.append("token", inputValue);
     axios__WEBPACK_IMPORTED_MODULE_5___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
-      console.log(responseAP.data);
+      var _responseAP$data;
+
+      if ((responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data = responseAP.data) === null || _responseAP$data === void 0 ? void 0 : _responseAP$data.status) === "success") {
+        setResponseMessage("Post updated sucessfully!");
+      }
+
+      setLoading(false);
+    }).catch(err => {
+      setLoading(false);
+      setError(err === null || err === void 0 ? void 0 : err.message);
     });
   };
 
@@ -7093,6 +7109,8 @@ const EditPost = _ref => {
 
   const titleOnChange = e => {
     setTitle(e.target.value);
+    let a = (0,_utils__WEBPACK_IMPORTED_MODULE_6__.convertToSlug)(e.target.value);
+    setSlug(a);
   };
 
   const slugOnChange = e => {
@@ -7113,6 +7131,22 @@ const EditPost = _ref => {
     if ((responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status = responseAP.status) === null || _responseAP$status === void 0 ? void 0 : _responseAP$status.type) === "success") setStatus(false);
     if ((responseAP === null || responseAP === void 0 ? void 0 : responseAP.type) === "PAGE_NOT_FOUND") setStatus(false);
   }, [responseAP]);
+  (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
+    console.log("I AM HERE.");
+    var params = new URLSearchParams();
+    params.append("action", "get_token");
+    params.append("id", id);
+    axios__WEBPACK_IMPORTED_MODULE_5___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
+      var _responseAP$data2;
+
+      if (responseAP !== null && responseAP !== void 0 && (_responseAP$data2 = responseAP.data) !== null && _responseAP$data2 !== void 0 && _responseAP$data2.token) {
+        var _responseAP$data3;
+
+        console.log("THERE'S A TOKEN");
+        setInputValue(responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data3 = responseAP.data) === null || _responseAP$data3 === void 0 ? void 0 : _responseAP$data3.token[0]);
+      }
+    });
+  }, []);
   console.log(responseAP);
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
@@ -7442,8 +7476,27 @@ const EditPost = _ref => {
   // >
   //   Checking
   // </p>
-  null), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
-    disabled: !(responseAP !== null && responseAP !== void 0 && (_responseAP$status5 = responseAP.status) !== null && _responseAP$status5 !== void 0 && _responseAP$status5.type) === "success" || dynamic === null || dynamic === "" || title === null || title === "",
+  null, responseMessage && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+    style: {
+      color: "#595B5C",
+      fontFamily: "'Inter', sans-serif",
+      fontStyle: "normal",
+      fontWeight: "400",
+      fontSize: "10px",
+      lineHeight: "175%"
+    }
+  }, responseMessage), error && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+    style: {
+      fontFamily: "'Inter', sans-serif",
+      fontStyle: "normal",
+      fontWeight: "400",
+      fontSize: "10px",
+      lineHeight: "175%",
+      color: "red",
+      margin: "0 0 0 0"
+    }
+  }, error)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
+    disabled: !(responseAP !== null && responseAP !== void 0 && (_responseAP$status5 = responseAP.status) !== null && _responseAP$status5 !== void 0 && _responseAP$status5.type) === "success" || !dynamic || !title || !slug,
     style: {
       fontFamily: "'Inter', sans-serif",
       fontStyle: "normal",
@@ -7451,7 +7504,7 @@ const EditPost = _ref => {
       fontSize: "12px",
       lineHeight: "24px",
       cursor: "pointer",
-      background: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status6 = responseAP.status) === null || _responseAP$status6 === void 0 ? void 0 : _responseAP$status6.type) === "success" ? "#633CE3" : "#bbaaf3",
+      background: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status6 = responseAP.status) === null || _responseAP$status6 === void 0 ? void 0 : _responseAP$status6.type) === "success" && dynamic && title && slug ? "#633CE3" : "#bbaaf3",
       color: "white",
       padding: "8px 13px 8px 13px",
       border: "none",
@@ -7460,7 +7513,7 @@ const EditPost = _ref => {
     //   handleMyClick();
     // }}
 
-  }, "Edit a Post"))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, loading ? "Submitting..." : "Edit a Post"))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       marginTop: "50px",
       marginBottom: "50px",
@@ -7678,7 +7731,8 @@ const Dashboard = () => {
   const [idx, setIdx] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
   const [refreshState, setRefreshState] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
   let [searchParams, setSearchParams] = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_7__.useSearchParams)();
-  const link = `${MYSCRIPT.plugin_admin_path}admin.php?page=aeroplugin&path=editPost`;
+  const link = `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}&path=editPost`;
+  console.log("PLUGIN NAME: ", MYSCRIPT.plugin_name);
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
     console.log("use effect");
     var params = new URLSearchParams(); //
@@ -7810,7 +7864,7 @@ const Dashboard = () => {
           alignItems: "center"
         }
       }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_router_dom__WEBPACK_IMPORTED_MODULE_7__.Link, {
-        to: `${MYSCRIPT.plugin_admin_path}admin.php?page=aeroplugin&path=addPost`
+        to: `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}&path=addPost`
       }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
         onClick: () => setUrl(!url),
         style: {
@@ -8126,7 +8180,7 @@ function Header(_ref) {
       outline: "none",
       borderStyle: "none"
     },
-    to: `${MYSCRIPT.plugin_admin_path}admin.php?page=aeroplugin`,
+    to: `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}`,
     onClick: () => resetView()
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     style: {

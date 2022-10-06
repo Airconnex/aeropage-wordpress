@@ -11,7 +11,7 @@
 add_action('admin_menu', 'aeropage_plugin_menu');
  
 function aeropage_plugin_menu(){
-  add_menu_page( 'Aeropage Sync for Airtable', 'Aeropage', 'manage_options', 'aeropage' , 'aeropage_plugin_admin' );
+  add_menu_page( 'Aeropage Sync for Airtable', 'Aeropage', 'manage_options', 'aeropage' , 'aeroplugin_admin_page' );
 }
 
 /**
@@ -35,6 +35,7 @@ function aeroplugin_admin_enqueue_scripts() {
   wp_add_inline_script( 'aeroplugin-script', 'const MYSCRIPT = ' . json_encode( array(
       'ajaxUrl' => admin_url( 'admin-ajax.php' ),
       'plugin_admin_path' => parse_url(admin_url())["path"],
+      'plugin_name' => "aeropage" //This is the name of the plugin.
   ) ), 'before' );
 }
 
@@ -51,7 +52,13 @@ function aeropageList()
   die();
 }
 
-
+add_action( 'wp_ajax_get_token', 'aeroplugin_get_token');
+//Gets the aero page token when in the edit post
+function aeroplugin_get_token(){
+  $pid = $_POST["id"];
+  $token = get_post_meta($pid, "aero_token");
+  die(json_encode(array("token" => $token)));
+}
 
 
 // make sure all the custom post types are registered.
@@ -131,7 +138,7 @@ function aeropageEdit() // called by ajax, adds the cpt
   update_post_meta ($id,'aero_token',$_POST['token']);
   }
 
-  die($id);
+  die(json_encode(array("status" => "success", "post_id" => $id)));
 	
 }
 
@@ -154,7 +161,7 @@ function aeropageSyncPosts($parentId)
 
   $parent = get_post($parentId);
 
-  $token = get_post_meta($parentId,'_aero_token',true);
+  $token = get_post_meta($parentId,'aero_token',true);
 
   $apiData = aeropageTokenApiCall($token);
 

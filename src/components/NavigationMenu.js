@@ -30,8 +30,8 @@ const Dashboard = () => {
   const [refreshState, setRefreshState] = useState(false);
 
   let [searchParams, setSearchParams] = useSearchParams();
-  const link = `${MYSCRIPT.plugin_admin_path}admin.php?page=aeroplugin&path=editPost`;
-
+  const link = `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}&path=editPost`;
+  console.log("PLUGIN NAME: ", MYSCRIPT.plugin_name);
   useEffect(() => {
     console.log("use effect");
     var params = new URLSearchParams();
@@ -186,7 +186,7 @@ const Dashboard = () => {
                 }}
               >
                 <Link
-                  to={`${MYSCRIPT.plugin_admin_path}admin.php?page=aeroplugin&path=addPost`}
+                  to={`${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}&path=addPost`}
                 >
                   <button
                     onClick={() => setUrl(!url)}
