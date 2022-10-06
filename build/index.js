@@ -6513,7 +6513,7 @@ const AddPost = _ref => {
     // const { ajax_url } = reactAppData;
 
     var params = new URLSearchParams();
-    params.append("action", "myAction");
+    params.append("action", "aeropageEdit");
     params.append("title", title);
     params.append("dynamic", dynamic);
     params.append("slug", slug);
@@ -7075,7 +7075,7 @@ const EditPost = _ref => {
     // const { ajax_url } = reactAppData;
 
     var params = new URLSearchParams();
-    params.append("action", "myAction");
+    params.append("action", "aeropageEdit");
     params.append("title", title);
     params.append("id", id);
     params.append("dynamic", dynamic);
@@ -7681,8 +7681,9 @@ const Dashboard = () => {
   const link = `${MYSCRIPT.plugin_admin_path}admin.php?page=aeroplugin&path=editPost`;
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
     console.log("use effect");
-    var params = new URLSearchParams();
-    params.append("action", "myAction2");
+    var params = new URLSearchParams(); //
+
+    params.append("action", "aeropageList");
     params.append("title", "test");
     axios__WEBPACK_IMPORTED_MODULE_3___default().post(MYSCRIPT.ajaxUrl, params).then(function (response) {
       // console.log(response.data);
@@ -7713,7 +7714,7 @@ const Dashboard = () => {
     console.log("id: " + id);
     console.log(MYSCRIPT.ajaxUrl);
     var params = new URLSearchParams();
-    params.append("action", "myAction3");
+    params.append("action", "aeropageSyncPosts");
     params.append("id", id);
     axios__WEBPACK_IMPORTED_MODULE_3___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
       console.log(responseAP.data);
@@ -7724,7 +7725,7 @@ const Dashboard = () => {
     console.log("id: " + id);
     console.log(MYSCRIPT.ajaxUrl);
     var params = new URLSearchParams();
-    params.append("action", "myAction3");
+    params.append("action", "aeropageSyncPosts");
     params.append("id", id);
     axios__WEBPACK_IMPORTED_MODULE_3___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
       setRefreshState(false);

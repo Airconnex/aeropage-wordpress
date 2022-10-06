@@ -84,7 +84,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic }) => {
     // const reactAppData = window.wpRoomDesigner || {};
     // const { ajax_url } = reactAppData;
     var params = new URLSearchParams();
-    params.append("action", "myAction");
+    params.append("action", "aeropageEdit");
     params.append("title", title);
     params.append("id", id);
     params.append("dynamic", dynamic);

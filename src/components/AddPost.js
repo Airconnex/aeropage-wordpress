@@ -90,7 +90,7 @@ const AddPost = ({ resetView }) => {
     // const reactAppData = window.wpRoomDesigner || {};
     // const { ajax_url } = reactAppData;
     var params = new URLSearchParams();
-    params.append("action", "myAction");
+    params.append("action", "aeropageEdit");
     params.append("title", title);
     params.append("dynamic", dynamic);
     params.append("slug", slug);

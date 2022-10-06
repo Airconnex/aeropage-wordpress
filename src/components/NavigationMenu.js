@@ -35,7 +35,8 @@ const Dashboard = () => {
   useEffect(() => {
     console.log("use effect");
     var params = new URLSearchParams();
-    params.append("action", "myAction2");
+    //
+    params.append("action", "aeropageList");
     params.append("title", "test");
     axios.post(MYSCRIPT.ajaxUrl, params).then(function (response) {
       // console.log(response.data);
@@ -71,7 +72,7 @@ const Dashboard = () => {
     console.log(MYSCRIPT.ajaxUrl);
 
     var params = new URLSearchParams();
-    params.append("action", "myAction3");
+    params.append("action", "aeropageSyncPosts");
     params.append("id", id);
 
     axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
@@ -84,7 +85,7 @@ const Dashboard = () => {
     console.log(MYSCRIPT.ajaxUrl);
 
     var params = new URLSearchParams();
-    params.append("action", "myAction3");
+    params.append("action", "aeropageSyncPosts");
     params.append("id", id);
 
     axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
