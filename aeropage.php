@@ -11,7 +11,7 @@
 add_action('admin_menu', 'aeropage_plugin_menu');
  
 function aeropage_plugin_menu(){
-  add_menu_page( 'Aeropage Sync for Airtable', 'Aeropage', 'manage_options', 'aeropage' , 'aeroplugin_admin_page' );
+  add_menu_page( 'Aeropage Sync for Airtable', 'Aeropage', 'manage_options', 'aeropage' , 'aeroplugin_admin_page', '', 61 );
 }
 
 /**
@@ -64,13 +64,14 @@ function aeropageList()
 
 
 
-add_action( 'wp_ajax_get_token', 'aeropageEditorMeta');
+add_action( 'wp_ajax_aeropageEditorMeta', 'aeropageEditorMeta');
 //Gets the aero page token when in the edit post
 function aeropageEditorMeta(){
   $pid = $_POST["id"];
   $token = get_post_meta($pid, "aero_token");
   $status = get_post_meta($pid, "aero_sync_status");
-  die(json_encode(array("token" => $token,"status" => $status)));
+  $sync_time = get_post_meta($pid, "aero_sync_time");
+  die(json_encode(array("token" => $token,"status" => $status, "sync_time" => $sync_time)));
 }
 
 
@@ -187,7 +188,8 @@ function aeropageSyncPosts($parentId)
   {
 	$response['status'] = 'success';
 	update_post_meta ($parentId,'aero_sync_status','success');
-	update_post_meta ($parentId,'aero_sync_time',time());
+  $sync_time = time();
+	update_post_meta ($parentId,'aero_sync_time', $sync_time);
   
   // trash posts 
 
@@ -277,29 +279,30 @@ function aeropageSyncPosts($parentId)
   // end foreach field
 
 
-}
-// end foreach record
-
   }
-  else // some problem with api
+  // end foreach record
+
+    }
+    else // some problem with api
+    {
+    $response['status'] = 'error';
+    update_post_meta ($parentId,'aero_sync_status','error');
+    $message = $apiData['status']['message'];
+    update_post_meta ($parentId,'aero_sync_message',$message);
+    $response['message'] = $message;
+  }
+
+  //If doing AJAX
+
+  if($isAjax)
   {
-  $response['status'] = 'error';
-  update_post_meta ($parentId,'aero_sync_status','error');
-  $message = $apiData['status']['message'];
-  update_post_meta ($parentId,'aero_sync_message',$message);
-  $response['message'] = $message;
-}
-
-//If doing AJAX
-
-if($isAjax)
-{
-die(json_encode($response));
-}
-else
-{
-return $response;
-}
+    $response["sync_time"] = $sync_time;
+    die(json_encode($response));
+  }
+  else
+  {
+  return $response;
+  }
 
 }
 // end function

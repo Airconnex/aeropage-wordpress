@@ -6488,7 +6488,7 @@ const aeroSvg = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement
 }));
 
 const AddPost = _ref => {
-  var _responseAP$status3, _responseAP$status4, _responseAP$status5, _responseAP$status6;
+  var _responseAP$status2, _responseAP$status3, _responseAP$status4, _responseAP$status5, _responseAP$status6, _responseAP$status7;
 
   let {
     resetView
@@ -6783,15 +6783,7 @@ const AddPost = _ref => {
     },
     placeholder: "Token"
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
-    onClick: e => {
-      var _responseAP$status2;
-
-      if ((responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status2 = responseAP.status) === null || _responseAP$status2 === void 0 ? void 0 : _responseAP$status2.type) !== "success") {
-        e.preventDefault();
-      } else {
-        window.open(`https://tools.aeropage.io/api/token/${inputValue}/`);
-      }
-    },
+    href: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status2 = responseAP.status) === null || _responseAP$status2 === void 0 ? void 0 : _responseAP$status2.type) !== "success" ? "" : `https://tools.aeropage.io/api-connector/${responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status3 = responseAP.status) === null || _responseAP$status3 === void 0 ? void 0 : _responseAP$status3.id}/`,
     target: "_blank",
     style: {
       fontFamily: "'Inter', sans-serif",
@@ -6802,22 +6794,19 @@ const AddPost = _ref => {
       lineHeight: "24px",
       cursor: "pointer",
       marginLeft: "5px",
-      background: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status3 = responseAP.status) === null || _responseAP$status3 === void 0 ? void 0 : _responseAP$status3.type) === "success" ? "#505c6c" : "rgba(80, 92, 108, 0.33)",
+      background: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status4 = responseAP.status) === null || _responseAP$status4 === void 0 ? void 0 : _responseAP$status4.type) === "success" ? "#505c6c" : "rgba(80, 92, 108, 0.33)",
       color: "white",
       padding: "8px 13px 8px 13px",
       border: "none",
       borderRadius: "6px" // pointerEvents:
       //   responseAP?.status?.type === "success" ? "" : "none",
 
-    } // onClick={() => {
-    //   handleMyClick();
-    // }}
-
+    }
   }, "Open"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       minHeight: "70px"
     }
-  }, (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status4 = responseAP.status) === null || _responseAP$status4 === void 0 ? void 0 : _responseAP$status4.type) === "success" && status === false ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status5 = responseAP.status) === null || _responseAP$status5 === void 0 ? void 0 : _responseAP$status5.type) === "success" && status === false ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       display: "flex",
       flexDirection: "row",
@@ -6922,7 +6911,7 @@ const AddPost = _ref => {
       margin: "0 0 0 0"
     }
   }, error)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
-    disabled: !(responseAP !== null && responseAP !== void 0 && (_responseAP$status5 = responseAP.status) !== null && _responseAP$status5 !== void 0 && _responseAP$status5.type) === "success" || !dynamic || !title || !slug,
+    disabled: !(responseAP !== null && responseAP !== void 0 && (_responseAP$status6 = responseAP.status) !== null && _responseAP$status6 !== void 0 && _responseAP$status6.type) === "success" || !dynamic || !title || !slug,
     style: {
       fontFamily: "'Inter', sans-serif",
       fontStyle: "normal",
@@ -6930,7 +6919,7 @@ const AddPost = _ref => {
       fontSize: "12px",
       lineHeight: "24px",
       cursor: "pointer",
-      background: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status6 = responseAP.status) === null || _responseAP$status6 === void 0 ? void 0 : _responseAP$status6.type) === "success" && dynamic && title && slug ? "#633CE3" : "#bbaaf3",
+      background: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status7 = responseAP.status) === null || _responseAP$status7 === void 0 ? void 0 : _responseAP$status7.type) === "success" && dynamic && title && slug ? "#633CE3" : "#bbaaf3",
       color: "white",
       padding: "8px 13px 8px 13px",
       border: "none",
@@ -6964,6 +6953,202 @@ const AddPost = _ref => {
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (AddPost);
+
+/***/ }),
+
+/***/ "./src/components/Card.js":
+/*!********************************!*\
+  !*** ./src/components/Card.js ***!
+  \********************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/dist/index.js");
+/* harmony import */ var _Icons__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Icons */ "./src/components/Icons.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_3__);
+
+
+
+
+
+
+
+const Card = _ref => {
+  let {
+    el,
+    idx,
+    setUrl,
+    setEditID,
+    setIdx,
+    url,
+    handleClick,
+    handleRefresh
+  } = _ref;
+  const link = `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}&path=editPost`;
+  const [refreshState, setRefreshState] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
+  const [syncTime, setSyncTime] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(el.sync_time);
+  const [syncStatus, setSyncStatus] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(el.sync_status);
+  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    style: {
+      border: "1px solid #B9B9B9",
+      padding: "10px",
+      minWidth: "150px",
+      maxWidth: "250px",
+      display: "flex",
+      flexDirection: "column",
+      boxShadow: "0px 4px 4px 0px #00000040",
+      flex: "1 1 200px",
+      margin: "10px 10px 10px 10px",
+      borderRadius: "8px"
+    },
+    key: idx
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_router_dom__WEBPACK_IMPORTED_MODULE_4__.Link, {
+    className: "link",
+    onClick: () => {
+      setUrl(!url);
+      setEditID(el.ID);
+      setIdx(idx);
+    },
+    style: {
+      textDecoration: "none",
+      color: "black"
+    },
+    to: `${link}&id=${el.ID}`
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    style: {
+      borderBottom: "1px solid #F4F5F8",
+      display: "flex",
+      width: "100%",
+      paddingBottom: "10px"
+    }
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    style: {
+      display: "flex",
+      flexDirection: "row",
+      width: "100%"
+    }
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
+    style: {
+      fontFamily: "'Inter', sans-serif",
+      fontStyle: "normal",
+      fontWeight: "600",
+      whiteSpace: "nowrap",
+      display: "flex",
+      alignItems: "center",
+      width: "fit-content",
+      color: "#595B5C",
+      fontSize: "12px",
+      lineHeight: "16.8px"
+    }
+  }, el === null || el === void 0 ? void 0 : el.post_title), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    style: {
+      display: "flex",
+      width: "100%",
+      justifyContent: "right"
+    }
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    style: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: "7px",
+      borderRadius: "3px",
+      background: syncStatus === "success" ? "#25A6A61A" : "rgba(194, 37, 37, 0.1)"
+    },
+    title: `Sync ${syncStatus}`
+  }, syncStatus === "success" ? _Icons__WEBPACK_IMPORTED_MODULE_2__.tickIcon : _Icons__WEBPACK_IMPORTED_MODULE_2__.warningIcon))))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    style: {
+      height: "100%",
+      display: "flex",
+      // alignItems: "center",
+      flexDirection: "column"
+    }
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
+    style: {
+      color: "#595B5C",
+      fontFamily: "'Inter', sans-serif",
+      fontStyle: "normal",
+      fontWeight: "400",
+      fontSize: "10px",
+      height: "100%",
+      display: "flex",
+      alignItems: "center",
+      lineHeight: "17.5px",
+      paddingTop: "10px",
+      paddingBottom: "10px"
+    }
+  }, syncTime && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, "Updated ", new Date(parseInt(syncTime) * 1000).toLocaleString())), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    style: {
+      width: "100%",
+      height: "100%",
+      display: "flex",
+      justifyContent: "right",
+      alignItems: "end"
+    }
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    id: "trash",
+    style: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: "7px",
+      height: "28px",
+      width: "28px"
+    } // onClick={() => handleClick(el?.ID)}
+
+  }, _Icons__WEBPACK_IMPORTED_MODULE_2__.trashIcon), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_router_dom__WEBPACK_IMPORTED_MODULE_4__.Link, {
+    className: "link",
+    onClick: () => {
+      setUrl(!url);
+      setEditID(el.ID);
+      setIdx(idx);
+    },
+    style: {
+      textDecoration: "none",
+      color: "black"
+    },
+    to: `${link}&id=${el.ID}`
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    id: "settings",
+    style: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: "7px",
+      height: "28px",
+      width: "28px"
+    } // onClick={() => handleClick(el?.ID)}
+
+  }, _Icons__WEBPACK_IMPORTED_MODULE_2__.settingsIcon)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    id: "refresh",
+    className: refreshState ? "refresh-start" : "",
+    style: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: "7px",
+      height: "28px",
+      width: "28px"
+    },
+    onClick: () => {
+      setRefreshState(true);
+      handleRefresh(el === null || el === void 0 ? void 0 : el.ID).then(data => {
+        console.log("HANDLE REFRESH DATA: ", data);
+        setSyncTime(data === null || data === void 0 ? void 0 : data.sync_time);
+        setSyncStatus(data === null || data === void 0 ? void 0 : data.status);
+        setRefreshState(false);
+      });
+    }
+  }, _Icons__WEBPACK_IMPORTED_MODULE_2__.refreshIcon))));
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (Card);
 
 /***/ }),
 
@@ -7053,14 +7238,15 @@ const aeroSvg = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement
 }));
 
 const EditPost = _ref => {
-  var _responseAP$status3, _responseAP$status4, _responseAP$status5, _responseAP$status6;
+  var _responseAP$status2, _responseAP$status3, _responseAP$status4, _responseAP$status5, _responseAP$status6, _responseAP$status7;
 
   let {
     resetView,
     id,
     editTitle,
     url,
-    editDynamic
+    editDynamic,
+    posts
   } = _ref;
   const JSON = {};
   const [btnState, setBtnState] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
@@ -7073,6 +7259,7 @@ const EditPost = _ref => {
   const [responseMessage, setResponseMessage] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
   const [error, setError] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
   const [loading, setLoading] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
+  const [post, setPost] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -7122,6 +7309,18 @@ const EditPost = _ref => {
   };
 
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
+    if (posts) {
+      setPost(posts === null || posts === void 0 ? void 0 : posts.find(post => post.ID == id));
+    }
+  }, [posts]);
+  (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
+    if (post) {
+      setTitle(post === null || post === void 0 ? void 0 : post.post_title);
+      setSlug(post === null || post === void 0 ? void 0 : post.post_name);
+      setDynamic(post === null || post === void 0 ? void 0 : post.post_excerpt);
+    }
+  }, [post]);
+  (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
     // fetch("https://api.aeropage.io/api/v3/token/" + inputValue);
     fetch("https://tools.aeropage.io/api/token/" + inputValue + "/").then(responseAP => responseAP.json()).then(data => setResponseAP(data));
   }, [inputValue]);
@@ -7134,7 +7333,7 @@ const EditPost = _ref => {
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
     console.log("I AM HERE.");
     var params = new URLSearchParams();
-    params.append("action", "get_token");
+    params.append("action", "aeropageEditorMeta");
     params.append("id", id);
     axios__WEBPACK_IMPORTED_MODULE_5___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
       var _responseAP$data2;
@@ -7357,15 +7556,7 @@ const EditPost = _ref => {
     },
     placeholder: "Token"
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
-    onClick: e => {
-      var _responseAP$status2;
-
-      if ((responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status2 = responseAP.status) === null || _responseAP$status2 === void 0 ? void 0 : _responseAP$status2.type) !== "success") {
-        e.preventDefault();
-      } else {
-        window.open(`https://tools.aeropage.io/api/token/${inputValue}/`);
-      }
-    },
+    href: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status2 = responseAP.status) === null || _responseAP$status2 === void 0 ? void 0 : _responseAP$status2.type) !== "success" ? "" : `https://tools.aeropage.io/api-connector/${responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status3 = responseAP.status) === null || _responseAP$status3 === void 0 ? void 0 : _responseAP$status3.id}/`,
     target: "_blank",
     style: {
       fontFamily: "'Inter', sans-serif",
@@ -7376,22 +7567,19 @@ const EditPost = _ref => {
       lineHeight: "24px",
       cursor: "pointer",
       marginLeft: "5px",
-      background: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status3 = responseAP.status) === null || _responseAP$status3 === void 0 ? void 0 : _responseAP$status3.type) === "success" ? "#505c6c" : "rgba(80, 92, 108, 0.33)",
+      background: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status4 = responseAP.status) === null || _responseAP$status4 === void 0 ? void 0 : _responseAP$status4.type) === "success" ? "#505c6c" : "rgba(80, 92, 108, 0.33)",
       color: "white",
       padding: "8px 13px 8px 13px",
       border: "none",
       borderRadius: "6px" // pointerEvents:
       //   responseAP?.status?.type === "success" ? "" : "none",
 
-    } // onClick={() => {
-    //   handleMyClick();
-    // }}
-
+    }
   }, "Open"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       minHeight: "70px"
     }
-  }, (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status4 = responseAP.status) === null || _responseAP$status4 === void 0 ? void 0 : _responseAP$status4.type) === "success" && status === false ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status5 = responseAP.status) === null || _responseAP$status5 === void 0 ? void 0 : _responseAP$status5.type) === "success" && status === false ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       display: "flex",
       flexDirection: "row",
@@ -7496,7 +7684,7 @@ const EditPost = _ref => {
       margin: "0 0 0 0"
     }
   }, error)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
-    disabled: !(responseAP !== null && responseAP !== void 0 && (_responseAP$status5 = responseAP.status) !== null && _responseAP$status5 !== void 0 && _responseAP$status5.type) === "success" || !dynamic || !title || !slug,
+    disabled: !(responseAP !== null && responseAP !== void 0 && (_responseAP$status6 = responseAP.status) !== null && _responseAP$status6 !== void 0 && _responseAP$status6.type) === "success" || !dynamic || !title || !slug,
     style: {
       fontFamily: "'Inter', sans-serif",
       fontStyle: "normal",
@@ -7504,7 +7692,7 @@ const EditPost = _ref => {
       fontSize: "12px",
       lineHeight: "24px",
       cursor: "pointer",
-      background: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status6 = responseAP.status) === null || _responseAP$status6 === void 0 ? void 0 : _responseAP$status6.type) === "success" && dynamic && title && slug ? "#633CE3" : "#bbaaf3",
+      background: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status7 = responseAP.status) === null || _responseAP$status7 === void 0 ? void 0 : _responseAP$status7.type) === "success" && dynamic && title && slug ? "#633CE3" : "#bbaaf3",
       color: "white",
       padding: "8px 13px 8px 13px",
       border: "none",
@@ -7513,7 +7701,7 @@ const EditPost = _ref => {
     //   handleMyClick();
     // }}
 
-  }, loading ? "Submitting..." : "Edit a Post"))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, loading ? "Submitting..." : "Save Changes"))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       marginTop: "50px",
       marginBottom: "50px",
@@ -7709,10 +7897,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _header__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./header */ "./src/components/header.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/dist/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/dist/index.js");
 /* harmony import */ var _AddPost__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./AddPost */ "./src/components/AddPost.js");
 /* harmony import */ var _EditPost__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./EditPost */ "./src/components/EditPost.js");
-/* harmony import */ var _Icons__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Icons */ "./src/components/Icons.js");
+/* harmony import */ var _Card__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Card */ "./src/components/Card.js");
+/* harmony import */ var _Icons__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Icons */ "./src/components/Icons.js");
+
 
 
 
@@ -7729,9 +7919,7 @@ const Dashboard = () => {
   const [path, setPath] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
   const [editID, setEditID] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
   const [idx, setIdx] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
-  const [refreshState, setRefreshState] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
-  let [searchParams, setSearchParams] = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_7__.useSearchParams)();
-  const link = `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}&path=editPost`;
+  const [searchParams, setSearchParams] = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_8__.useSearchParams)();
   console.log("PLUGIN NAME: ", MYSCRIPT.plugin_name);
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
     console.log("use effect");
@@ -7752,13 +7940,11 @@ const Dashboard = () => {
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
     console.log(searchParams.get("path"));
     setPath(searchParams.get("path"));
+    setEditID(searchParams.get("id"));
   }, [url]);
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
     console.log("path status:" + path);
   }, [path]);
-  (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-    console.log("refresh status:" + refreshState);
-  }, [refreshState]);
 
   const resetView = () => {
     setPath(null);
@@ -7771,19 +7957,18 @@ const Dashboard = () => {
     params.append("action", "aeropageSyncPosts");
     params.append("id", id);
     axios__WEBPACK_IMPORTED_MODULE_3___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
-      console.log(responseAP.data);
+      console.log("RESPONSE DATA: ", responseAP.data);
     });
   };
 
-  const handleRefresh = id => {
+  const handleRefresh = async id => {
     console.log("id: " + id);
     console.log(MYSCRIPT.ajaxUrl);
     var params = new URLSearchParams();
     params.append("action", "aeropageSyncPosts");
     params.append("id", id);
-    axios__WEBPACK_IMPORTED_MODULE_3___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
-      setRefreshState(false);
-      console.log(responseAP.data);
+    return await axios__WEBPACK_IMPORTED_MODULE_3___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
+      return responseAP === null || responseAP === void 0 ? void 0 : responseAP.data;
     });
   };
 
@@ -7863,7 +8048,7 @@ const Dashboard = () => {
           justifyContent: "right",
           alignItems: "center"
         }
-      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_router_dom__WEBPACK_IMPORTED_MODULE_7__.Link, {
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_router_dom__WEBPACK_IMPORTED_MODULE_8__.Link, {
         to: `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}&path=addPost`
       }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
         onClick: () => setUrl(!url),
@@ -7890,152 +8075,16 @@ const Dashboard = () => {
           maxWidth: "80%"
         }
       }, response.map((el, idx) => {
-        return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-          style: {
-            border: "1px solid #B9B9B9",
-            padding: "10px",
-            minWidth: "150px",
-            maxWidth: "250px",
-            display: "flex",
-            flexDirection: "column",
-            boxShadow: "0px 4px 4px 0px #00000040",
-            flex: "1 1 200px",
-            margin: "10px 10px 10px 10px",
-            borderRadius: "8px"
-          }
-        }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_router_dom__WEBPACK_IMPORTED_MODULE_7__.Link, {
-          className: "link",
-          onClick: () => {
-            setUrl(!url);
-            setEditID(el.ID);
-            setIdx(idx);
-          },
-          style: {
-            textDecoration: "none",
-            color: "black"
-          },
-          to: `${link}&id=${el.ID}`
-        }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-          style: {
-            borderBottom: "1px solid #F4F5F8",
-            display: "flex",
-            width: "100%",
-            paddingBottom: "10px"
-          }
-        }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-          style: {
-            display: "flex",
-            flexDirection: "row",
-            width: "100%"
-          }
-        }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
-          style: {
-            fontFamily: "'Inter', sans-serif",
-            fontStyle: "normal",
-            fontWeight: "600",
-            whiteSpace: "nowrap",
-            display: "flex",
-            alignItems: "center",
-            width: "fit-content",
-            color: "#595B5C",
-            fontSize: "12px",
-            lineHeight: "16.8px"
-          }
-        }, el === null || el === void 0 ? void 0 : el.post_title), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-          style: {
-            display: "flex",
-            width: "100%",
-            justifyContent: "right"
-          }
-        }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-          style: {
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            padding: "7px",
-            borderRadius: "3px",
-            background: "#25A6A61A"
-          },
-          onClick: () => handleClick(el === null || el === void 0 ? void 0 : el.ID)
-        }, _Icons__WEBPACK_IMPORTED_MODULE_6__.tickIcon))))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-          style: {
-            height: "100%",
-            display: "flex",
-            // alignItems: "center",
-            flexDirection: "column"
-          }
-        }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
-          style: {
-            color: "#595B5C",
-            fontFamily: "'Inter', sans-serif",
-            fontStyle: "normal",
-            fontWeight: "400",
-            fontSize: "10px",
-            height: "100%",
-            display: "flex",
-            alignItems: "center",
-            lineHeight: "17.5px",
-            paddingTop: "10px",
-            paddingBottom: "10px"
-          }
-        }, "Updated 12:22pm, 13/03/2022"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-          style: {
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            justifyContent: "right",
-            alignItems: "end"
-          }
-        }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-          id: "trash",
-          style: {
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            padding: "7px",
-            height: "28px",
-            width: "28px"
-          },
-          onClick: () => handleClick(el === null || el === void 0 ? void 0 : el.ID)
-        }, _Icons__WEBPACK_IMPORTED_MODULE_6__.trashIcon), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_router_dom__WEBPACK_IMPORTED_MODULE_7__.Link, {
-          className: "link",
-          onClick: () => {
-            setUrl(!url);
-            setEditID(el.ID);
-            setIdx(idx);
-          },
-          style: {
-            textDecoration: "none",
-            color: "black"
-          },
-          to: `${link}&id=${el.ID}`
-        }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-          id: "settings",
-          style: {
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            padding: "7px",
-            height: "28px",
-            width: "28px"
-          },
-          onClick: () => handleClick(el === null || el === void 0 ? void 0 : el.ID)
-        }, _Icons__WEBPACK_IMPORTED_MODULE_6__.settingsIcon)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-          id: "refresh" // className="refresh-start"
-          ,
-          style: {
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            padding: "7px",
-            height: "28px",
-            width: "28px"
-          },
-          onClick: () => {
-            setRefreshState(true);
-            handleRefresh(el === null || el === void 0 ? void 0 : el.ID);
-          }
-        }, _Icons__WEBPACK_IMPORTED_MODULE_6__.refreshIcon)))), " ");
+        return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_Card__WEBPACK_IMPORTED_MODULE_6__["default"], {
+          el: el,
+          id: idx,
+          setUrl: setUrl,
+          setEditID: setEditID,
+          setIdx: setIdx,
+          handleClick: handleClick,
+          url: url,
+          handleRefresh: handleRefresh
+        }), " ");
       }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
         style: {
           display: "flex",
@@ -8065,11 +8114,15 @@ const Dashboard = () => {
         resetView: resetView
       });
     } else if (path === "editPost") {
+      var _response$idx, _response$idx2, _response$idx3;
+
+      console.log(response);
       return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_EditPost__WEBPACK_IMPORTED_MODULE_5__["default"], {
         id: editID,
-        editTitle: response[idx].post_title,
-        url: response[idx].post_name,
-        editDynamic: response[idx].post_excerpt
+        editTitle: response === null || response === void 0 ? void 0 : (_response$idx = response[idx]) === null || _response$idx === void 0 ? void 0 : _response$idx.post_title,
+        url: response === null || response === void 0 ? void 0 : (_response$idx2 = response[idx]) === null || _response$idx2 === void 0 ? void 0 : _response$idx2.post_name,
+        editDynamic: response === null || response === void 0 ? void 0 : (_response$idx3 = response[idx]) === null || _response$idx3 === void 0 ? void 0 : _response$idx3.post_excerpt,
+        posts: response
       });
     }
   };

@@ -67,7 +67,7 @@ export const aeroSvg = (
   </svg>
 );
 
-const EditPost = ({ resetView, id, editTitle, url, editDynamic }) => {
+const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
   const JSON = {};
 
   const [btnState, setBtnState] = useState(true);
@@ -80,7 +80,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic }) => {
   const [responseMessage, setResponseMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const [post, setPost] = useState(null);
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(MYSCRIPT.ajaxUrl);
@@ -107,25 +107,35 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic }) => {
         setError(err?.message);
       });
   };
-
   const handleChange = (e) => {
     setStatus(true);
     setInputValue(e.target.value);
   };
-
   const titleOnChange = (e) => {
     setTitle(e.target.value);
     let a = convertToSlug(e.target.value);
     setSlug(a);
   };
-
   const slugOnChange = (e) => {
     setSlug(e.target.value);
   };
-
   const dynamicOnChange = (e) => {
     setDynamic(e.target.value);
   };
+
+  useEffect(() => {
+    if(posts){
+      setPost(posts?.find(post => post.ID == id));
+    }
+  }, [posts])
+
+  useEffect(() => {
+    if(post){
+      setTitle(post?.post_title);
+      setSlug(post?.post_name);
+      setDynamic(post?.post_excerpt);
+    }
+  }, [post])
 
   useEffect(() => {
     // fetch("https://api.aeropage.io/api/v3/token/" + inputValue);
@@ -142,7 +152,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic }) => {
   useEffect(() => {
     console.log("I AM HERE.")
     var params = new URLSearchParams();
-    params.append("action", "get_token");
+    params.append("action", "aeropageEditorMeta");
     params.append("id", id);
     axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
       if(responseAP?.data?.token){
@@ -404,15 +414,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic }) => {
                 placeholder="Token"
               ></input>
               <a
-                onClick={(e) => {
-                  if (responseAP?.status?.type !== "success") {
-                    e.preventDefault();
-                  } else {
-                    window.open(
-                      `https://tools.aeropage.io/api/token/${inputValue}/`
-                    );
-                  }
-                }}
+                href={responseAP?.status?.type !== "success" ? "" : `https://tools.aeropage.io/api-connector/${responseAP?.status?.id}/`}
                 target="_blank"
                 style={{
                   fontFamily: "'Inter', sans-serif",
@@ -434,9 +436,6 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic }) => {
                   // pointerEvents:
                   //   responseAP?.status?.type === "success" ? "" : "none",
                 }}
-                // onClick={() => {
-                //   handleMyClick();
-                // }}
               >
                 Open
               </a>
@@ -619,7 +618,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic }) => {
                 //   handleMyClick();
                 // }}
               >
-                {loading ? "Submitting..." : "Edit a Post"}
+                {loading ? "Submitting..." : "Save Changes"}
               </button>
               {/* </Link> */}
             </form>

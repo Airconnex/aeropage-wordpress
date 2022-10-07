@@ -12,13 +12,9 @@ import {
 import { useSearchParams } from "react-router-dom";
 import AddPost from "./AddPost";
 import EditPost from "./EditPost";
+import Card from "./Card";
 import {
-  aeroSvg,
-  tickIcon,
-  trashIcon,
-  refreshIcon,
-  settingsIcon,
-  warningIcon,
+  aeroSvg
 } from "./Icons";
 
 const Dashboard = () => {
@@ -27,10 +23,7 @@ const Dashboard = () => {
   const [path, setPath] = useState(null);
   const [editID, setEditID] = useState(null);
   const [idx, setIdx] = useState(null);
-  const [refreshState, setRefreshState] = useState(false);
-
-  let [searchParams, setSearchParams] = useSearchParams();
-  const link = `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}&path=editPost`;
+  const [searchParams, setSearchParams] = useSearchParams();
   console.log("PLUGIN NAME: ", MYSCRIPT.plugin_name);
   useEffect(() => {
     console.log("use effect");
@@ -53,15 +46,12 @@ const Dashboard = () => {
   useEffect(() => {
     console.log(searchParams.get("path"));
     setPath(searchParams.get("path"));
+    setEditID(searchParams.get("id"));
   }, [url]);
 
   useEffect(() => {
     console.log("path status:" + path);
   }, [path]);
-
-  useEffect(() => {
-    console.log("refresh status:" + refreshState);
-  }, [refreshState]);
 
   const resetView = () => {
     setPath(null);
@@ -76,11 +66,11 @@ const Dashboard = () => {
     params.append("id", id);
 
     axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
-      console.log(responseAP.data);
+      console.log("RESPONSE DATA: ", responseAP.data);
     });
   };
 
-  const handleRefresh = (id) => {
+  const handleRefresh = async (id) => {
     console.log("id: " + id);
     console.log(MYSCRIPT.ajaxUrl);
 
@@ -88,9 +78,8 @@ const Dashboard = () => {
     params.append("action", "aeropageSyncPosts");
     params.append("id", id);
 
-    axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
-      setRefreshState(false);
-      console.log(responseAP.data);
+    return await axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
+      return responseAP?.data;
     });
   };
 
@@ -223,195 +212,16 @@ const Dashboard = () => {
               {response.map((el, idx) => {
                 return (
                   <>
-                    <div
-                      style={{
-                        border: "1px solid #B9B9B9",
-                        padding: "10px",
-                        minWidth: "150px",
-                        maxWidth: "250px",
-                        display: "flex",
-                        flexDirection: "column",
-                        boxShadow: "0px 4px 4px 0px #00000040",
-                        flex: "1 1 200px",
-                        margin: "10px 10px 10px 10px",
-                        borderRadius: "8px",
-                      }}
-                    >
-                      <Link
-                        className="link"
-                        onClick={() => {
-                          setUrl(!url);
-                          setEditID(el.ID);
-                          setIdx(idx);
-                        }}
-                        style={{
-                          textDecoration: "none",
-                          color: "black",
-                        }}
-                        to={`${link}&id=${el.ID}`}
-                      >
-                        <div
-                          style={{
-                            borderBottom: "1px solid #F4F5F8",
-                            display: "flex",
-                            width: "100%",
-                            paddingBottom: "10px",
-                          }}
-                        >
-                          <div
-                            style={{
-                              display: "flex",
-                              flexDirection: "row",
-                              width: "100%",
-                            }}
-                          >
-                            <span
-                              style={{
-                                fontFamily: "'Inter', sans-serif",
-                                fontStyle: "normal",
-                                fontWeight: "600",
-                                whiteSpace: "nowrap",
-                                display: "flex",
-                                alignItems: "center",
-                                width: "fit-content",
-                                color: "#595B5C",
-                                fontSize: "12px",
-                                lineHeight: "16.8px",
-                              }}
-                            >
-                              {el?.post_title}
-                            </span>
-                            {/* <button onClick={() => handleClick(el?.ID)}>
-                        Refresh
-                      </button> */}
-
-                            <div
-                              style={{
-                                display: "flex",
-                                width: "100%",
-                                justifyContent: "right",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                  padding: "7px",
-                                  borderRadius: "3px",
-                                  background: "#25A6A61A",
-                                }}
-                                onClick={() => handleClick(el?.ID)}
-                              >
-                                {tickIcon}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </Link>
-
-                      <div
-                        style={{
-                          height: "100%",
-                          display: "flex",
-                          // alignItems: "center",
-                          flexDirection: "column",
-                        }}
-                      >
-                        <span
-                          style={{
-                            color: "#595B5C",
-                            fontFamily: "'Inter', sans-serif",
-                            fontStyle: "normal",
-                            fontWeight: "400",
-                            fontSize: "10px",
-                            height: "100%",
-                            display: "flex",
-                            alignItems: "center",
-                            lineHeight: "17.5px",
-                            paddingTop: "10px",
-                            paddingBottom: "10px",
-                          }}
-                        >
-                          Updated 12:22pm, 13/03/2022
-                        </span>
-                        <div
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            display: "flex",
-                            justifyContent: "right",
-                            alignItems: "end",
-                          }}
-                        >
-                          <div
-                            id="trash"
-                            style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              padding: "7px",
-                              height: "28px",
-                              width: "28px",
-                            }}
-                            onClick={() => handleClick(el?.ID)}
-                          >
-                            {trashIcon}
-                          </div>
-                          <Link
-                            className="link"
-                            onClick={() => {
-                              setUrl(!url);
-                              setEditID(el.ID);
-                              setIdx(idx);
-                            }}
-                            style={{
-                              textDecoration: "none",
-                              color: "black",
-                            }}
-                            to={`${link}&id=${el.ID}`}
-                          >
-                            <div
-                              id="settings"
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                padding: "7px",
-                                height: "28px",
-                                width: "28px",
-                              }}
-                              onClick={() => handleClick(el?.ID)}
-                            >
-                              {settingsIcon}
-                            </div>
-                          </Link>
-                          <div
-                            id="refresh"
-                            // className="refresh-start"
-                            style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              padding: "7px",
-                              height: "28px",
-                              width: "28px",
-                            }}
-                            onClick={() => {
-                              setRefreshState(true);
-                              handleRefresh(el?.ID);
-                            }}
-                          >
-                            {refreshIcon}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* <p style={{ fontSize: "12px" }}>
-                        Create rich html with images and buttons to use in emails.
-                        Export to Airtable and send using any automation tools
-                      </p> */}
-                    </div>{" "}
+                    <Card
+                      el={el}
+                      id={idx}
+                      setUrl={setUrl}
+                      setEditID={setEditID}
+                      setIdx={setIdx}
+                      handleClick={handleClick}
+                      url={url}
+                      handleRefresh={handleRefresh}
+                    />{" "}
                   </>
                 );
               })}
@@ -469,12 +279,14 @@ const Dashboard = () => {
     } else if (path === "addPost") {
       return <AddPost resetView={resetView} />;
     } else if (path === "editPost") {
+      console.log(response);
       return (
         <EditPost
           id={editID}
-          editTitle={response[idx].post_title}
-          url={response[idx].post_name}
-          editDynamic={response[idx].post_excerpt}
+          editTitle={response?.[idx]?.post_title}
+          url={response?.[idx]?.post_name}
+          editDynamic={response?.[idx]?.post_excerpt}
+          posts={response}
         />
       );
     }

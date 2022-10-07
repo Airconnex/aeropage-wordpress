@@ -405,15 +405,7 @@ const AddPost = ({ resetView }) => {
                 placeholder="Token"
               ></input>
               <a
-                onClick={(e) => {
-                  if (responseAP?.status?.type !== "success") {
-                    e.preventDefault();
-                  } else {
-                    window.open(
-                      `https://tools.aeropage.io/api/token/${inputValue}/`
-                    );
-                  }
-                }}
+                href={responseAP?.status?.type !== "success" ? "" : `https://tools.aeropage.io/api-connector/${responseAP?.status?.id}/`}
                 target="_blank"
                 style={{
                   fontFamily: "'Inter', sans-serif",
@@ -435,9 +427,6 @@ const AddPost = ({ resetView }) => {
                   // pointerEvents:
                   //   responseAP?.status?.type === "success" ? "" : "none",
                 }}
-                // onClick={() => {
-                //   handleMyClick();
-                // }}
               >
                 Open
               </a>
