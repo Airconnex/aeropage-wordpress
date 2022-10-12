@@ -1,11 +1,17 @@
 === Aeropage Sync Plugin ===
  
 Contributors: Aerostack Limited UK
+<br/>
 Tags: Airtable, Sync, CPT, Custom Post Type, Divi
+<br/>
 Requires at least: 6.0.2
+<br/>
 Tested up to: 6.0.2
+<br/>
 Stable tag: 1.0
+<br/>
 License: GPLv2 or later
+<br/>
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
   
 Aeropage Sync Plugin
