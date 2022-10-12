@@ -37,5 +37,9 @@ Syncronizes your Airtable data with WordPress creating custom post types for rec
 ![image](https://user-images.githubusercontent.com/46200125/195353227-94b6d11c-b74c-4bb4-965a-ee3563d1fffc.png)
 
 == Changelog ==
+<br/>
 = 1.0 =
+<br/>
 * Plugin released. 
+
+
