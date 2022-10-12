@@ -1,4 +1,4 @@
-=== Aeropage Sync Plugin ===
+=== Aeropage Sync for Airtable ===
  
 Contributors: aeropage<br/>
 Tags: Airtable, Sync, CPT, Custom Post Type, Divi<br/>
