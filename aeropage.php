@@ -67,7 +67,7 @@ function aeropageList()
 add_action( 'wp_ajax_aeropageEditorMeta', 'aeropageEditorMeta');
 //Gets the aero page token when in the edit post
 function aeropageEditorMeta(){
-  $pid = $_POST["id"];
+  $pid = intval($_POST["id"]);
   $token = get_post_meta($pid, "aero_token");
   $status = get_post_meta($pid, "aero_sync_status");
   $sync_time = get_post_meta($pid, "aero_sync_time");
@@ -132,24 +132,30 @@ function aeroRegisterTypes()
 add_action("wp_ajax_aeropageEdit", "aeropageEdit");
 function aeropageEdit() // called by ajax, adds the cpt
 {
-// can be passed an id (edit) or empty to create new
-// wordpress will automatically increment the slug if its already used.
+  $post_id = null;
 
+  if($_POST['id'])
+  {
+    $post_id = intval($_POST['id']);
+  }
+
+  // can be passed an id (edit) or empty to create new
+  // wordpress will automatically increment the slug if its already used.
   $template_post = array(
-          'ID' => $_POST['id'],
-          'post_title' => $_POST['title'],
-          'post_name' => $_POST['slug'],
-          'post_excerpt'=> $_POST['dynamic'],
-          'post_type' => 'aero-template',
-          'post_status' => 'private'
-      );
+    'ID' => $post_id,
+    'post_title' => sanitize_text_field($_POST['title']),
+    'post_name' => sanitize_text_field($_POST['slug']),
+    'post_excerpt'=> sanitize_text_field($_POST['dynamic']),
+    'post_type' => 'aero-template',
+    'post_status' => 'private'
+  );
 
   $id = wp_insert_post($template_post);
 
   if ($id)
   {
-  update_post_meta ($id,'aero_token',$_POST['token']);
-  aeropageSyncPosts($id);
+    update_post_meta ($id,'aero_token', sanitize_text_field($_POST['token']));
+    aeropageSyncPosts($id);
   }
 
   die(json_encode(array("status" => "success", "post_id" => $id)));
@@ -169,8 +175,13 @@ function aeropageSyncPosts($parentId)
 
   if(!$parentId)
   {
-  $isAjax = true;
-  $parentId = $_POST["id"];
+    $isAjax = true;
+    $parentId = intval($_POST["id"]);
+  }
+
+  if(!$parentId)
+  {
+    die(json_encode(array("status" => "error", "message" => "No parent ID was passed.")));
   }
  
 
@@ -190,24 +201,22 @@ function aeropageSyncPosts($parentId)
 	update_post_meta ($parentId,'aero_sync_status','success');
   $sync_time = time();
 	update_post_meta ($parentId,'aero_sync_time', $sync_time);
-  
   // trash posts 
 
   $trash = "
-      UPDATE $wpdb->posts p
-          INNER JOIN $wpdb->postmeta pm ON (p.ID = pm.post_id AND pm.meta_key = '_aero_cpt') 
-      SET p.post_status = 'trash' 
-      WHERE pm.meta_value = '$parentId'"
-      ;
-  $results = $wpdb->get_results($trash);
+    UPDATE $wpdb->posts p
+        INNER JOIN $wpdb->postmeta pm ON (p.ID = pm.post_id AND pm.meta_key = '_aero_cpt') 
+    SET p.post_status = 'trash' 
+    WHERE pm.meta_value = %d";
+  $results = $wpdb->get_results($wpdb->prepare($trash, $parentId));
       
       
   foreach ($apiData['records'] as $record)
   {
 
-  $record_id = $record['id'];
-  $record_name = $record['name']; 
-  $record_slug = $record['slug']; 
+  $record_id = sanitize_text_field($record['id']);
+  $record_name = sanitize_text_field($record['name']); 
+  $record_slug = sanitize_text_field($record['slug']); 
   
   $post_type = $parent->post_name;
   
@@ -228,13 +237,13 @@ function aeropageSyncPosts($parentId)
   if ($existing){$existing_id = $existing[0]->id;}
 
   $record_post = array(
-          'ID' => $existing_id,
-          'post_title' => $record_name,
-          'post_name' => $record_slug,
-		  'post_parent' => '',
-          'post_type' => $post_type,
-          'post_status' => 'publish'
-      );
+      'ID' => $existing_id,
+      'post_title' => $record_name,
+      'post_name' => $record_slug,
+      'post_parent' => '',
+      'post_type' => $post_type,
+      'post_status' => 'publish'
+  );
     
   $record_post_id = wp_insert_post($record_post);
 
@@ -278,7 +287,6 @@ function aeropageSyncPosts($parentId)
   }
   // end foreach field
 
-
   }
   // end foreach record
 
@@ -287,7 +295,7 @@ function aeropageSyncPosts($parentId)
     {
     $response['status'] = 'error';
     update_post_meta ($parentId,'aero_sync_status','error');
-    $message = $apiData['status']['message'];
+    $message = sanitize_text_field($apiData['status']['message']);
     update_post_meta ($parentId,'aero_sync_message',$message);
     $response['message'] = $message;
   }
@@ -308,37 +316,12 @@ function aeropageSyncPosts($parentId)
 // end function
 
 
-
-
-
 function aeropageTokenApiCall($token)
 {
-
 	$api_url = "https://tools.aeropage.io/api/token/$token/";
-
-	$ch = curl_init($api_url);
-	
-    // ONLY FOR LOCAL / DEVELOPMENT!!!!
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-	
-	$headers = array("Content-Type: application/json");
-	
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	
-    $result = json_decode(curl_exec($ch), true);
-	
-    curl_close($ch);
-
-    return $result;
-
-
+  $result = json_decode(wp_remote_retrieve_body(wp_remote_get($api_url)), true);
+  return $result;
 }
-
-
-
-
 
   /* WOOCOMMERCE (FUTURE)
 	$product = new WC_Product_Simple();
