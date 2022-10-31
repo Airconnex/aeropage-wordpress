@@ -25,7 +25,9 @@ const Card = ({
   setIdx,
   url,
   handleClick,
-  handleRefresh
+  handleRefresh,
+  setOpenModal,
+  setToBeDeleted
 }) => {
   const link = `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}&path=editPost`;
   const [refreshState, setRefreshState] = useState(false);
@@ -168,8 +170,12 @@ const Card = ({
               padding: "7px",
               height: "28px",
               width: "28px",
+              cursor: "pointer"
             }}
-            // onClick={() => handleClick(el?.ID)}
+            onClick={(e) => {
+              setOpenModal(true);
+              setToBeDeleted(el.ID);
+            }}
           >
             {trashIcon}
           </div>
@@ -211,6 +217,7 @@ const Card = ({
               padding: "7px",
               height: "28px",
               width: "28px",
+              cursor: "pointer"
             }}
             onClick={() => {
               setRefreshState(true);
@@ -226,6 +233,7 @@ const Card = ({
           </div>
         </div>
       </div>
+
 
       {/* <p style={{ fontSize: "12px" }}>
         Create rich html with images and buttons to use in emails.

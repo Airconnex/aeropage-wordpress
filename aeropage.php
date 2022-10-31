@@ -82,6 +82,7 @@ add_action( 'init', 'aeroRegisterTypes' );
 function aeroRegisterTypes()
 {
 
+  try{
     $flush = null;
 
 		$aeroPosts = get_posts(['post_type' => 'aero-template','post_status' => 'private','numberposts' => -1]);
@@ -93,9 +94,11 @@ function aeroRegisterTypes()
 
 		$slug = $template->post_name; // eg Headphones
 
-		if (!post_type_exists($slug))
+		if (!post_type_exists($slug) && $slug)
 		{
 
+    // echo "SLUG: ";
+    // echo $slug;
 		$flush = true;
 
 		register_post_type( "$slug", //airconnex_templates
@@ -124,7 +127,9 @@ function aeroRegisterTypes()
 
 		}
 		if ($flush){flush_rewrite_rules();}
-
+  }catch(Exception $e){
+    echo $e;
+  }
 }
 
 
@@ -168,8 +173,45 @@ function aeropageEdit() // called by ajax, adds the cpt
 //   aeropageTokenApiCall($token);
 // }
 
-add_action("wp_ajax_aeropageSyncPosts", "aeropageSyncPosts");
+add_action("wp_ajax_aeropageDeletePost", "aeropageDeletePost");
+function aeropageDeletePost() 
+{
 
+  global $wpdb;
+
+  $post_id = null;
+
+  if($_POST['id'])
+  {
+    $post_id = intval($_POST['id']);
+  }
+
+  $parent = get_post($post_id);
+  $slug = $parent->post_name;
+
+  //Delete all the posts for that post type
+  $wpdb->query($wpdb->prepare(
+    "
+    DELETE a,b,c
+    FROM wp_posts a
+    LEFT JOIN wp_term_relationships b
+        ON (a.ID = b.object_id)
+    LEFT JOIN wp_postmeta c
+        ON (a.ID = c.post_id)
+    WHERE a.post_type = %s;
+    "
+  , $slug));
+
+  // Unregister the post type first
+  unregister_post_type($slug);
+
+  // Remove the post
+  wp_delete_post($post_id, true);
+
+  die(json_encode(array("status" => "success"))); 
+}
+
+add_action("wp_ajax_aeropageSyncPosts", "aeropageSyncPosts");
 function aeropageSyncPosts($parentId)
 {
 
