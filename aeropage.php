@@ -8,6 +8,66 @@
  * Author URI: https://tools.aeropage.io/
  * License: GPL2
 */
+
+//Add the cron job to the list of cron jobs upon activation of the function
+//Cron job has an hourly schedule
+register_activation_hook( __FILE__, "aero_activate" );
+function aero_activate()
+{
+  if (!wp_next_scheduled ( "aero_hourly_sync" )) {
+    wp_schedule_event(time(), "hourly", "aero_hourly_sync");
+  }
+}
+
+//Remove the cron job from the list upon deactivation of the funciton
+register_deactivation_hook( __FILE__, "aero_deactivate" );
+function my_deactivation() 
+{
+  wp_clear_scheduled_hook( "aero_hourly_sync" );
+}
+
+//Function that runs hourly
+add_action("aero_hourly_sync", "aero_hourly_sync");
+add_action("wp_ajax_testCronFunction", "aero_hourly_sync");
+function aero_hourly_sync()
+{
+  try{
+    //Get the posts where the auto sync is enabled
+    $aeroPosts = get_posts([
+      'meta_key' => 'aero_auto_sync',
+      'meta_value' => 1,
+      'post_type' => 'aero-template', 
+      'post_status' => 'private',
+      'numberposts' => -1
+    ]);
+
+    //Loop through the post
+    foreach ($aeroPosts as $post)
+    {
+      //Get the token
+      $token = get_post_meta($post->ID, "aero_token",true);
+      //Check if there are new/modified records
+      $response = aeropageModCheckApiCall($token);
+      
+      //If there's an error, we skip
+      if($response["status"] !== "success") continue;
+
+      //if there are new/modified records, we sync it
+      if($response["has_new_records"] == 1){
+        aeropageSyncPosts($post->ID);
+      }
+    }
+    
+  }catch(Exception $e){
+    die(json_encode(
+      array(
+        "status" => "error",
+        "message" => $e->getMessage()
+      )
+    ));
+  }
+}
+
 add_action('admin_menu', 'aeropage_plugin_menu');
  
 function aeropage_plugin_menu(){
@@ -35,6 +95,7 @@ add_action( 'admin_enqueue_scripts', 'aeroplugin_admin_enqueue_scripts' );
 function aeroplugin_admin_enqueue_scripts() {
   wp_enqueue_style( 'aeroplugin-style', plugin_dir_url( __FILE__ ) . 'build/index.css' );
   wp_enqueue_script( 'aeroplugin-script', plugin_dir_url( __FILE__ ) . 'build/index.js', array( 'wp-element' ), date("h:i:s"), true );
+  // wp_enqueue_style('react-toggle-styles', 'https://raw.githubusercontent.com/instructure-react/react-toggle/master/style.css', null, '1.0');
   wp_add_inline_script( 'aeroplugin-script', 'const MYSCRIPT = ' . json_encode( array(
       'ajaxUrl' => admin_url( 'admin-ajax.php' ),
       'plugin_admin_path' => parse_url(admin_url())["path"],
@@ -50,9 +111,9 @@ function aeropageList()
 	
 	foreach ($aeroPosts as $post)
 	{
-	$post->sync_status = get_post_meta($post->ID, "aero_sync_status",true);
-	$post->sync_time = get_post_meta($post->ID, "aero_sync_time",true);
-	$post->sync_message = get_post_meta($post->ID, "aero_sync_message",true);
+    $post->sync_status = get_post_meta($post->ID, "aero_sync_status",true);
+    $post->sync_time = get_post_meta($post->ID, "aero_sync_time",true);
+    $post->sync_message = get_post_meta($post->ID, "aero_sync_message",true);
 	}
 	
   // this is for react...
@@ -71,7 +132,8 @@ function aeropageEditorMeta(){
   $token = get_post_meta($pid, "aero_token");
   $status = get_post_meta($pid, "aero_sync_status");
   $sync_time = get_post_meta($pid, "aero_sync_time");
-  die(json_encode(array("token" => $token,"status" => $status, "sync_time" => $sync_time)));
+  $auto_sync = get_post_meta($pid, "aero_auto_sync");
+  die(json_encode(array("token" => $token,"status" => $status, "sync_time" => $sync_time, "auto_sync" => $auto_sync)));
 }
 
 
@@ -159,7 +221,14 @@ function aeropageEdit() // called by ajax, adds the cpt
 
   if ($id)
   {
+    $auto_sync = false;
+    
+    if($_POST['auto_sync'] === "true"){
+      $auto_sync = true;
+    }
+
     update_post_meta ($id,'aero_token', sanitize_text_field($_POST['token']));
+    update_post_meta ($id,'aero_auto_sync', $auto_sync);
     aeropageSyncPosts($id);
   }
 
@@ -361,6 +430,13 @@ function aeropageSyncPosts($parentId)
 function aeropageTokenApiCall($token)
 {
 	$api_url = "https://tools.aeropage.io/api/token/$token/";
+  $result = json_decode(wp_remote_retrieve_body(wp_remote_get($api_url)), true);
+  return $result;
+}
+
+function aeropageModCheckApiCall($token)
+{
+	$api_url = "https://tools.aeropage.io/api/modcheck/$token/";
   $result = json_decode(wp_remote_retrieve_body(wp_remote_get($api_url)), true);
   return $result;
 }

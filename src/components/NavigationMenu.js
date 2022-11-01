@@ -208,7 +208,6 @@ const Dashboard = () => {
                 >
                   Custom Post Syncronizer
                 </p>
-
                 <div
                   style={{
                     width: "100%",

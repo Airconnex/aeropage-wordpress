@@ -6420,11 +6420,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_json_view__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-json-view */ "./node_modules/react-json-view/dist/main.js");
 /* harmony import */ var react_json_view__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_json_view__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _header__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./header */ "./src/components/header.js");
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
 /* harmony import */ var react_loader_spinner__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-loader-spinner */ "./node_modules/react-loader-spinner/dist/esm/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./utils */ "./src/components/utils.js");
+/* harmony import */ var react_toggle__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! react-toggle */ "./node_modules/react-toggle/dist/component/index.js");
+
 
 
 
@@ -6494,7 +6496,7 @@ const AddPost = _ref => {
     resetView
   } = _ref;
   const JSON = {};
-  const navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_7__.useNavigate)();
+  const navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_8__.useNavigate)();
   const [btnState, setBtnState] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
   const [inputValue, setInputValue] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
   const [status, setStatus] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
@@ -6505,11 +6507,12 @@ const AddPost = _ref => {
   const [loading, setLoading] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
   const [error, setError] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
   const [responseMessage, setResponseMessage] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
+  const [autoSync, setAutoSync] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
 
   const handleSubmit = e => {
     e.preventDefault();
-    setLoading(true);
-    console.log(MYSCRIPT.ajaxUrl); // const reactAppData = window.wpRoomDesigner || {};
+    setLoading(true); // console.log(MYSCRIPT.ajaxUrl);
+    // const reactAppData = window.wpRoomDesigner || {};
     // const { ajax_url } = reactAppData;
 
     var params = new URLSearchParams();
@@ -6518,11 +6521,12 @@ const AddPost = _ref => {
     params.append("dynamic", dynamic);
     params.append("slug", slug);
     params.append("token", inputValue);
+    params.append("auto_sync", autoSync);
     axios__WEBPACK_IMPORTED_MODULE_5___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
       var _responseAP$data;
 
       if ((responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data = responseAP.data) === null || _responseAP$data === void 0 ? void 0 : _responseAP$data.status) === "success") {
-        console.log("YES THIS WORKS...");
+        // console.log("YES THIS WORKS...");
         setResponseMessage("Post was added sucessfully!");
         window.location = `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}`;
       } else {
@@ -6804,7 +6808,7 @@ const AddPost = _ref => {
     }
   }, "Open"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
-      minHeight: "70px"
+      minHeight: "80px"
     }
   }, (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status5 = responseAP.status) === null || _responseAP$status5 === void 0 ? void 0 : _responseAP$status5.type) === "success" && status === false ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
@@ -6891,7 +6895,7 @@ const AddPost = _ref => {
   // >
   //   Checking
   // </p>
-  null, responseMessage === "Post was added sucessfully!" ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+  null, responseMessage && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     style: {
       color: "#595B5C",
       fontFamily: "'Inter', sans-serif",
@@ -6900,7 +6904,7 @@ const AddPost = _ref => {
       fontSize: "10px",
       lineHeight: "175%"
     }
-  }, "Post was added sucessfully!") : null, error && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+  }, responseMessage), error && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     style: {
       fontFamily: "'Inter', sans-serif",
       fontStyle: "normal",
@@ -6910,7 +6914,18 @@ const AddPost = _ref => {
       color: "red",
       margin: "0 0 0 0"
     }
-  }, error)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
+  }, error), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "div-wrapper"
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_toggle__WEBPACK_IMPORTED_MODULE_7__["default"], {
+    defaultChecked: autoSync,
+    icons: false,
+    checked: autoSync,
+    onChange: e => {
+      setAutoSync(!autoSync);
+    }
+  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
+    className: "label-text"
+  }, "Auto Sync")))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
     disabled: !(responseAP !== null && responseAP !== void 0 && (_responseAP$status6 = responseAP.status) !== null && _responseAP$status6 !== void 0 && _responseAP$status6.type) === "success" || !dynamic || !title || !slug,
     style: {
       fontFamily: "'Inter', sans-serif",
@@ -7182,6 +7197,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./utils */ "./src/components/utils.js");
+/* harmony import */ var react_toggle__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! react-toggle */ "./node_modules/react-toggle/dist/component/index.js");
+
 
 
 
@@ -7262,6 +7279,7 @@ const EditPost = _ref => {
   const [title, setTitle] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(editTitle);
   const [slug, setSlug] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(url);
   const [dynamic, setDynamic] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(editDynamic);
+  const [autoSync, setAutoSync] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
   const [responseAP, setResponseAP] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
   const [responseMessage, setResponseMessage] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
   const [error, setError] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
@@ -7269,8 +7287,8 @@ const EditPost = _ref => {
   const [post, setPost] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
 
   const handleSubmit = e => {
-    e.preventDefault();
-    console.log(MYSCRIPT.ajaxUrl);
+    e.preventDefault(); // console.log(MYSCRIPT.ajaxUrl);
+
     setLoading(true);
     setResponseMessage(""); // const reactAppData = window.wpRoomDesigner || {};
     // const { ajax_url } = reactAppData;
@@ -7282,6 +7300,7 @@ const EditPost = _ref => {
     params.append("dynamic", dynamic);
     params.append("slug", slug);
     params.append("token", inputValue);
+    params.append("auto_sync", autoSync);
     axios__WEBPACK_IMPORTED_MODULE_5___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
       var _responseAP$data;
 
@@ -7338,22 +7357,28 @@ const EditPost = _ref => {
     if ((responseAP === null || responseAP === void 0 ? void 0 : responseAP.type) === "PAGE_NOT_FOUND") setStatus(false);
   }, [responseAP]);
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-    console.log("I AM HERE.");
+    // console.log("I AM HERE.")
     var params = new URLSearchParams();
     params.append("action", "aeropageEditorMeta");
     params.append("id", id);
     axios__WEBPACK_IMPORTED_MODULE_5___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
-      var _responseAP$data2;
+      var _responseAP$data2, _responseAP$data4;
 
       if (responseAP !== null && responseAP !== void 0 && (_responseAP$data2 = responseAP.data) !== null && _responseAP$data2 !== void 0 && _responseAP$data2.token) {
         var _responseAP$data3;
 
-        console.log("THERE'S A TOKEN");
+        // console.log("THERE'S A TOKEN");
         setInputValue(responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data3 = responseAP.data) === null || _responseAP$data3 === void 0 ? void 0 : _responseAP$data3.token[0]);
       }
+
+      if (responseAP !== null && responseAP !== void 0 && (_responseAP$data4 = responseAP.data) !== null && _responseAP$data4 !== void 0 && _responseAP$data4.auto_sync) {
+        var _responseAP$data5, _responseAP$data5$aut;
+
+        setAutoSync((responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data5 = responseAP.data) === null || _responseAP$data5 === void 0 ? void 0 : (_responseAP$data5$aut = _responseAP$data5.auto_sync) === null || _responseAP$data5$aut === void 0 ? void 0 : _responseAP$data5$aut[0]) === "1" ? true : false);
+      }
     });
-  }, []);
-  console.log(responseAP);
+  }, []); // console.log(responseAP);
+
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       background: "white",
@@ -7584,7 +7609,7 @@ const EditPost = _ref => {
     }
   }, "Open"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
-      minHeight: "70px"
+      minHeight: "80px"
     }
   }, (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status5 = responseAP.status) === null || _responseAP$status5 === void 0 ? void 0 : _responseAP$status5.type) === "success" && status === false ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
@@ -7690,7 +7715,20 @@ const EditPost = _ref => {
       color: "red",
       margin: "0 0 0 0"
     }
-  }, error)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
+  }, error), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "div-wrapper"
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_toggle__WEBPACK_IMPORTED_MODULE_7__["default"], {
+    defaultChecked: autoSync,
+    icons: false,
+    checked: autoSync,
+    onChange: e => setAutoSync(!autoSync)
+  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
+    className: "label-text"
+  }, "Auto Sync")))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    style: {
+      display: "block"
+    }
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
     disabled: !(responseAP !== null && responseAP !== void 0 && (_responseAP$status6 = responseAP.status) !== null && _responseAP$status6 !== void 0 && _responseAP$status6.type) === "success" || !dynamic || !title || !slug,
     style: {
       fontFamily: "'Inter', sans-serif",
@@ -7703,12 +7741,13 @@ const EditPost = _ref => {
       color: "white",
       padding: "8px 13px 8px 13px",
       border: "none",
-      borderRadius: "6px"
+      borderRadius: "6px",
+      display: "block"
     } // onClick={() => {
     //   handleMyClick();
     // }}
 
-  }, loading ? "Submitting..." : "Save Changes"))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, loading ? "Submitting..." : "Save Changes")))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       marginTop: "50px",
       marginBottom: "50px",
@@ -8372,6 +8411,75 @@ const convertToSlug = text => {
     return "";
   }
 };
+
+/***/ }),
+
+/***/ "./node_modules/classnames/index.js":
+/*!******************************************!*\
+  !*** ./node_modules/classnames/index.js ***!
+  \******************************************/
+/***/ (function(module, exports) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	Copyright (c) 2018 Jed Watson.
+	Licensed under the MIT License (MIT), see
+	http://jedwatson.github.io/classnames
+*/
+/* global define */
+
+(function () {
+	'use strict';
+
+	var hasOwn = {}.hasOwnProperty;
+	var nativeCodeString = '[native code]';
+
+	function classNames() {
+		var classes = [];
+
+		for (var i = 0; i < arguments.length; i++) {
+			var arg = arguments[i];
+			if (!arg) continue;
+
+			var argType = typeof arg;
+
+			if (argType === 'string' || argType === 'number') {
+				classes.push(arg);
+			} else if (Array.isArray(arg)) {
+				if (arg.length) {
+					var inner = classNames.apply(null, arg);
+					if (inner) {
+						classes.push(inner);
+					}
+				}
+			} else if (argType === 'object') {
+				if (arg.toString !== Object.prototype.toString && !arg.toString.toString().includes('[native code]')) {
+					classes.push(arg.toString());
+					continue;
+				}
+
+				for (var key in arg) {
+					if (hasOwn.call(arg, key) && arg[key]) {
+						classes.push(key);
+					}
+				}
+			}
+		}
+
+		return classes.join(' ');
+	}
+
+	if ( true && module.exports) {
+		classNames.default = classNames;
+		module.exports = classNames;
+	} else if (true) {
+		// register as 'classnames', consistent with npm package name
+		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = (function () {
+			return classNames;
+		}).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	} else {}
+}());
+
 
 /***/ }),
 
@@ -15998,6 +16106,377 @@ function createMemoryRouter(routes, opts) {
 
 //# sourceMappingURL=index.js.map
 
+
+/***/ }),
+
+/***/ "./node_modules/react-toggle/dist/component/check.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/react-toggle/dist/component/check.js ***!
+  \***********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+var _react = __webpack_require__(/*! react */ "react");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports["default"] = function () {
+  return _react2.default.createElement(
+    'svg',
+    { width: '14', height: '11', viewBox: '0 0 14 11' },
+    _react2.default.createElement('path', { d: 'M11.264 0L5.26 6.004 2.103 2.847 0 4.95l5.26 5.26 8.108-8.107L11.264 0', fill: '#fff', fillRule: 'evenodd' })
+  );
+};
+
+/***/ }),
+
+/***/ "./node_modules/react-toggle/dist/component/index.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/react-toggle/dist/component/index.js ***!
+  \***********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(/*! react */ "react");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _classnames = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _propTypes = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _check = __webpack_require__(/*! ./check */ "./node_modules/react-toggle/dist/component/check.js");
+
+var _check2 = _interopRequireDefault(_check);
+
+var _x = __webpack_require__(/*! ./x */ "./node_modules/react-toggle/dist/component/x.js");
+
+var _x2 = _interopRequireDefault(_x);
+
+var _util = __webpack_require__(/*! ./util */ "./node_modules/react-toggle/dist/component/util.js");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Toggle = function (_PureComponent) {
+  _inherits(Toggle, _PureComponent);
+
+  function Toggle(props) {
+    _classCallCheck(this, Toggle);
+
+    var _this = _possibleConstructorReturn(this, (Toggle.__proto__ || Object.getPrototypeOf(Toggle)).call(this, props));
+
+    _this.handleClick = _this.handleClick.bind(_this);
+    _this.handleTouchStart = _this.handleTouchStart.bind(_this);
+    _this.handleTouchMove = _this.handleTouchMove.bind(_this);
+    _this.handleTouchEnd = _this.handleTouchEnd.bind(_this);
+    _this.handleFocus = _this.handleFocus.bind(_this);
+    _this.handleBlur = _this.handleBlur.bind(_this);
+    _this.previouslyChecked = !!(props.checked || props.defaultChecked);
+    _this.state = {
+      checked: !!(props.checked || props.defaultChecked),
+      hasFocus: false
+    };
+    return _this;
+  }
+
+  _createClass(Toggle, [{
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate(prevProps) {
+      if (prevProps.checked !== this.props.checked) {
+        // Disable linting rule here since this usage of setState inside
+        // componentDidUpdate is OK; see
+        // https://reactjs.org/docs/react-component.html#componentdidupdate
+        // eslint-disable-next-line react/no-did-update-set-state
+        this.setState({ checked: !!this.props.checked });
+      }
+    }
+  }, {
+    key: 'handleClick',
+    value: function handleClick(event) {
+      if (this.props.disabled) {
+        return;
+      }
+      var checkbox = this.input;
+      if (event.target !== checkbox && !this.moved) {
+        this.previouslyChecked = checkbox.checked;
+        event.preventDefault();
+        checkbox.focus();
+        checkbox.click();
+        return;
+      }
+
+      var checked = this.props.hasOwnProperty('checked') ? this.props.checked : checkbox.checked;
+
+      this.setState({ checked: checked });
+    }
+  }, {
+    key: 'handleTouchStart',
+    value: function handleTouchStart(event) {
+      if (this.props.disabled) {
+        return;
+      }
+      this.startX = (0, _util.pointerCoord)(event).x;
+      this.activated = true;
+    }
+  }, {
+    key: 'handleTouchMove',
+    value: function handleTouchMove(event) {
+      if (!this.activated) return;
+      this.moved = true;
+
+      if (this.startX) {
+        var currentX = (0, _util.pointerCoord)(event).x;
+        if (this.state.checked && currentX + 15 < this.startX) {
+          this.setState({ checked: false });
+          this.startX = currentX;
+          this.activated = true;
+        } else if (currentX - 15 > this.startX) {
+          this.setState({ checked: true });
+          this.startX = currentX;
+          this.activated = currentX < this.startX + 5;
+        }
+      }
+    }
+  }, {
+    key: 'handleTouchEnd',
+    value: function handleTouchEnd(event) {
+      if (!this.moved) return;
+      var checkbox = this.input;
+      event.preventDefault();
+
+      if (this.startX) {
+        var endX = (0, _util.pointerCoord)(event).x;
+        if (this.previouslyChecked === true && this.startX + 4 > endX) {
+          if (this.previouslyChecked !== this.state.checked) {
+            this.setState({ checked: false });
+            this.previouslyChecked = this.state.checked;
+            checkbox.click();
+          }
+        } else if (this.startX - 4 < endX) {
+          if (this.previouslyChecked !== this.state.checked) {
+            this.setState({ checked: true });
+            this.previouslyChecked = this.state.checked;
+            checkbox.click();
+          }
+        }
+
+        this.activated = false;
+        this.startX = null;
+        this.moved = false;
+      }
+    }
+  }, {
+    key: 'handleFocus',
+    value: function handleFocus(event) {
+      var onFocus = this.props.onFocus;
+
+
+      if (onFocus) {
+        onFocus(event);
+      }
+
+      this.setState({ hasFocus: true });
+    }
+  }, {
+    key: 'handleBlur',
+    value: function handleBlur(event) {
+      var onBlur = this.props.onBlur;
+
+
+      if (onBlur) {
+        onBlur(event);
+      }
+
+      this.setState({ hasFocus: false });
+    }
+  }, {
+    key: 'getIcon',
+    value: function getIcon(type) {
+      var icons = this.props.icons;
+
+      if (!icons) {
+        return null;
+      }
+      return icons[type] === undefined ? Toggle.defaultProps.icons[type] : icons[type];
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this2 = this;
+
+      var _props = this.props,
+          className = _props.className,
+          _icons = _props.icons,
+          inputProps = _objectWithoutProperties(_props, ['className', 'icons']);
+
+      var classes = (0, _classnames2.default)('react-toggle', {
+        'react-toggle--checked': this.state.checked,
+        'react-toggle--focus': this.state.hasFocus,
+        'react-toggle--disabled': this.props.disabled
+      }, className);
+
+      return _react2.default.createElement(
+        'div',
+        { className: classes,
+          onClick: this.handleClick,
+          onTouchStart: this.handleTouchStart,
+          onTouchMove: this.handleTouchMove,
+          onTouchEnd: this.handleTouchEnd },
+        _react2.default.createElement(
+          'div',
+          { className: 'react-toggle-track' },
+          _react2.default.createElement(
+            'div',
+            { className: 'react-toggle-track-check' },
+            this.getIcon('checked')
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'react-toggle-track-x' },
+            this.getIcon('unchecked')
+          )
+        ),
+        _react2.default.createElement('div', { className: 'react-toggle-thumb' }),
+        _react2.default.createElement('input', _extends({}, inputProps, {
+          ref: function ref(_ref) {
+            _this2.input = _ref;
+          },
+          onFocus: this.handleFocus,
+          onBlur: this.handleBlur,
+          className: 'react-toggle-screenreader-only',
+          type: 'checkbox' }))
+      );
+    }
+  }]);
+
+  return Toggle;
+}(_react.PureComponent);
+
+exports["default"] = Toggle;
+
+
+Toggle.displayName = 'Toggle';
+
+Toggle.defaultProps = {
+  icons: {
+    checked: _react2.default.createElement(_check2.default, null),
+    unchecked: _react2.default.createElement(_x2.default, null)
+  }
+};
+
+Toggle.propTypes = {
+  checked: _propTypes2.default.bool,
+  disabled: _propTypes2.default.bool,
+  defaultChecked: _propTypes2.default.bool,
+  onChange: _propTypes2.default.func,
+  onFocus: _propTypes2.default.func,
+  onBlur: _propTypes2.default.func,
+  className: _propTypes2.default.string,
+  name: _propTypes2.default.string,
+  value: _propTypes2.default.string,
+  id: _propTypes2.default.string,
+  'aria-labelledby': _propTypes2.default.string,
+  'aria-label': _propTypes2.default.string,
+  icons: _propTypes2.default.oneOfType([_propTypes2.default.bool, _propTypes2.default.shape({
+    checked: _propTypes2.default.node,
+    unchecked: _propTypes2.default.node
+  })])
+};
+
+/***/ }),
+
+/***/ "./node_modules/react-toggle/dist/component/util.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/react-toggle/dist/component/util.js ***!
+  \**********************************************************/
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.pointerCoord = pointerCoord;
+// Copyright 2015-present Drifty Co.
+// http://drifty.com/
+// from: https://github.com/driftyco/ionic/blob/master/src/util/dom.ts
+
+function pointerCoord(event) {
+  // get coordinates for either a mouse click
+  // or a touch depending on the given event
+  if (event) {
+    var changedTouches = event.changedTouches;
+    if (changedTouches && changedTouches.length > 0) {
+      var touch = changedTouches[0];
+      return { x: touch.clientX, y: touch.clientY };
+    }
+    var pageX = event.pageX;
+    if (pageX !== undefined) {
+      return { x: pageX, y: event.pageY };
+    }
+  }
+  return { x: 0, y: 0 };
+}
+
+/***/ }),
+
+/***/ "./node_modules/react-toggle/dist/component/x.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/react-toggle/dist/component/x.js ***!
+  \*******************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+var _react = __webpack_require__(/*! react */ "react");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports["default"] = function () {
+  return _react2.default.createElement(
+    'svg',
+    { width: '10', height: '10', viewBox: '0 0 10 10' },
+    _react2.default.createElement('path', { d: 'M9.9 2.12L7.78 0 4.95 2.828 2.12 0 0 2.12l2.83 2.83L0 7.776 2.123 9.9 4.95 7.07 7.78 9.9 9.9 7.776 7.072 4.95 9.9 2.12', fill: '#fff', fillRule: 'evenodd' })
+  );
+};
 
 /***/ }),
 

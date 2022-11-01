@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Oval } from "react-loader-spinner";
 import axios from "axios";
 import { convertToSlug } from "./utils";
+import Toggle from "react-toggle";
 
 export const tickIcon = (
   <svg
@@ -81,11 +82,11 @@ const AddPost = ({ resetView }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [responseMessage, setResponseMessage] = useState("");
-
+  const [autoSync, setAutoSync] = useState(false);
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
-    console.log(MYSCRIPT.ajaxUrl);
+    // console.log(MYSCRIPT.ajaxUrl);
 
     // const reactAppData = window.wpRoomDesigner || {};
     // const { ajax_url } = reactAppData;
@@ -95,12 +96,13 @@ const AddPost = ({ resetView }) => {
     params.append("dynamic", dynamic);
     params.append("slug", slug);
     params.append("token", inputValue);
+    params.append("auto_sync", autoSync);
 
     axios
       .post(MYSCRIPT.ajaxUrl, params)
       .then(function (responseAP) {
         if (responseAP?.data?.status === "success") {
-          console.log("YES THIS WORKS...");
+          // console.log("YES THIS WORKS...");
           setResponseMessage("Post was added sucessfully!");
           window.location = `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}`;
         } else {
@@ -430,7 +432,7 @@ const AddPost = ({ resetView }) => {
               >
                 Open
               </a>
-              <div style={{ minHeight: "70px" }}>
+              <div style={{ minHeight: "80px" }}>
                 {responseAP?.status?.type === "success" && status === false ? (
                   <div
                     style={{
@@ -548,7 +550,7 @@ const AddPost = ({ resetView }) => {
                 //   Checking
                 // </p>
                 null}
-                {responseMessage === "Post was added sucessfully!" ? (
+                {responseMessage && (
                   <p
                     style={{
                       color: "#595B5C",
@@ -559,10 +561,10 @@ const AddPost = ({ resetView }) => {
                       lineHeight: "175%",
                     }}
                   >
-                    Post was added sucessfully!
+                    {responseMessage}
                   </p>
-                ) : null}
-                {error && (
+                )}
+                { error && (
                   <p
                     style={{
                       fontFamily: "'Inter', sans-serif",
@@ -576,7 +578,19 @@ const AddPost = ({ resetView }) => {
                   >
                     {error}
                   </p>
-                )}
+                ) }
+                <div className="div-wrapper">
+                  <label>
+                    <Toggle
+                      defaultChecked={autoSync}
+                      icons={false}
+                      checked={autoSync}
+                      onChange={(e) => {
+                        setAutoSync(!autoSync)
+                      }} />
+                    <span className="label-text">Auto Sync</span>
+                  </label>
+                </div>
               </div>
               {/* <Link
                 onClick={() => resetView()}

@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Oval } from "react-loader-spinner";
 import axios from "axios";
 import { convertToSlug } from "./utils";
+import Toggle from "react-toggle";
 
 export const tickIcon = (
   <svg
@@ -76,6 +77,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
   const [title, setTitle] = useState(editTitle);
   const [slug, setSlug] = useState(url);
   const [dynamic, setDynamic] = useState(editDynamic);
+  const [autoSync, setAutoSync] = useState(false);
   const [responseAP, setResponseAP] = useState(null);
   const [responseMessage, setResponseMessage] = useState("");
   const [error, setError] = useState("");
@@ -83,7 +85,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
   const [post, setPost] = useState(null);
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(MYSCRIPT.ajaxUrl);
+    // console.log(MYSCRIPT.ajaxUrl);
     setLoading(true);
     setResponseMessage("");
     // const reactAppData = window.wpRoomDesigner || {};
@@ -95,6 +97,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
     params.append("dynamic", dynamic);
     params.append("slug", slug);
     params.append("token", inputValue);
+    params.append("auto_sync", autoSync);
 
     axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
       if(responseAP?.data?.status === "success"){
@@ -150,18 +153,22 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
   }, [responseAP]);
 
   useEffect(() => {
-    console.log("I AM HERE.")
+    // console.log("I AM HERE.")
     var params = new URLSearchParams();
     params.append("action", "aeropageEditorMeta");
     params.append("id", id);
     axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
       if(responseAP?.data?.token){
-        console.log("THERE'S A TOKEN");
-        setInputValue(responseAP?.data?.token[0])
+        // console.log("THERE'S A TOKEN");
+        setInputValue(responseAP?.data?.token[0]);
+      }
+
+      if(responseAP?.data?.auto_sync){
+        setAutoSync(responseAP?.data?.auto_sync?.[0] === "1" ? true : false);
       }
     });
   }, []);
-  console.log(responseAP);
+  // console.log(responseAP);
 
   return (
     <div
@@ -439,7 +446,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
               >
                 Open
               </a>
-              <div style={{ minHeight: "70px" }}>
+              <div style={{ minHeight: "80px" }}>
                 {responseAP?.status?.type === "success" && status === false ? (
                   <div
                     style={{
@@ -586,40 +593,53 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
                     {error}
                   </p>
                 ) }
+                <div className="div-wrapper">
+                  <label>
+                    <Toggle
+                      defaultChecked={autoSync}
+                      icons={false}
+                      checked={autoSync}
+                      onChange={(e) => setAutoSync(!autoSync)} />
+                    <span className="label-text">Auto Sync</span>
+                  </label>
+                </div>
               </div>
               {/* <Link to="/"> */}
-              <button
-                disabled={
-                  !responseAP?.status?.type === "success" ||
-                  !dynamic ||
-                  !title ||
-                  !slug
-                }
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontStyle: "normal",
-                  fontWeight: "500",
-                  fontSize: "12px",
-                  lineHeight: "24px",
-                  cursor: "pointer",
-                  background:
-                    responseAP?.status?.type === "success" &&
-                    dynamic &&
-                    title && 
-                    slug
-                      ? "#633CE3"
-                      : "#bbaaf3",
-                  color: "white",
-                  padding: "8px 13px 8px 13px",
-                  border: "none",
-                  borderRadius: "6px",
-                }}
-                // onClick={() => {
-                //   handleMyClick();
-                // }}
-              >
-                {loading ? "Submitting..." : "Save Changes"}
-              </button>
+              <div style={{display: "block"}}>
+                <button
+                  disabled={
+                    !responseAP?.status?.type === "success" ||
+                    !dynamic ||
+                    !title ||
+                    !slug
+                  }
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontStyle: "normal",
+                    fontWeight: "500",
+                    fontSize: "12px",
+                    lineHeight: "24px",
+                    cursor: "pointer",
+                    background:
+                      responseAP?.status?.type === "success" &&
+                      dynamic &&
+                      title && 
+                      slug
+                        ? "#633CE3"
+                        : "#bbaaf3",
+                    color: "white",
+                    padding: "8px 13px 8px 13px",
+                    border: "none",
+                    borderRadius: "6px",
+                    display: "block"
+                  }}
+                  // onClick={() => {
+                  //   handleMyClick();
+                  // }}
+                >
+                  {loading ? "Submitting..." : "Save Changes"}
+                </button>
+              </div>
               {/* </Link> */}
             </form>
           </div>
