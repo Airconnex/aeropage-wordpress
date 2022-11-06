@@ -1,12 +1,12 @@
 === Aeropage Sync for Airtable ===
  
-Contributors: aeropage<br/>
-Tags: Airtable, Sync, CPT, Custom Post Type, Divi<br/>
-Requires at least: 6.0.2<br/>
-Tested up to: 6.0.2<br/>
-Stable tag: 1.0<br/>
-License: GPLv2 or later<br/>
-License URI: http://www.gnu.org/licenses/gpl-2.0.html<br/>
+Contributors: Aeropage
+Tags: Airtable, Sync, CPT, Custom Post Type, Divi
+Requires at least: 6.0.2
+Tested up to: 6.1
+Stable tag: 1.0.1
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
   
 Aeropage Sync Plugin
 
@@ -31,7 +31,9 @@ Syncronizes your Airtable data with WordPress creating custom post types for rec
 ![image](https://user-images.githubusercontent.com/46200125/195353227-94b6d11c-b74c-4bb4-965a-ee3563d1fffc.png)
 
 == Changelog ==
-<br/>
+
 = 1.0 =
-<br/>
 * Plugin released. 
+
+= 1.0.1
+* General bug fixes

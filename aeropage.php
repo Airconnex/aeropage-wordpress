@@ -3,7 +3,7 @@
  * Plugin Name: Aeropage Sync for Airtable
  * Plugin URI: https://tools.aeropage.io/airwordpress/
  * Description: Airtable to Wordpress Custom Post Type Sync Plugin
- * Version: 1.0
+ * Version: 1.0.1
  * Author: Mike San Marzano
  * Author URI: https://tools.aeropage.io/
  * License: GPL2
@@ -11,8 +11,8 @@
 
 //Add the cron job to the list of cron jobs upon activation of the function
 //Cron job has an hourly schedule
-register_activation_hook( __FILE__, "aero_activate" );
-function aero_activate()
+register_activation_hook( __FILE__, "aero_plugin_activate" );
+function aero_plugin_activate()
 {
   if (!wp_next_scheduled ( "aero_hourly_sync" )) {
     wp_schedule_event(time(), "hourly", "aero_hourly_sync");
@@ -20,8 +20,8 @@ function aero_activate()
 }
 
 //Remove the cron job from the list upon deactivation of the funciton
-register_deactivation_hook( __FILE__, "aero_deactivate" );
-function my_deactivation() 
+register_deactivation_hook( __FILE__, "aero_plugin_deactivate" );
+function aero_plugin_deactivate() 
 {
   wp_clear_scheduled_hook( "aero_hourly_sync" );
 }
@@ -95,7 +95,6 @@ add_action( 'admin_enqueue_scripts', 'aeroplugin_admin_enqueue_scripts' );
 function aeroplugin_admin_enqueue_scripts() {
   wp_enqueue_style( 'aeroplugin-style', plugin_dir_url( __FILE__ ) . 'build/index.css' );
   wp_enqueue_script( 'aeroplugin-script', plugin_dir_url( __FILE__ ) . 'build/index.js', array( 'wp-element' ), date("h:i:s"), true );
-  // wp_enqueue_style('react-toggle-styles', 'https://raw.githubusercontent.com/instructure-react/react-toggle/master/style.css', null, '1.0');
   wp_add_inline_script( 'aeroplugin-script', 'const MYSCRIPT = ' . json_encode( array(
       'ajaxUrl' => admin_url( 'admin-ajax.php' ),
       'plugin_admin_path' => parse_url(admin_url())["path"],
@@ -119,8 +118,7 @@ function aeropageList()
   // this is for react...
 
   header('Content-Type: application/json');
-  echo json_encode($aeroPosts);
-  die();
+  die(json_encode($aeroPosts));
 }
 
 
@@ -190,7 +188,7 @@ function aeroRegisterTypes()
 		}
 		if ($flush){flush_rewrite_rules();}
   }catch(Exception $e){
-    echo $e;
+    echo esc_attr($e->getMessage());
   }
 }
 
@@ -380,15 +378,16 @@ function aeropageSyncPosts($parentId)
 
   $type = $apiData['fields'][$field_index]['type'];
 
-
+  //We sanitize the URL just to be sure...
   if ($type == 'attachment_img')
   {
-  $value = $value[0]['thumbnails']['large']['url'];
-  }
-
-  if ($type == 'attachment_doc')
+  $value = sanitize_url($value[0]['thumbnails']['large']['url']);
+  }elseif ($type == 'attachment_doc')
   {
-  $value = $value[0]['url'];
+  $value = sanitize_url($value[0]['url']);
+  }else
+  {
+  $value = sanitize_text_field($value);
   }
 
   update_post_meta ($record_post_id, "aero_$key", $value);
