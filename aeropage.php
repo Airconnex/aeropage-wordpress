@@ -7,6 +7,7 @@
  * Author: Mike San Marzano
  * Author URI: https://tools.aeropage.io/
  * License: GPL2
+ * Requires PHP: at least 7.4.0
 */
 
 //Add the cron job to the list of cron jobs upon activation of the function
