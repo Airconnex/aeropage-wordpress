@@ -425,7 +425,6 @@ function aeropageSyncPosts($parentId)
   $response['status'] = 'error';
   update_post_meta ($parentId,'aero_sync_status','error');
   $message = sanitize_text_field($apiData['status']['message']);
-  echo "SYNC MESSAGE: ".$apiData['status']['message'];
   update_post_meta ($parentId,'aero_sync_message',$message);
   $response['message'] = $message;
   }
