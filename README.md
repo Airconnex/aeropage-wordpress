@@ -4,7 +4,7 @@
 * Tags: Airtable, Sync, CPT, Custom Post Type, Divi
 * Requires at least: 6.0.2
 * Tested up to: 6.1
-* Stable tag: 1.0.1
+* Stable tag: 1.0.4
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 * Requires PHP: at least 7.4.0
@@ -41,3 +41,9 @@ Syncronizes your Airtable data with WordPress creating custom post types for rec
 
 ### 1.0.1
 * General bug fixes
+
+### 1.0.4
+* UI fixed and improvements
+
+### 1.0.3
+* Sync fixes and UI improvements

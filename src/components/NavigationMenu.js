@@ -67,13 +67,13 @@ const Dashboard = () => {
   }, [response]);
 
   useEffect(() => {
-    console.log(searchParams.get("path"));
+    // console.log(searchParams.get("path"));
     setPath(searchParams.get("path"));
     setEditID(searchParams.get("id"));
   }, [url]);
 
   useEffect(() => {
-    console.log("path status:" + path);
+    // console.log("path status:" + path);
   }, [path]);
 
   const listAeropagePages = () => {
@@ -96,8 +96,8 @@ const Dashboard = () => {
   };
 
   const handleClick = (id) => {
-    console.log("id: " + id);
-    console.log(MYSCRIPT.ajaxUrl);
+    // console.log("id: " + id);
+    // console.log(MYSCRIPT.ajaxUrl);
 
     let params = new URLSearchParams();
     params.append("action", "aeropageSyncPosts");
@@ -109,14 +109,25 @@ const Dashboard = () => {
   };
 
   const handleRefresh = async (id) => {
-    console.log("id: " + id);
-    console.log(MYSCRIPT.ajaxUrl);
+    // console.log("id: " + id);
+    // console.log(MYSCRIPT.ajaxUrl);
 
     let params = new URLSearchParams();
     params.append("action", "aeropageSyncPosts");
     params.append("id", id);
 
     return await axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
+      if(response){
+        const b = [...response];
+        const a = b?.find(re => re.ID === id);
+
+        if(a){
+          a.sync_message = responseAP?.data?.message;
+        }
+
+        setResponse(b);
+      }
+      
       return responseAP?.data;
     });
   };

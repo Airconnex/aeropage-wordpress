@@ -8070,12 +8070,11 @@ const Dashboard = () => {
     console.log(response);
   }, [response]);
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-    console.log(searchParams.get("path"));
+    // console.log(searchParams.get("path"));
     setPath(searchParams.get("path"));
     setEditID(searchParams.get("id"));
   }, [url]);
-  (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-    console.log("path status:" + path);
+  (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {// console.log("path status:" + path);
   }, [path]);
 
   const listAeropagePages = () => {
@@ -8098,8 +8097,8 @@ const Dashboard = () => {
   };
 
   const handleClick = id => {
-    console.log("id: " + id);
-    console.log(MYSCRIPT.ajaxUrl);
+    // console.log("id: " + id);
+    // console.log(MYSCRIPT.ajaxUrl);
     let params = new URLSearchParams();
     params.append("action", "aeropageSyncPosts");
     params.append("id", id);
@@ -8109,12 +8108,25 @@ const Dashboard = () => {
   };
 
   const handleRefresh = async id => {
-    console.log("id: " + id);
-    console.log(MYSCRIPT.ajaxUrl);
+    // console.log("id: " + id);
+    // console.log(MYSCRIPT.ajaxUrl);
     let params = new URLSearchParams();
     params.append("action", "aeropageSyncPosts");
     params.append("id", id);
     return await axios__WEBPACK_IMPORTED_MODULE_3___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
+      if (response) {
+        const b = [...response];
+        const a = b === null || b === void 0 ? void 0 : b.find(re => re.ID === id);
+
+        if (a) {
+          var _responseAP$data;
+
+          a.sync_message = responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data = responseAP.data) === null || _responseAP$data === void 0 ? void 0 : _responseAP$data.message;
+        }
+
+        setResponse(b);
+      }
+
       return responseAP === null || responseAP === void 0 ? void 0 : responseAP.data;
     });
   };
