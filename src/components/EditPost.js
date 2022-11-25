@@ -112,7 +112,21 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
   };
   const handleChange = (e) => {
     setStatus(true);
-    setInputValue(e.target.value);
+    let token = "";
+
+    try{
+      //Parse the URL
+      const url = new URL(e.target.value);
+      const path = url.pathname;
+      const parsed = path.split("/");
+      token = parsed[3];
+
+      console.log("PARSED: ", parsed);
+    }catch(err){
+      token = e.target.value;
+    }
+
+    setInputValue(token);
   };
   const titleOnChange = (e) => {
     setTitle(e.target.value);
@@ -141,6 +155,8 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
   }, [post])
 
   useEffect(() => {
+    if(!inputValue) return null;
+
     // fetch("https://api.aeropage.io/api/v3/token/" + inputValue);
     fetch("https://tools.aeropage.io/api/token/" + inputValue + "/")
       .then((responseAP) => responseAP.json())
@@ -188,22 +204,26 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
             paddingLeft: "15px",
             paddingRight: "15px",
             width: "100%",
+            justifyContent: "space-between",
+            alignItems: "center"
           }}
         >
           <Header
-            toolType={"Aeropage Plugin"}
+            toolType={"My Posts"}
             toolName={`${title}`}
             pathLevel={1}
             resetView={resetView}
           ></Header>
-
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              width: "100%",
-            }}
-          ></div>
+          <div>
+            <a 
+              href="https://tools.aeropage.io/api-connector/" 
+              target={"_blank"}
+            >
+              <button
+                className={"btn"}
+              >Go to Connector</button>
+            </a>
+          </div>
         </div>
       </div>
 
@@ -637,7 +657,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
                   //   handleMyClick();
                   // }}
                 >
-                  {loading ? "Submitting..." : "Save Changes"}
+                  {loading ? "Submitting..." : "Save Post"}
                 </button>
               </div>
               {/* </Link> */}

@@ -345,14 +345,24 @@ function aeropageSyncPosts($parentId)
   $record_slug = $record_id;
   }
   
-  
   $field_names = array_column($apiData['fields'], 'name'); // get just the types
 
   // find if theres a trashed post with this record id already
 
-  $existing = get_posts(['post_type'=> $post_type,'post_status' => 'trash','numberposts' => 1,'meta_key' => '_aero_id', 'meta_value' => $record_id ]);
+  $existing = get_posts([
+    'post_type'=> $post_type,
+    'post_status' => 'trash',
+    'numberposts' => 1,
+    'meta_key' => '_aero_id', 
+    'meta_value' => $record_id 
+  ]);
 
-  if ($existing){$existing_id = $existing[0]->id;}
+  //If there's a post, use that post ID otherwise just left it empty
+  if ($existing){
+    $existing_id = $existing[0]->ID;
+  }else{
+    $existing_id = "";
+  }
 
   $record_post = array(
       'ID' => $existing_id,
@@ -408,15 +418,16 @@ function aeropageSyncPosts($parentId)
 
   }
   // end foreach record
-
-    }
-    else // some problem with api
-    {
-    $response['status'] = 'error';
-    update_post_meta ($parentId,'aero_sync_status','error');
-    $message = sanitize_text_field($apiData['status']['message']);
-    update_post_meta ($parentId,'aero_sync_message',$message);
-    $response['message'] = $message;
+  update_post_meta ($parentId,'aero_sync_message', $response['message']);
+  }
+  else // some problem with api
+  {
+  $response['status'] = 'error';
+  update_post_meta ($parentId,'aero_sync_status','error');
+  $message = sanitize_text_field($apiData['status']['message']);
+  echo "SYNC MESSAGE: ".$apiData['status']['message'];
+  update_post_meta ($parentId,'aero_sync_message',$message);
+  $response['message'] = $message;
   }
 
   //If doing AJAX

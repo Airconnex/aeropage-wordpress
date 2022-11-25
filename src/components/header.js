@@ -64,18 +64,18 @@ export default function Header({
         paddingRight: "15px",
       }}
     >
-      {/* <Link to="/wordpress/wp-admin/admin.php?page=aeroplugin"> */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          paddingTop: "10px",
-          paddingBottom: "10px",
-        }}
-      >
-        {aeroSvg}
-      </div>
-      {/* </Link> */}
+      <a href={"https://tools.aeropage.io/api-connector/" } target={"_blank"}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            paddingTop: "10px",
+            paddingBottom: "10px",
+          }}
+        >
+          {aeroSvg}
+        </div>
+      </a>
 
       <div
         style={{
@@ -103,7 +103,7 @@ export default function Header({
         >
           <p
             style={{
-              width: "100px",
+              width: "60px",
               marginRight: "3px",
               color: "black",
               cursor: "pointer",

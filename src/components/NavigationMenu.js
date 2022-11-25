@@ -29,6 +29,18 @@ const customStyles = {
     maxWidth: '350px'
   },
 };
+const logModalStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    maxWidth: '750px',
+    padding: '30px'
+  },
+};
 Modal.setAppElement('#aeroplugin');
 
 const Dashboard = () => {
@@ -41,7 +53,9 @@ const Dashboard = () => {
   const [toBeDeleted, setToBeDeleted] = useState(null);
   const [isLoadingDelete, setIsLoadingDelete] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  
+  const [openLogModal, setOpenLogModal] = useState(false);
+  const [syncLog, setSyncLog] = useState(false);
+
   console.log("PLUGIN NAME: ", MYSCRIPT.plugin_name);
   useEffect(() => {
     console.log("use effect");
@@ -157,19 +171,18 @@ const Dashboard = () => {
                   paddingLeft: "15px",
                   paddingRight: "15px",
                   width: "100%",
+                  justifyContent: "space-between",
+                  alignItems: "center"
                 }}
               >
-                {/* <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                paddingTop: "10px",
-                paddingBottom: "10px",
-              }}
-            >
-              <Link to="/">{aeroSvg}</Link>
-            </div> */}
-                <Header toolType={"Aeropage Plugin"}></Header>
+                <Header toolType={"My Posts"}></Header>
+                <div>
+                  <a href="https://tools.aeropage.io/api-connector/" target={"_blank"}>
+                    <button
+                      className={"btn"}
+                    >Go to Connector</button>
+                  </a>
+                </div>
               </div>
             </div>
 
@@ -266,6 +279,8 @@ const Dashboard = () => {
                         handleRefresh={handleRefresh}
                         setOpenModal={setOpenModal}
                         setToBeDeleted={setToBeDeleted}
+                        setOpenLogModal={setOpenLogModal}
+                        setSyncLog={setSyncLog}
                       />{" "}
                     </>
                   );
@@ -360,6 +375,38 @@ const Dashboard = () => {
                 disabled={isLoadingDelete}
               >{isLoadingDelete ? "Deleting..." : "Yes, delete."}</button>
             </div>
+          </Modal>
+          <Modal
+            isOpen={openLogModal}
+            style={logModalStyles}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "20px"
+              }}
+            >
+              <h2>View Recent Sync Log</h2>
+              <div 
+                style={{ 
+                  cursor: "pointer", 
+                  fontSize: "15px"
+                }}
+                onClick={() => setOpenLogModal(false)}
+              >X</div>
+            </div>
+            <div 
+              style={{
+                "maxHeight": "500px",
+                "height": "auto",
+                "overflowY": "auto"
+              }}
+              dangerouslySetInnerHTML={{
+                __html: syncLog ? syncLog : "<h4>No logs found.<h4>"
+              }}
+            />
           </Modal>
         </>
       );

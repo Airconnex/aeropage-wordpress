@@ -27,7 +27,7 @@
     stroke: #C22525;
   }
 
-#settings:hover svg {
+#settings:hover svg, #logs:hover svg {
     stroke: #633CE3;
 }
 
@@ -201,4 +201,19 @@ animation-play-state: running;
 .div-wrapper{
   margin-top: 15px;
   margin-bottom: 25px;
+}
+
+.btn{
+  font-family: Inter, sans-serif; 
+  font-style: normal; 
+  font-weight: 500; 
+  font-size: 12px; 
+  line-height: 24px; 
+  cursor: pointer; 
+  background: rgb(99, 60, 227); 
+  color: white; 
+  padding: 8px 13px; 
+  border: none; 
+  border-radius: 6px; 
+  display: block;
 }

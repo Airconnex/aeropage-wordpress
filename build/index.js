@@ -6545,7 +6545,20 @@ const AddPost = _ref => {
 
   const handleChange = e => {
     setStatus(true);
-    setInputValue(e.target.value);
+    let token = "";
+
+    try {
+      //Parse the URL
+      const url = new URL(e.target.value);
+      const path = url.pathname;
+      const parsed = path.split("/");
+      token = parsed[3];
+      console.log("PARSED: ", parsed);
+    } catch (err) {
+      token = e.target.value;
+    }
+
+    setInputValue(token);
   };
 
   const titleOnChange = e => {
@@ -6569,6 +6582,7 @@ const AddPost = _ref => {
 
 
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
+    if (!inputValue) return null;
     fetch("https://tools.aeropage.io/api/token/" + inputValue + "/").then(responseAP => responseAP.json()).then(data => setResponseAP(data));
   }, [inputValue]);
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
@@ -6597,20 +6611,21 @@ const AddPost = _ref => {
       flexDirection: "row",
       paddingLeft: "15px",
       paddingRight: "15px",
-      width: "100%"
+      width: "100%",
+      justifyContent: "space-between",
+      alignItems: "center"
     }
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_header__WEBPACK_IMPORTED_MODULE_3__["default"], {
-    toolType: "Aeropage Plugin",
+    toolType: "My Posts",
     toolName: "Add a Post",
     pathLevel: 1,
     resetView: resetView
-  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    style: {
-      display: "flex",
-      justifyContent: "center",
-      width: "100%"
-    }
-  }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
+    href: "https://tools.aeropage.io/api-connector/",
+    target: "_blank"
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
+    className: "btn"
+  }, "Go to Connector"))))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       display: "flex",
       flexDirection: "row",
@@ -6943,7 +6958,7 @@ const AddPost = _ref => {
     //   handleMyClick();
     // }}
 
-  }, loading ? "Submitting..." : "Add a Post"))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, loading ? "Submitting..." : "Save Post"))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       marginTop: "50px",
       marginBottom: "50px",
@@ -7005,7 +7020,9 @@ const Card = _ref => {
     handleClick,
     handleRefresh,
     setOpenModal,
-    setToBeDeleted
+    setToBeDeleted,
+    setOpenLogModal,
+    setSyncLog
   } = _ref;
   const link = `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}&path=editPost`;
   const [refreshState, setRefreshState] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
@@ -7105,10 +7122,26 @@ const Card = _ref => {
       width: "100%",
       height: "100%",
       display: "flex",
-      justifyContent: "right",
+      justifyContent: "center",
       alignItems: "end"
     }
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    id: "logs",
+    style: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: "7px",
+      height: "28px",
+      width: "28px",
+      cursor: "pointer"
+    },
+    title: "Recent Sync Log",
+    onClick: e => {
+      setOpenLogModal(true);
+      setSyncLog(el.sync_message);
+    }
+  }, _Icons__WEBPACK_IMPORTED_MODULE_2__.squareMessageIcon), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     id: "trash",
     style: {
       display: "flex",
@@ -7317,7 +7350,20 @@ const EditPost = _ref => {
 
   const handleChange = e => {
     setStatus(true);
-    setInputValue(e.target.value);
+    let token = "";
+
+    try {
+      //Parse the URL
+      const url = new URL(e.target.value);
+      const path = url.pathname;
+      const parsed = path.split("/");
+      token = parsed[3];
+      console.log("PARSED: ", parsed);
+    } catch (err) {
+      token = e.target.value;
+    }
+
+    setInputValue(token);
   };
 
   const titleOnChange = e => {
@@ -7347,7 +7393,8 @@ const EditPost = _ref => {
     }
   }, [post]);
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-    // fetch("https://api.aeropage.io/api/v3/token/" + inputValue);
+    if (!inputValue) return null; // fetch("https://api.aeropage.io/api/v3/token/" + inputValue);
+
     fetch("https://tools.aeropage.io/api/token/" + inputValue + "/").then(responseAP => responseAP.json()).then(data => setResponseAP(data));
   }, [inputValue]);
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
@@ -7398,20 +7445,21 @@ const EditPost = _ref => {
       flexDirection: "row",
       paddingLeft: "15px",
       paddingRight: "15px",
-      width: "100%"
+      width: "100%",
+      justifyContent: "space-between",
+      alignItems: "center"
     }
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_header__WEBPACK_IMPORTED_MODULE_3__["default"], {
-    toolType: "Aeropage Plugin",
+    toolType: "My Posts",
     toolName: `${title}`,
     pathLevel: 1,
     resetView: resetView
-  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    style: {
-      display: "flex",
-      justifyContent: "center",
-      width: "100%"
-    }
-  }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
+    href: "https://tools.aeropage.io/api-connector/",
+    target: "_blank"
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
+    className: "btn"
+  }, "Go to Connector"))))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       display: "flex",
       flexDirection: "row",
@@ -7747,7 +7795,7 @@ const EditPost = _ref => {
     //   handleMyClick();
     // }}
 
-  }, loading ? "Submitting..." : "Save Changes")))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, loading ? "Submitting..." : "Save Post")))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       marginTop: "50px",
       marginBottom: "50px",
@@ -7787,6 +7835,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "aeroSvg": function() { return /* binding */ aeroSvg; },
 /* harmony export */   "refreshIcon": function() { return /* binding */ refreshIcon; },
 /* harmony export */   "settingsIcon": function() { return /* binding */ settingsIcon; },
+/* harmony export */   "squareMessageIcon": function() { return /* binding */ squareMessageIcon; },
 /* harmony export */   "tickIcon": function() { return /* binding */ tickIcon; },
 /* harmony export */   "trashIcon": function() { return /* binding */ trashIcon; },
 /* harmony export */   "warningIcon": function() { return /* binding */ warningIcon; }
@@ -7925,6 +7974,20 @@ const warningIcon = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createEle
   x2: "12.01",
   y2: "16"
 }));
+const squareMessageIcon = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
+  xmlns: "http://www.w3.org/2000/svg",
+  width: "14",
+  height: "14",
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  "stroke-width": "2",
+  "stroke-linecap": "round",
+  "stroke-linejoin": "round",
+  class: "feather feather-message-square"
+}, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("path", {
+  d: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+}));
 
 /***/ }),
 
@@ -7972,6 +8035,18 @@ const customStyles = {
     maxWidth: '350px'
   }
 };
+const logModalStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    maxWidth: '750px',
+    padding: '30px'
+  }
+};
 react_modal__WEBPACK_IMPORTED_MODULE_7___default().setAppElement('#aeroplugin');
 
 const Dashboard = () => {
@@ -7984,6 +8059,8 @@ const Dashboard = () => {
   const [toBeDeleted, setToBeDeleted] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
   const [isLoadingDelete, setIsLoadingDelete] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
   const [searchParams, setSearchParams] = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_9__.useSearchParams)();
+  const [openLogModal, setOpenLogModal] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
+  const [syncLog, setSyncLog] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
   console.log("PLUGIN NAME: ", MYSCRIPT.plugin_name);
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
     console.log("use effect");
@@ -8094,11 +8171,18 @@ const Dashboard = () => {
           flexDirection: "row",
           paddingLeft: "15px",
           paddingRight: "15px",
-          width: "100%"
+          width: "100%",
+          justifyContent: "space-between",
+          alignItems: "center"
         }
       }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_header__WEBPACK_IMPORTED_MODULE_2__["default"], {
-        toolType: "Aeropage Plugin"
-      }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+        toolType: "My Posts"
+      }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
+        href: "https://tools.aeropage.io/api-connector/",
+        target: "_blank"
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
+        className: "btn"
+      }, "Go to Connector"))))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
         style: {
           width: "100%",
           display: "flex",
@@ -8173,7 +8257,9 @@ const Dashboard = () => {
           url: url,
           handleRefresh: handleRefresh,
           setOpenModal: setOpenModal,
-          setToBeDeleted: setToBeDeleted
+          setToBeDeleted: setToBeDeleted,
+          setOpenLogModal: setOpenLogModal,
+          setSyncLog: setSyncLog
         }), " ");
       }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
         style: {
@@ -8231,7 +8317,32 @@ const Dashboard = () => {
           cursor: "pointer"
         },
         disabled: isLoadingDelete
-      }, isLoadingDelete ? "Deleting..." : "Yes, delete."))));
+      }, isLoadingDelete ? "Deleting..." : "Yes, delete."))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)((react_modal__WEBPACK_IMPORTED_MODULE_7___default()), {
+        isOpen: openLogModal,
+        style: logModalStyles
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+        style: {
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: "20px"
+        }
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, "View Recent Sync Log"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+        style: {
+          cursor: "pointer",
+          fontSize: "15px"
+        },
+        onClick: () => setOpenLogModal(false)
+      }, "X")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+        style: {
+          "maxHeight": "500px",
+          "height": "auto",
+          "overflowY": "auto"
+        },
+        dangerouslySetInnerHTML: {
+          __html: syncLog ? syncLog : "<h4>No logs found.<h4>"
+        }
+      })));
     } else if (path === "addPost") {
       return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_AddPost__WEBPACK_IMPORTED_MODULE_4__["default"], {
         resetView: resetView
@@ -8334,6 +8445,9 @@ function Header(_ref) {
       paddingLeft: "15px",
       paddingRight: "15px"
     }
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
+    href: "https://tools.aeropage.io/api-connector/",
+    target: "_blank"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       display: "flex",
@@ -8341,7 +8455,7 @@ function Header(_ref) {
       paddingTop: "10px",
       paddingBottom: "10px"
     }
-  }, aeroSvg), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, aeroSvg)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       display: "flex",
       flexDirection: "row",
@@ -8360,7 +8474,7 @@ function Header(_ref) {
     onClick: () => resetView()
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     style: {
-      width: "100px",
+      width: "60px",
       marginRight: "3px",
       color: "black",
       cursor: "pointer",

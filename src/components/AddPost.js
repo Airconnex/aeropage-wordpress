@@ -119,7 +119,21 @@ const AddPost = ({ resetView }) => {
 
   const handleChange = (e) => {
     setStatus(true);
-    setInputValue(e.target.value);
+    let token = "";
+
+    try{
+      //Parse the URL
+      const url = new URL(e.target.value);
+      const path = url.pathname;
+      const parsed = path.split("/");
+      token = parsed[3];
+
+      console.log("PARSED: ", parsed);
+    }catch(err){
+      token = e.target.value;
+    }
+
+    setInputValue(token);
   };
 
   const titleOnChange = (e) => {
@@ -144,6 +158,8 @@ const AddPost = ({ resetView }) => {
   // console.log(dynamic);
 
   useEffect(() => {
+    if(!inputValue) return null;
+
     fetch("https://tools.aeropage.io/api/token/" + inputValue + "/")
       .then((responseAP) => responseAP.json())
       .then((data) => setResponseAP(data));
@@ -174,22 +190,23 @@ const AddPost = ({ resetView }) => {
             paddingLeft: "15px",
             paddingRight: "15px",
             width: "100%",
+            justifyContent: "space-between",
+            alignItems: "center"
           }}
         >
           <Header
-            toolType={"Aeropage Plugin"}
+            toolType={"My Posts"}
             toolName={"Add a Post"}
             pathLevel={1}
             resetView={resetView}
           ></Header>
-
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              width: "100%",
-            }}
-          ></div>
+          <div>
+            <a href="https://tools.aeropage.io/api-connector/" target={"_blank"}>
+              <button
+                className={"btn"}
+              >Go to Connector</button>
+            </a>
+          </div>
         </div>
       </div>
 
@@ -626,7 +643,7 @@ const AddPost = ({ resetView }) => {
                 //   handleMyClick();
                 // }}
               >
-                {loading ? "Submitting..." : "Add a Post"}
+                {loading ? "Submitting..." : "Save Post"}
               </button>
               {/* </Link> */}
             </form>

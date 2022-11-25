@@ -14,6 +14,7 @@ import {
   refreshIcon,
   settingsIcon,
   warningIcon,
+  squareMessageIcon,
 } from "./Icons";
 import axios from "axios";
 
@@ -27,7 +28,9 @@ const Card = ({
   handleClick,
   handleRefresh,
   setOpenModal,
-  setToBeDeleted
+  setToBeDeleted,
+  setOpenLogModal,
+  setSyncLog
 }) => {
   const link = `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}&path=editPost`;
   const [refreshState, setRefreshState] = useState(false);
@@ -157,10 +160,29 @@ const Card = ({
             width: "100%",
             height: "100%",
             display: "flex",
-            justifyContent: "right",
+            justifyContent: "center",
             alignItems: "end",
           }}
         >
+          <div
+            id="logs"
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              padding: "7px",
+              height: "28px",
+              width: "28px",
+              cursor: "pointer"
+            }}
+            title="Recent Sync Log"
+            onClick={(e) => {
+              setOpenLogModal(true);
+              setSyncLog(el.sync_message);
+            }}
+          >
+            {squareMessageIcon}
+          </div>
           <div
             id="trash"
             style={{
