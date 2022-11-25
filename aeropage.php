@@ -3,7 +3,7 @@
  * Plugin Name: Aeropage Sync for Airtable
  * Plugin URI: https://tools.aeropage.io/api-connector/
  * Description: Airtable to Wordpress Custom Post Type Sync Plugin
- * Version: 1.0.2
+ * Version: 1.0.3
  * Author: Aeropage
  * Author URI: https://tools.aeropage.io/
  * License: GPL2
