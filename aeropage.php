@@ -3,7 +3,7 @@
  * Plugin Name: Aeropage Sync for Airtable
  * Plugin URI: https://tools.aeropage.io/api-connector/
  * Description: Airtable to Wordpress Custom Post Type Sync Plugin
- * Version: 1.0.4
+ * Version: 1.1.0
  * Author: Aeropage
  * Author URI: https://tools.aeropage.io/
  * License: GPL2
@@ -102,7 +102,7 @@ add_action( 'admin_enqueue_scripts', 'aeroplugin_admin_enqueue_scripts' );
  * @return void
  */
 function aeroplugin_admin_enqueue_scripts() {
-  wp_enqueue_style( 'aeroplugin-style', plugin_dir_url( __FILE__ ) . 'build/index.css', array(), '1.0.4' );
+  wp_enqueue_style( 'aeroplugin-style', plugin_dir_url( __FILE__ ) . 'build/index.css', array(), '1.1.0' );
   wp_enqueue_script( 'aeroplugin-script', plugin_dir_url( __FILE__ ) . 'build/index.js', array( 'wp-element' ), date("h:i:s"), true );
   wp_add_inline_script( 'aeroplugin-script', 'const MYSCRIPT = ' . json_encode( array(
       'ajaxUrl' => admin_url( 'admin-ajax.php' ),
@@ -327,11 +327,10 @@ function aeropageSyncPosts($parentId)
     SET p.post_status = 'trash' 
     WHERE pm.meta_value = %d";
   $results = $wpdb->get_results($wpdb->prepare($trash, $parentId));
-      
-      
+  $count = 1;
+  
   foreach ($apiData['records'] as $record)
   {
-
   $record_id = sanitize_text_field($record['id']);
   $record_name = sanitize_text_field($record['name']); 
   $record_slug = sanitize_text_field($record['slug']); 
@@ -363,17 +362,44 @@ function aeropageSyncPosts($parentId)
   }else{
     $existing_id = "";
   }
+  
+  
+  if (strlen($record['post_title']) > 0)
+  {
+  $post_title = sanitize_text_field($record['post_title']);
+  $post_title_msg = "<br>--> adding custom post_title as $post_title.";
+  }
+  else
+  {
+  $post_title = $record_name;
+  $post_title_msg = "<br>--> no custom post title.";
+  }
+  
+  if (strlen($record['post_excerpt']) > 0)
+  {
+  $post_excerpt = sanitize_text_field($record['post_excerpt']);
+  $post_excerpt_msg = "<br>--> adding custom post_excerpt as $post_excerpt.";
+  }
+  else
+  {
+  $post_excerpt = $record_name;
+  $post_excerpt_msg = "<br>--> no custom post excerpt.";
+  }
+
 
   $record_post = array(
-      'ID' => $existing_id,
-      'post_title' => $record_name,
-      'post_name' => $record_slug,
-      'post_parent' => '',
-      'post_type' => $post_type,
-      'post_status' => 'publish'
+    'ID' => $existing_id,
+    'post_title' => $post_title,
+    'post_excerpt' => $post_excerpt,
+    'post_name' => $record_slug,
+    'post_parent' => '',
+    'post_type' => $post_type,
+    'post_status' => 'publish'
   );
     
   $record_post_id = wp_insert_post($record_post);
+  
+  $count++;
 
   update_post_meta ($record_post_id, '_aero_cpt', $parentId);
   update_post_meta ($record_post_id, '_aero_id', $record_id);
@@ -381,13 +407,32 @@ function aeropageSyncPosts($parentId)
 
   if ($existing)
   {
-  $response['message'] .= "<br>record $record_id : $record_name already exists as $record_post_id and is being updated.";
+  $response['message'] .= "<br>record $record_id : $record_name already exists as $record_post_id and is being updated.".$post_title_msg.$post_excerpt_msg;
   }
   else
   {
-  $response['message'] .= "<br>record $record_id : $record_name has been created as $record_post_id.";
+  $response['message'] .= "<br>record $record_id : $record_name has been created as $record_post_id.".$post_title_msg.$post_excerpt_msg;
   }
 
+
+ // featured image download
+	if (strlen($record['post_image']) > 0)
+  {
+    $image_value = sanitize_url($record['post_image']);
+    $thumbnail_id = get_post_meta( $record_post_id, '_thumbnail_id',true ); // check if this post already has thumbnails...
+
+    if (!$thumbnail_id) // if we dont already have the thumb for this post
+    {
+      $response['message'] .= "<br>--> There is a post_image, but no thumbnail found. downloading now.";
+      $thumbnail_id = aeropage_external_image($image_value,$record_post_id);
+
+      //Set the attachment as featured image.
+      delete_post_meta( $record_post_id, '_thumbnail_id' );
+      add_post_meta( $record_post_id , '_thumbnail_id' , $thumbnail_id, true );
+
+    }
+    unset($thumbnail_id);
+  }
 
 
   foreach ($record['fields'] as $key=>$value)
@@ -458,6 +503,59 @@ function aeropageModCheckApiCall($token)
   $result = json_decode(wp_remote_retrieve_body(wp_remote_get($api_url)), true);
   return $result;
 }
+
+
+function aeropage_external_image($ext_url,$parent)
+{
+  global $wpdb;
+	$filename = "$parent-featured";
+  //$ext_url -- the external url
+  //$parent -- the parent post to attach to  
+  $extension = pathinfo(parse_url($ext_url, PHP_URL_PATH), PATHINFO_EXTENSION);
+  // new filename for local
+  $image_filename = sanitize_file_name( $filename.'.'.$extension);
+  $upload_dir = wp_upload_dir();
+  $upload_folder = $upload_dir['basedir'].'/aeropage/';
+        
+  if(!file_exists($upload_folder)) wp_mkdir_p($upload_folder);
+    
+  $ext_img = wp_remote_get( $ext_url ); // check the url to make sure its valid
+
+  if (! is_wp_error( $ext_img ) ) 
+  {
+    $img_content = wp_remote_retrieve_body( $ext_img ); // get the image file
+    $fp = fopen( $upload_folder.'/'.$image_filename , 'w' ); // set the path to save
+    fwrite( $fp, $img_content ); // write the contents to the file
+    fclose( $fp ); // close the path
+    $wp_filetype = wp_check_filetype( $image_filename , null ); // check the filename
+    $attachment = array(
+      'post_mime_type' => $wp_filetype['type'], // mimetype
+      'post_title' => preg_replace( '/\.[^.]+$/', '', $image_filename ),
+      'post_content' => '',
+      'post_status' => 'inherit'
+    );
+    
+    $image_filepath = $upload_folder.'/'.$image_filename;
+
+    //require for wp_generate_attachment_metadata which generates image related meta-data also creates thumbs
+    
+    require_once ABSPATH . 'wp-admin/includes/image.php';
+    
+    $thumbnail_id = wp_insert_attachment( $attachment, $image_filepath, $parent );
+    
+    if ($thumbnail_id)
+    {
+    //Generate post thumbnail of different sizes.
+    $attach_data = wp_generate_attachment_metadata( $thumbnail_id , $image_filepath);
+    wp_update_attachment_metadata( $thumbnail_id,  $attach_data );
+    
+    return $thumbnail_id; 
+    } 
+  }
+}
+// end function
+
+
 
   /* WOOCOMMERCE (FUTURE)
 	$product = new WC_Product_Simple();
