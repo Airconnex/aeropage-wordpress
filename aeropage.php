@@ -3,7 +3,7 @@
  * Plugin Name: Aeropage Sync for Airtable
  * Plugin URI: https://tools.aeropage.io/api-connector/
  * Description: Airtable to Wordpress Custom Post Type Sync Plugin
- * Version: 1.1.0
+ * Version: 1.2.0
  * Author: Aeropage
  * Author URI: https://tools.aeropage.io/
  * License: GPL2
@@ -122,6 +122,7 @@ function aeropageList()
     $post->sync_status = get_post_meta($post->ID, "aero_sync_status",true);
     $post->sync_time = get_post_meta($post->ID, "aero_sync_time",true);
     $post->sync_message = get_post_meta($post->ID, "aero_sync_message",true);
+    $post->connection = get_post_meta($post->ID, "aero_connection", true);
 	}
 	
   // this is for react...
@@ -130,7 +131,77 @@ function aeropageList()
   die(json_encode($aeroPosts));
 }
 
+add_action( 'admin_bar_menu', 'aeroAddAdminBar', 100 );
+function aeroAddAdminBar( $admin_bar ){
+  global $post;
 
+  if(!$post) return;
+
+  $aeroCPT = get_post_meta($post->ID, '_aero_cpt', true);
+  //If there's a value for _aero_cpt, we add this nav bar item
+  //Will only show if user is an admin, we don't want it to show for 'members' only
+  if($aeroCPT && current_user_can( 'manage_options' )){
+    $admin_bar->add_menu( 
+      array( 
+        'id'=>'aero-sync-bar',
+        'title'=>'
+          <div
+            style="display: flex;"
+            id="aero-page-sync-container"
+          >
+            <svg
+              style="margin-right: 2px;"
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#FFF"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="feather feather-refresh-cw"
+            >
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>&nbsp;Resync Aeropage
+          </div>
+        ',
+        'href'=>'',
+      ) 
+    );
+  }
+}
+
+add_action( 'wp_footer', 'aeroSyncScript' );
+function aeroSyncScript() {
+  global $post;
+  $aeroCPT = get_post_meta($post->ID, '_aero_cpt', true);
+  
+  //If there's a value for aero_cpt, we add this script to the footer in the
+  //actual wordpress site. This will only be shown if the user is an admin
+  if($aeroCPT && current_user_can( 'manage_options' )){
+  ?> 
+    <script type="text/javascript">
+      document.getElementById("aero-page-sync-container").onclick = function () {
+        var ajaxurl = "<?php echo admin_url('admin-ajax.php'); ?>";
+        var params = new URLSearchParams();
+        var xhttp = new XMLHttpRequest();
+
+        params.append("action", "aeropageSyncPosts");
+        params.append("id", "<?php echo $aeroCPT; ?>");
+
+        xhttp.open("POST", ajaxurl, false);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.send(params);
+
+        location.reload();
+      }
+    </script>
+  <?php
+  }
+}
 
 add_action( 'wp_ajax_aeropageEditorMeta', 'aeropageEditorMeta');
 //Gets the aero page token when in the edit post
@@ -140,12 +211,20 @@ function aeropageEditorMeta(){
   $status = get_post_meta($pid, "aero_sync_status");
   $sync_time = get_post_meta($pid, "aero_sync_time");
   $auto_sync = get_post_meta($pid, "aero_auto_sync");
-  die(json_encode(array("token" => $token,"status" => $status, "sync_time" => $sync_time, "auto_sync" => $auto_sync)));
+  $record_post_status = get_post_meta($pid, "aero_post_status");
+  die(json_encode(
+    array(
+      "token" => $token,
+      "status" => $status, 
+      "sync_time" => $sync_time, 
+      "auto_sync" => $auto_sync,
+      "post_status" => $record_post_status
+    )
+  ));
 }
 
 
 // make sure all the custom post types are registered.
-
 add_action( 'init', 'aeroRegisterTypes' );
 
 function aeroRegisterTypes()
@@ -236,6 +315,8 @@ function aeropageEdit() // called by ajax, adds the cpt
 
     update_post_meta ($id,'aero_token', sanitize_text_field($_POST['token']));
     update_post_meta ($id,'aero_auto_sync', $auto_sync);
+    update_post_meta ($id,'aero_connection', sanitize_text_field($_POST["app"])."/".sanitize_text_field($_POST["table"])."/".sanitize_text_field($_POST["view"]));
+    update_post_meta ($id, 'aero_post_status', sanitize_text_field($_POST["post_status"]));
     aeropageSyncPosts($id);
   }
 
@@ -309,6 +390,8 @@ function aeropageSyncPosts($parentId)
 
   $token = get_post_meta($parentId,'aero_token',true);
 
+  $record_post_status = get_post_meta($parentId, 'aero_post_status', true);
+
   $apiData = aeropageTokenApiCall($token);
 
   $response = array();
@@ -320,6 +403,21 @@ function aeropageSyncPosts($parentId)
   $sync_time = time();
 	update_post_meta ($parentId,'aero_sync_time', $sync_time);
   // trash posts 
+  
+  
+  // fields are indexed numerically - iterate to create an array of types, indexed by name
+  
+  $fieldsByName = array();
+  
+  foreach ($apiData['fields'] as $key=>$datafield)
+  {
+  $name = sanitize_text_field($datafield['name']);
+  $type = sanitize_text_field($datafield['type']);
+  $fieldsByName[$name] = $type;
+  }
+  
+  update_post_meta ($parentId,'aero_sync_fields', $fieldsByName); // add to the parent cpt
+
 
   $trash = "
     UPDATE $wpdb->posts p
@@ -355,10 +453,13 @@ function aeropageSyncPosts($parentId)
     'meta_key' => '_aero_id', 
     'meta_value' => $record_id 
   ]);
+  
+  $post_status = $record_post_status;
 
   //If there's a post, use that post ID otherwise just left it empty
   if ($existing){
     $existing_id = $existing[0]->ID;
+    $post_status = "publish";
   }else{
     $existing_id = "";
   }
@@ -394,7 +495,7 @@ function aeropageSyncPosts($parentId)
     'post_name' => $record_slug,
     'post_parent' => '',
     'post_type' => $post_type,
-    'post_status' => 'publish'
+    'post_status' => $post_status
   );
     
   $record_post_id = wp_insert_post($record_post);
@@ -437,10 +538,7 @@ function aeropageSyncPosts($parentId)
 
   foreach ($record['fields'] as $key=>$value)
   {
-
-  $field_index = array_search($key, $field_names);
-
-  $type = $apiData['fields'][$field_index]['type'];
+  $type = $fieldsByName[$key]; // get the type
 
   //We sanitize the URL just to be sure...
   if ($type == 'attachment_img')
@@ -488,7 +586,6 @@ function aeropageSyncPosts($parentId)
 
 }
 // end function
-
 
 function aeropageTokenApiCall($token)
 {

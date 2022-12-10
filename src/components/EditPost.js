@@ -83,6 +83,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [post, setPost] = useState(null);
+  const [postStatus, setPostStatus] = useState("publish");
   const handleSubmit = (e) => {
     e.preventDefault();
     // console.log(MYSCRIPT.ajaxUrl);
@@ -98,6 +99,10 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
     params.append("slug", slug);
     params.append("token", inputValue);
     params.append("auto_sync", autoSync);
+    params.append("app", responseAP?.status?.app);
+    params.append("table", responseAP?.status?.table);
+    params.append("view", responseAP?.status?.view);
+    params.append("post_status", postStatus);
 
     axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
       if(responseAP?.data?.status === "success"){
@@ -128,6 +133,9 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
 
     setInputValue(token);
   };
+  const postStatusOnChange = (e) => {
+    setPostStatus(e.target.value);
+  }
   const titleOnChange = (e) => {
     setTitle(e.target.value);
     let a = convertToSlug(e.target.value);
@@ -182,6 +190,10 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
       if(responseAP?.data?.auto_sync){
         setAutoSync(responseAP?.data?.auto_sync?.[0] === "1" ? true : false);
       }
+
+      if(responseAP?.data?.post_status){
+        setPostStatus(responseAP?.data?.post_status?.[0]);
+      }
     });
   }, []);
   // console.log(responseAP);
@@ -218,10 +230,16 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
             <a 
               href="https://tools.aeropage.io/api-connector/" 
               target={"_blank"}
+              style={{
+                textDecoration: "none"
+              }}
             >
               <button
                 className={"btn"}
-              >Go to Connector</button>
+                style={{
+                  background: "rgb(37, 37, 37)"
+                }}
+              >Go to Aeropage</button>
             </a>
           </div>
         </div>
@@ -584,6 +602,83 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
                 //   Checking
                 // </p>
                 null}
+                <div className="div-wrapper">
+                  <label>
+                    <span className="label-text">Post Status</span>
+                  </label>
+                  <br />
+                  <select
+                    value={postStatus}
+                    onChange={postStatusOnChange}
+                    style={{
+                      height: "32px",
+                      borderRadius: "6px",
+                      backgroundColor: "white",
+                      color: "#595B5C",
+                      fontFamily: "'Inter', sans-serif",
+                      fontStyle: "normal",
+                      fontWeight: "400",
+                      width: "75%",
+                      border: "1px solid lightGray",
+                      fontSize: "12px",
+                      lineHeight: "18px",
+                      marginTop: "6px"
+                    }}
+                  >
+                    <option
+                      style={{
+                        borderRadius: "6px",
+                        color: "#595B5C",
+                        fontFamily: "'Inter', sans-serif",
+                        fontStyle: "normal",
+                        fontWeight: "400",
+                        fontSize: "12px",
+                        lineHeight: "150%",
+                      }}
+                      value="publish"
+                    >
+                      Publish
+                    </option>
+                    <option
+                      style={{
+                        borderRadius: "6px",
+                        color: "#595B5C",
+                        fontFamily: "'Inter', sans-serif",
+                        fontStyle: "normal",
+                        fontWeight: "400",
+                        fontSize: "12px",
+                        lineHeight: "150%",
+                      }}
+                      value="private"
+                    >
+                      Private
+                    </option>
+                    <option
+                      style={{
+                        borderRadius: "6px",
+                        color: "#595B5C",
+                        fontFamily: "'Inter', sans-serif",
+                        fontStyle: "normal",
+                        fontWeight: "400",
+                        fontSize: "12px",
+                        lineHeight: "150%",
+                      }}
+                      value="draft"
+                    >
+                      Draft
+                    </option>
+                  </select>
+                </div>
+                <div className="div-wrapper">
+                  <label>
+                    <Toggle
+                      defaultChecked={autoSync}
+                      icons={false}
+                      checked={autoSync}
+                      onChange={(e) => setAutoSync(!autoSync)} />
+                    <span className="label-text">Auto Sync</span>
+                  </label>
+                </div>
                 {responseMessage && (
                   <p
                     style={{
@@ -613,16 +708,6 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
                     {error}
                   </p>
                 ) }
-                <div className="div-wrapper">
-                  <label>
-                    <Toggle
-                      defaultChecked={autoSync}
-                      icons={false}
-                      checked={autoSync}
-                      onChange={(e) => setAutoSync(!autoSync)} />
-                    <span className="label-text">Auto Sync</span>
-                  </label>
-                </div>
               </div>
               {/* <Link to="/"> */}
               <div style={{display: "block"}}>

@@ -188,10 +188,20 @@ const Dashboard = () => {
               >
                 <Header toolType={"My Posts"}></Header>
                 <div>
-                  <a href="https://tools.aeropage.io/api-connector/" target={"_blank"}>
+                  <a 
+                    href="https://tools.aeropage.io/api-connector/" 
+                    target={"_blank"}
+                    style={{
+                      textDecoration: "none"
+                    }}
+                  >
                     <button
                       className={"btn"}
-                    >Go to Connector</button>
+                      style={{
+                        background: "rgb(37, 37, 37)",
+                        textDecoration: "none"
+                      }}
+                    >Go to Aeropage</button>
                   </a>
                 </div>
               </div>

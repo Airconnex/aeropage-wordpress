@@ -15,6 +15,7 @@ import {
   settingsIcon,
   warningIcon,
   squareMessageIcon,
+  airtableIcon
 } from "./Icons";
 import axios from "axios";
 
@@ -44,6 +45,7 @@ const Card = ({
         padding: "10px",
         minWidth: "150px",
         maxWidth: "250px",
+        width: "250px",
         display: "flex",
         flexDirection: "column",
         boxShadow: "0px 4px 4px 0px #00000040",
@@ -164,6 +166,23 @@ const Card = ({
             alignItems: "end",
           }}
         >
+          <a href={`https://airtable.com/${el.connection}`} target={"_blank"}>
+            <div
+              id="airtable-link"
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                padding: "7px",
+                height: "28px",
+                width: "28px",
+                cursor: "pointer"
+              }}
+              title="Open Airtable"
+            >
+              {airtableIcon}
+            </div>
+          </a>
           <div
             id="logs"
             style={{

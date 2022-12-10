@@ -6490,7 +6490,7 @@ const aeroSvg = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement
 }));
 
 const AddPost = _ref => {
-  var _responseAP$status2, _responseAP$status3, _responseAP$status4, _responseAP$status5, _responseAP$status6, _responseAP$status7;
+  var _responseAP$status5, _responseAP$status6, _responseAP$status7, _responseAP$status8, _responseAP$status9, _responseAP$status10;
 
   let {
     resetView
@@ -6508,8 +6508,11 @@ const AddPost = _ref => {
   const [error, setError] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
   const [responseMessage, setResponseMessage] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
   const [autoSync, setAutoSync] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
+  const [postStatus, setPostStatus] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("publish");
 
   const handleSubmit = e => {
+    var _responseAP$status, _responseAP$status2, _responseAP$status3;
+
     e.preventDefault();
     setLoading(true); // console.log(MYSCRIPT.ajaxUrl);
     // const reactAppData = window.wpRoomDesigner || {};
@@ -6522,6 +6525,10 @@ const AddPost = _ref => {
     params.append("slug", slug);
     params.append("token", inputValue);
     params.append("auto_sync", autoSync);
+    params.append("app", responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status = responseAP.status) === null || _responseAP$status === void 0 ? void 0 : _responseAP$status.app);
+    params.append("table", responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status2 = responseAP.status) === null || _responseAP$status2 === void 0 ? void 0 : _responseAP$status2.table);
+    params.append("view", responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status3 = responseAP.status) === null || _responseAP$status3 === void 0 ? void 0 : _responseAP$status3.view);
+    params.append("post_status", postStatus);
     axios__WEBPACK_IMPORTED_MODULE_5___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
       var _responseAP$data;
 
@@ -6577,6 +6584,10 @@ const AddPost = _ref => {
 
   const handleMyClick = () => {
     console.log("clicked");
+  };
+
+  const postStatusOnChange = e => {
+    setPostStatus(e.target.value);
   }; // console.log(title);
   // console.log(dynamic);
 
@@ -6586,9 +6597,9 @@ const AddPost = _ref => {
     fetch("https://tools.aeropage.io/api/token/" + inputValue + "/").then(responseAP => responseAP.json()).then(data => setResponseAP(data));
   }, [inputValue]);
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-    var _responseAP$status;
+    var _responseAP$status4;
 
-    if ((responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status = responseAP.status) === null || _responseAP$status === void 0 ? void 0 : _responseAP$status.type) === "success") setStatus(false);
+    if ((responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status4 = responseAP.status) === null || _responseAP$status4 === void 0 ? void 0 : _responseAP$status4.type) === "success") setStatus(false);
     if ((responseAP === null || responseAP === void 0 ? void 0 : responseAP.type) === "PAGE_NOT_FOUND") setStatus(false);
   }, [responseAP]); // console.log(responseAP);
 
@@ -6622,10 +6633,16 @@ const AddPost = _ref => {
     resetView: resetView
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
     href: "https://tools.aeropage.io/api-connector/",
-    target: "_blank"
+    target: "_blank",
+    style: {
+      textDecoration: "none"
+    }
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
-    className: "btn"
-  }, "Go to Connector"))))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "btn",
+    style: {
+      background: "rgb(37, 37, 37)"
+    }
+  }, "Go to Aeropage"))))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       display: "flex",
       flexDirection: "row",
@@ -6802,7 +6819,7 @@ const AddPost = _ref => {
     },
     placeholder: "Token"
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
-    href: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status2 = responseAP.status) === null || _responseAP$status2 === void 0 ? void 0 : _responseAP$status2.type) !== "success" ? "" : `https://tools.aeropage.io/api-connector/${responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status3 = responseAP.status) === null || _responseAP$status3 === void 0 ? void 0 : _responseAP$status3.id}/`,
+    href: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status5 = responseAP.status) === null || _responseAP$status5 === void 0 ? void 0 : _responseAP$status5.type) !== "success" ? "" : `https://tools.aeropage.io/api-connector/${responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status6 = responseAP.status) === null || _responseAP$status6 === void 0 ? void 0 : _responseAP$status6.id}/`,
     target: "_blank",
     style: {
       fontFamily: "'Inter', sans-serif",
@@ -6813,7 +6830,7 @@ const AddPost = _ref => {
       lineHeight: "24px",
       cursor: "pointer",
       marginLeft: "5px",
-      background: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status4 = responseAP.status) === null || _responseAP$status4 === void 0 ? void 0 : _responseAP$status4.type) === "success" ? "#505c6c" : "rgba(80, 92, 108, 0.33)",
+      background: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status7 = responseAP.status) === null || _responseAP$status7 === void 0 ? void 0 : _responseAP$status7.type) === "success" ? "#505c6c" : "rgba(80, 92, 108, 0.33)",
       color: "white",
       padding: "8px 13px 8px 13px",
       border: "none",
@@ -6825,7 +6842,7 @@ const AddPost = _ref => {
     style: {
       minHeight: "80px"
     }
-  }, (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status5 = responseAP.status) === null || _responseAP$status5 === void 0 ? void 0 : _responseAP$status5.type) === "success" && status === false ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status8 = responseAP.status) === null || _responseAP$status8 === void 0 ? void 0 : _responseAP$status8.type) === "success" && status === false ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       display: "flex",
       flexDirection: "row",
@@ -6931,6 +6948,60 @@ const AddPost = _ref => {
     }
   }, error), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "div-wrapper"
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
+    className: "label-text"
+  }, "Post Status")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("br", null), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("select", {
+    value: postStatus,
+    onChange: postStatusOnChange,
+    style: {
+      height: "32px",
+      borderRadius: "6px",
+      backgroundColor: "white",
+      color: "#595B5C",
+      fontFamily: "'Inter', sans-serif",
+      fontStyle: "normal",
+      fontWeight: "400",
+      width: "75%",
+      border: "1px solid lightGray",
+      fontSize: "12px",
+      lineHeight: "18px",
+      marginTop: "6px"
+    }
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {
+    style: {
+      borderRadius: "6px",
+      color: "#595B5C",
+      fontFamily: "'Inter', sans-serif",
+      fontStyle: "normal",
+      fontWeight: "400",
+      fontSize: "12px",
+      lineHeight: "150%"
+    },
+    value: "publish"
+  }, "Publish"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {
+    style: {
+      borderRadius: "6px",
+      color: "#595B5C",
+      fontFamily: "'Inter', sans-serif",
+      fontStyle: "normal",
+      fontWeight: "400",
+      fontSize: "12px",
+      lineHeight: "150%"
+    },
+    value: "private"
+  }, "Private"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {
+    style: {
+      borderRadius: "6px",
+      color: "#595B5C",
+      fontFamily: "'Inter', sans-serif",
+      fontStyle: "normal",
+      fontWeight: "400",
+      fontSize: "12px",
+      lineHeight: "150%"
+    },
+    value: "draft"
+  }, "Draft"))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "div-wrapper"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_toggle__WEBPACK_IMPORTED_MODULE_7__["default"], {
     defaultChecked: autoSync,
     icons: false,
@@ -6941,7 +7012,7 @@ const AddPost = _ref => {
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
     className: "label-text"
   }, "Auto Sync")))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
-    disabled: !(responseAP !== null && responseAP !== void 0 && (_responseAP$status6 = responseAP.status) !== null && _responseAP$status6 !== void 0 && _responseAP$status6.type) === "success" || !dynamic || !title || !slug,
+    disabled: !(responseAP !== null && responseAP !== void 0 && (_responseAP$status9 = responseAP.status) !== null && _responseAP$status9 !== void 0 && _responseAP$status9.type) === "success" || !dynamic || !title || !slug,
     style: {
       fontFamily: "'Inter', sans-serif",
       fontStyle: "normal",
@@ -6949,7 +7020,7 @@ const AddPost = _ref => {
       fontSize: "12px",
       lineHeight: "24px",
       cursor: "pointer",
-      background: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status7 = responseAP.status) === null || _responseAP$status7 === void 0 ? void 0 : _responseAP$status7.type) === "success" && dynamic && title && slug ? "#633CE3" : "#bbaaf3",
+      background: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status10 = responseAP.status) === null || _responseAP$status10 === void 0 ? void 0 : _responseAP$status10.type) === "success" && dynamic && title && slug ? "#633CE3" : "#bbaaf3",
       color: "white",
       padding: "8px 13px 8px 13px",
       border: "none",
@@ -7034,6 +7105,7 @@ const Card = _ref => {
       padding: "10px",
       minWidth: "150px",
       maxWidth: "250px",
+      width: "250px",
       display: "flex",
       flexDirection: "column",
       boxShadow: "0px 4px 4px 0px #00000040",
@@ -7125,7 +7197,22 @@ const Card = _ref => {
       justifyContent: "center",
       alignItems: "end"
     }
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
+    href: `https://airtable.com/${el.connection}`,
+    target: "_blank"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    id: "airtable-link",
+    style: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: "7px",
+      height: "28px",
+      width: "28px",
+      cursor: "pointer"
+    },
+    title: "Open Airtable"
+  }, _Icons__WEBPACK_IMPORTED_MODULE_2__.airtableIcon)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     id: "logs",
     style: {
       display: "flex",
@@ -7295,7 +7382,7 @@ const aeroSvg = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement
 }));
 
 const EditPost = _ref => {
-  var _responseAP$status2, _responseAP$status3, _responseAP$status4, _responseAP$status5, _responseAP$status6, _responseAP$status7;
+  var _responseAP$status5, _responseAP$status6, _responseAP$status7, _responseAP$status8, _responseAP$status9, _responseAP$status10;
 
   let {
     resetView,
@@ -7318,8 +7405,11 @@ const EditPost = _ref => {
   const [error, setError] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
   const [loading, setLoading] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
   const [post, setPost] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
+  const [postStatus, setPostStatus] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("publish");
 
   const handleSubmit = e => {
+    var _responseAP$status, _responseAP$status2, _responseAP$status3;
+
     e.preventDefault(); // console.log(MYSCRIPT.ajaxUrl);
 
     setLoading(true);
@@ -7334,6 +7424,10 @@ const EditPost = _ref => {
     params.append("slug", slug);
     params.append("token", inputValue);
     params.append("auto_sync", autoSync);
+    params.append("app", responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status = responseAP.status) === null || _responseAP$status === void 0 ? void 0 : _responseAP$status.app);
+    params.append("table", responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status2 = responseAP.status) === null || _responseAP$status2 === void 0 ? void 0 : _responseAP$status2.table);
+    params.append("view", responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status3 = responseAP.status) === null || _responseAP$status3 === void 0 ? void 0 : _responseAP$status3.view);
+    params.append("post_status", postStatus);
     axios__WEBPACK_IMPORTED_MODULE_5___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
       var _responseAP$data;
 
@@ -7364,6 +7458,10 @@ const EditPost = _ref => {
     }
 
     setInputValue(token);
+  };
+
+  const postStatusOnChange = e => {
+    setPostStatus(e.target.value);
   };
 
   const titleOnChange = e => {
@@ -7398,9 +7496,9 @@ const EditPost = _ref => {
     fetch("https://tools.aeropage.io/api/token/" + inputValue + "/").then(responseAP => responseAP.json()).then(data => setResponseAP(data));
   }, [inputValue]);
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-    var _responseAP$status;
+    var _responseAP$status4;
 
-    if ((responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status = responseAP.status) === null || _responseAP$status === void 0 ? void 0 : _responseAP$status.type) === "success") setStatus(false);
+    if ((responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status4 = responseAP.status) === null || _responseAP$status4 === void 0 ? void 0 : _responseAP$status4.type) === "success") setStatus(false);
     if ((responseAP === null || responseAP === void 0 ? void 0 : responseAP.type) === "PAGE_NOT_FOUND") setStatus(false);
   }, [responseAP]);
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
@@ -7409,7 +7507,7 @@ const EditPost = _ref => {
     params.append("action", "aeropageEditorMeta");
     params.append("id", id);
     axios__WEBPACK_IMPORTED_MODULE_5___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
-      var _responseAP$data2, _responseAP$data4;
+      var _responseAP$data2, _responseAP$data4, _responseAP$data6;
 
       if (responseAP !== null && responseAP !== void 0 && (_responseAP$data2 = responseAP.data) !== null && _responseAP$data2 !== void 0 && _responseAP$data2.token) {
         var _responseAP$data3;
@@ -7422,6 +7520,12 @@ const EditPost = _ref => {
         var _responseAP$data5, _responseAP$data5$aut;
 
         setAutoSync((responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data5 = responseAP.data) === null || _responseAP$data5 === void 0 ? void 0 : (_responseAP$data5$aut = _responseAP$data5.auto_sync) === null || _responseAP$data5$aut === void 0 ? void 0 : _responseAP$data5$aut[0]) === "1" ? true : false);
+      }
+
+      if (responseAP !== null && responseAP !== void 0 && (_responseAP$data6 = responseAP.data) !== null && _responseAP$data6 !== void 0 && _responseAP$data6.post_status) {
+        var _responseAP$data7, _responseAP$data7$pos;
+
+        setPostStatus(responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data7 = responseAP.data) === null || _responseAP$data7 === void 0 ? void 0 : (_responseAP$data7$pos = _responseAP$data7.post_status) === null || _responseAP$data7$pos === void 0 ? void 0 : _responseAP$data7$pos[0]);
       }
     });
   }, []); // console.log(responseAP);
@@ -7456,10 +7560,16 @@ const EditPost = _ref => {
     resetView: resetView
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
     href: "https://tools.aeropage.io/api-connector/",
-    target: "_blank"
+    target: "_blank",
+    style: {
+      textDecoration: "none"
+    }
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
-    className: "btn"
-  }, "Go to Connector"))))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "btn",
+    style: {
+      background: "rgb(37, 37, 37)"
+    }
+  }, "Go to Aeropage"))))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       display: "flex",
       flexDirection: "row",
@@ -7636,7 +7746,7 @@ const EditPost = _ref => {
     },
     placeholder: "Token"
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
-    href: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status2 = responseAP.status) === null || _responseAP$status2 === void 0 ? void 0 : _responseAP$status2.type) !== "success" ? "" : `https://tools.aeropage.io/api-connector/${responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status3 = responseAP.status) === null || _responseAP$status3 === void 0 ? void 0 : _responseAP$status3.id}/`,
+    href: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status5 = responseAP.status) === null || _responseAP$status5 === void 0 ? void 0 : _responseAP$status5.type) !== "success" ? "" : `https://tools.aeropage.io/api-connector/${responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status6 = responseAP.status) === null || _responseAP$status6 === void 0 ? void 0 : _responseAP$status6.id}/`,
     target: "_blank",
     style: {
       fontFamily: "'Inter', sans-serif",
@@ -7647,7 +7757,7 @@ const EditPost = _ref => {
       lineHeight: "24px",
       cursor: "pointer",
       marginLeft: "5px",
-      background: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status4 = responseAP.status) === null || _responseAP$status4 === void 0 ? void 0 : _responseAP$status4.type) === "success" ? "#505c6c" : "rgba(80, 92, 108, 0.33)",
+      background: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status7 = responseAP.status) === null || _responseAP$status7 === void 0 ? void 0 : _responseAP$status7.type) === "success" ? "#505c6c" : "rgba(80, 92, 108, 0.33)",
       color: "white",
       padding: "8px 13px 8px 13px",
       border: "none",
@@ -7659,7 +7769,7 @@ const EditPost = _ref => {
     style: {
       minHeight: "80px"
     }
-  }, (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status5 = responseAP.status) === null || _responseAP$status5 === void 0 ? void 0 : _responseAP$status5.type) === "success" && status === false ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status8 = responseAP.status) === null || _responseAP$status8 === void 0 ? void 0 : _responseAP$status8.type) === "success" && status === false ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       display: "flex",
       flexDirection: "row",
@@ -7744,7 +7854,70 @@ const EditPost = _ref => {
   // >
   //   Checking
   // </p>
-  null, responseMessage && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+  null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "div-wrapper"
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
+    className: "label-text"
+  }, "Post Status")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("br", null), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("select", {
+    value: postStatus,
+    onChange: postStatusOnChange,
+    style: {
+      height: "32px",
+      borderRadius: "6px",
+      backgroundColor: "white",
+      color: "#595B5C",
+      fontFamily: "'Inter', sans-serif",
+      fontStyle: "normal",
+      fontWeight: "400",
+      width: "75%",
+      border: "1px solid lightGray",
+      fontSize: "12px",
+      lineHeight: "18px",
+      marginTop: "6px"
+    }
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {
+    style: {
+      borderRadius: "6px",
+      color: "#595B5C",
+      fontFamily: "'Inter', sans-serif",
+      fontStyle: "normal",
+      fontWeight: "400",
+      fontSize: "12px",
+      lineHeight: "150%"
+    },
+    value: "publish"
+  }, "Publish"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {
+    style: {
+      borderRadius: "6px",
+      color: "#595B5C",
+      fontFamily: "'Inter', sans-serif",
+      fontStyle: "normal",
+      fontWeight: "400",
+      fontSize: "12px",
+      lineHeight: "150%"
+    },
+    value: "private"
+  }, "Private"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {
+    style: {
+      borderRadius: "6px",
+      color: "#595B5C",
+      fontFamily: "'Inter', sans-serif",
+      fontStyle: "normal",
+      fontWeight: "400",
+      fontSize: "12px",
+      lineHeight: "150%"
+    },
+    value: "draft"
+  }, "Draft"))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "div-wrapper"
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_toggle__WEBPACK_IMPORTED_MODULE_7__["default"], {
+    defaultChecked: autoSync,
+    icons: false,
+    checked: autoSync,
+    onChange: e => setAutoSync(!autoSync)
+  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
+    className: "label-text"
+  }, "Auto Sync"))), responseMessage && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     style: {
       color: "#595B5C",
       fontFamily: "'Inter', sans-serif",
@@ -7763,21 +7936,12 @@ const EditPost = _ref => {
       color: "red",
       margin: "0 0 0 0"
     }
-  }, error), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "div-wrapper"
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_toggle__WEBPACK_IMPORTED_MODULE_7__["default"], {
-    defaultChecked: autoSync,
-    icons: false,
-    checked: autoSync,
-    onChange: e => setAutoSync(!autoSync)
-  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
-    className: "label-text"
-  }, "Auto Sync")))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, error)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       display: "block"
     }
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
-    disabled: !(responseAP !== null && responseAP !== void 0 && (_responseAP$status6 = responseAP.status) !== null && _responseAP$status6 !== void 0 && _responseAP$status6.type) === "success" || !dynamic || !title || !slug,
+    disabled: !(responseAP !== null && responseAP !== void 0 && (_responseAP$status9 = responseAP.status) !== null && _responseAP$status9 !== void 0 && _responseAP$status9.type) === "success" || !dynamic || !title || !slug,
     style: {
       fontFamily: "'Inter', sans-serif",
       fontStyle: "normal",
@@ -7785,7 +7949,7 @@ const EditPost = _ref => {
       fontSize: "12px",
       lineHeight: "24px",
       cursor: "pointer",
-      background: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status7 = responseAP.status) === null || _responseAP$status7 === void 0 ? void 0 : _responseAP$status7.type) === "success" && dynamic && title && slug ? "#633CE3" : "#bbaaf3",
+      background: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status10 = responseAP.status) === null || _responseAP$status10 === void 0 ? void 0 : _responseAP$status10.type) === "success" && dynamic && title && slug ? "#633CE3" : "#bbaaf3",
       color: "white",
       padding: "8px 13px 8px 13px",
       border: "none",
@@ -7833,6 +7997,7 @@ const EditPost = _ref => {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "aeroSvg": function() { return /* binding */ aeroSvg; },
+/* harmony export */   "airtableIcon": function() { return /* binding */ airtableIcon; },
 /* harmony export */   "refreshIcon": function() { return /* binding */ refreshIcon; },
 /* harmony export */   "settingsIcon": function() { return /* binding */ settingsIcon; },
 /* harmony export */   "squareMessageIcon": function() { return /* binding */ squareMessageIcon; },
@@ -7988,6 +8153,34 @@ const squareMessageIcon = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.cre
 }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("path", {
   d: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
 }));
+const airtableIcon = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
+  viewBox: "0 0 35 35",
+  fill: "none",
+  width: "17",
+  height: "16",
+  xmlns: "http://www.w3.org/2000/svg"
+}, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("g", {
+  clipPath: "url(#clip0_5252_55786)"
+}, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("path", {
+  d: "M13.5859 2.89388L2.40103 7.52232C1.779 7.78013 1.78556 8.66325 2.41134 8.91122L13.6426 13.3653C14.6294 13.7567 15.7284 13.7567 16.7152 13.3653L27.9465 8.91122C28.5723 8.66279 28.5793 7.77966 27.9568 7.52232L16.7724 2.89435C15.7521 2.47207 14.6058 2.47207 13.5854 2.89435",
+  fill: "#FFCC00"
+}), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("path", {
+  d: "M16.1758 15.7971V26.9238C16.1759 27.0461 16.206 27.1664 16.2632 27.2744C16.3205 27.3823 16.4033 27.4747 16.5044 27.5433C16.6055 27.612 16.7219 27.6549 16.8433 27.6684C16.9648 27.6818 17.0877 27.6653 17.2014 27.6204L29.717 22.7623C29.8565 22.7068 29.9762 22.6108 30.0605 22.4866C30.1448 22.3625 30.1899 22.2158 30.19 22.0657V10.9395C30.1898 10.8173 30.1598 10.6969 30.1025 10.589C30.0453 10.481 29.9625 10.3887 29.8614 10.32C29.7603 10.2513 29.6439 10.2084 29.5224 10.195C29.401 10.1815 29.278 10.198 29.1644 10.2429L16.6487 15.101C16.5093 15.1565 16.3896 15.2525 16.3053 15.3767C16.221 15.5009 16.1759 15.6475 16.1758 15.7976",
+  fill: "#31C2F2"
+}), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("path", {
+  d: "M13.254 16.3717L9.16277 18.3474L1.32199 22.1045C0.825117 22.3445 0.19043 21.9826 0.19043 21.4295V10.9867C0.19043 10.787 0.292617 10.6145 0.43043 10.4851C0.486761 10.429 0.550661 10.381 0.620273 10.3426C0.807773 10.2301 1.07496 10.2001 1.3023 10.2901L13.1921 15.001C13.8015 15.241 13.8484 16.0876 13.2545 16.3721",
+  fill: "#ED3049"
+}), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("path", {
+  d: "M13.254 16.3716L9.53962 18.1651L0.429932 10.4841C0.486263 10.428 0.550163 10.38 0.619775 10.3416C0.807275 10.2291 1.07446 10.1991 1.30181 10.2891L13.1917 15.0001C13.801 15.2401 13.8479 16.0866 13.254 16.3712",
+  fill: "#C62842"
+})), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("defs", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("clipPath", {
+  id: "clip0_5252_55786"
+}, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("rect", {
+  width: "30",
+  height: "30",
+  fill: "white",
+  transform: "translate(0.189941 0.125488)"
+}))));
 
 /***/ }),
 
@@ -8191,10 +8384,17 @@ const Dashboard = () => {
         toolType: "My Posts"
       }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
         href: "https://tools.aeropage.io/api-connector/",
-        target: "_blank"
+        target: "_blank",
+        style: {
+          textDecoration: "none"
+        }
       }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
-        className: "btn"
-      }, "Go to Connector"))))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+        className: "btn",
+        style: {
+          background: "rgb(37, 37, 37)",
+          textDecoration: "none"
+        }
+      }, "Go to Aeropage"))))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
         style: {
           width: "100%",
           display: "flex",

@@ -83,6 +83,7 @@ const AddPost = ({ resetView }) => {
   const [error, setError] = useState("");
   const [responseMessage, setResponseMessage] = useState("");
   const [autoSync, setAutoSync] = useState(false);
+  const [postStatus, setPostStatus] = useState("publish");
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
@@ -97,6 +98,10 @@ const AddPost = ({ resetView }) => {
     params.append("slug", slug);
     params.append("token", inputValue);
     params.append("auto_sync", autoSync);
+    params.append("app", responseAP?.status?.app);
+    params.append("table", responseAP?.status?.table);
+    params.append("view", responseAP?.status?.view);
+    params.append("post_status", postStatus);
 
     axios
       .post(MYSCRIPT.ajaxUrl, params)
@@ -154,6 +159,9 @@ const AddPost = ({ resetView }) => {
     console.log("clicked");
   };
 
+  const postStatusOnChange = (e) => {
+    setPostStatus(e.target.value);
+  }
   // console.log(title);
   // console.log(dynamic);
 
@@ -201,10 +209,19 @@ const AddPost = ({ resetView }) => {
             resetView={resetView}
           ></Header>
           <div>
-            <a href="https://tools.aeropage.io/api-connector/" target={"_blank"}>
+            <a 
+              href="https://tools.aeropage.io/api-connector/" 
+              target={"_blank"}
+              style={{
+                textDecoration: "none"
+              }}
+            >
               <button
                 className={"btn"}
-              >Go to Connector</button>
+                style={{
+                  background: "rgb(37, 37, 37)"
+                }}
+              >Go to Aeropage</button>
             </a>
           </div>
         </div>
@@ -596,6 +613,73 @@ const AddPost = ({ resetView }) => {
                     {error}
                   </p>
                 ) }
+                <div className="div-wrapper">
+                  <label>
+                    <span className="label-text">Post Status</span>
+                  </label>
+                  <br />
+                  <select
+                    value={postStatus}
+                    onChange={postStatusOnChange}
+                    style={{
+                      height: "32px",
+                      borderRadius: "6px",
+                      backgroundColor: "white",
+                      color: "#595B5C",
+                      fontFamily: "'Inter', sans-serif",
+                      fontStyle: "normal",
+                      fontWeight: "400",
+                      width: "75%",
+                      border: "1px solid lightGray",
+                      fontSize: "12px",
+                      lineHeight: "18px",
+                      marginTop: "6px"
+                    }}
+                  >
+                    <option
+                      style={{
+                        borderRadius: "6px",
+                        color: "#595B5C",
+                        fontFamily: "'Inter', sans-serif",
+                        fontStyle: "normal",
+                        fontWeight: "400",
+                        fontSize: "12px",
+                        lineHeight: "150%",
+                      }}
+                      value="publish"
+                    >
+                      Publish
+                    </option>
+                    <option
+                      style={{
+                        borderRadius: "6px",
+                        color: "#595B5C",
+                        fontFamily: "'Inter', sans-serif",
+                        fontStyle: "normal",
+                        fontWeight: "400",
+                        fontSize: "12px",
+                        lineHeight: "150%",
+                      }}
+                      value="private"
+                    >
+                      Private
+                    </option>
+                    <option
+                      style={{
+                        borderRadius: "6px",
+                        color: "#595B5C",
+                        fontFamily: "'Inter', sans-serif",
+                        fontStyle: "normal",
+                        fontWeight: "400",
+                        fontSize: "12px",
+                        lineHeight: "150%",
+                      }}
+                      value="draft"
+                    >
+                      Draft
+                    </option>
+                  </select>
+                </div>
                 <div className="div-wrapper">
                   <label>
                     <Toggle
