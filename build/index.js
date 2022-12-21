@@ -6634,7 +6634,7 @@ const AddPost = _ref => {
     pathLevel: 1,
     resetView: resetView
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
-    href: "https://tools.aeropage.io/api-connector/",
+    href: "https://tools.aeropage.io/api-connector/?notion=true",
     target: "_blank",
     style: {
       textDecoration: "none"
@@ -7563,7 +7563,7 @@ const EditPost = _ref => {
     pathLevel: 1,
     resetView: resetView
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
-    href: "https://tools.aeropage.io/api-connector/",
+    href: "https://tools.aeropage.io/api-connector/?notion=true",
     target: "_blank",
     style: {
       textDecoration: "none"
@@ -8387,7 +8387,7 @@ const Dashboard = () => {
       }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_header__WEBPACK_IMPORTED_MODULE_2__["default"], {
         toolType: "My Posts"
       }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
-        href: "https://tools.aeropage.io/api-connector/",
+        href: "https://tools.aeropage.io/api-connector/?notion=true",
         target: "_blank",
         style: {
           textDecoration: "none"

@@ -228,7 +228,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
           ></Header>
           <div>
             <a 
-              href="https://tools.aeropage.io/api-connector/" 
+              href="https://tools.aeropage.io/api-connector/?notion=true" 
               target={"_blank"}
               style={{
                 textDecoration: "none"
