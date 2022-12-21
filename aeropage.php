@@ -589,7 +589,7 @@ function aeropageSyncPosts($parentId)
 
 function aeropageTokenApiCall($token)
 {
-	$api_url = "https://tools.aeropage.io/api/token/$token";
+	$api_url = "https://tools.aeropage.io/api/token/$token/";
   // $api_url = "http://localhost:3002/api/token/$token";
   $result = json_decode(wp_remote_retrieve_body(wp_remote_get($api_url)), true);
   return $result;
@@ -597,7 +597,7 @@ function aeropageTokenApiCall($token)
 
 function aeropageModCheckApiCall($token)
 {
-	$api_url = "https://tools.aeropage.io/api/modcheck/$token";
+	$api_url = "https://tools.aeropage.io/api/modcheck/$token/";
   // $api_url = "http://localhost:3002/api/modcheck/$token";
   $result = json_decode(wp_remote_retrieve_body(wp_remote_get($api_url)), true);
   return $result;
