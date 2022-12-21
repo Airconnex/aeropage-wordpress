@@ -166,7 +166,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
     if(!inputValue) return null;
 
     // fetch("https://api.aeropage.io/api/v3/token/" + inputValue);
-    fetch("https://tools.aeropage.io/api/token/" + inputValue + "/")
+    fetch("https://tools.aeropage.io/api/token/" + inputValue, { redirect: "follow" })
       .then((responseAP) => responseAP.json())
       .then((data) => setResponseAP(data));
   }, [inputValue]);
@@ -459,7 +459,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
                 placeholder="Token"
               ></input>
               <a
-                href={responseAP?.status?.type !== "success" ? "" : `https://tools.aeropage.io/api-connector/${responseAP?.status?.id}/`}
+                href={responseAP?.status?.type !== "success" ? "" : `https://tools.aeropage.io/api-connector/${responseAP?.status?.id}`}
                 target="_blank"
                 style={{
                   fontFamily: "'Inter', sans-serif",

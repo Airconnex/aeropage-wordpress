@@ -6594,7 +6594,9 @@ const AddPost = _ref => {
 
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
     if (!inputValue) return null;
-    fetch("https://tools.aeropage.io/api/token/" + inputValue + "/").then(responseAP => responseAP.json()).then(data => setResponseAP(data));
+    fetch("https://tools.aeropage.io/api/token/" + inputValue, {
+      redirect: "follow"
+    }).then(responseAP => responseAP.json()).then(data => setResponseAP(data));
   }, [inputValue]);
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
     var _responseAP$status4;
@@ -6819,7 +6821,7 @@ const AddPost = _ref => {
     },
     placeholder: "Token"
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
-    href: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status5 = responseAP.status) === null || _responseAP$status5 === void 0 ? void 0 : _responseAP$status5.type) !== "success" ? "" : `https://tools.aeropage.io/api-connector/${responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status6 = responseAP.status) === null || _responseAP$status6 === void 0 ? void 0 : _responseAP$status6.id}/`,
+    href: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status5 = responseAP.status) === null || _responseAP$status5 === void 0 ? void 0 : _responseAP$status5.type) !== "success" ? "" : `https://tools.aeropage.io/api-connector/${responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status6 = responseAP.status) === null || _responseAP$status6 === void 0 ? void 0 : _responseAP$status6.id}`,
     target: "_blank",
     style: {
       fontFamily: "'Inter', sans-serif",
@@ -7493,7 +7495,9 @@ const EditPost = _ref => {
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
     if (!inputValue) return null; // fetch("https://api.aeropage.io/api/v3/token/" + inputValue);
 
-    fetch("https://tools.aeropage.io/api/token/" + inputValue + "/").then(responseAP => responseAP.json()).then(data => setResponseAP(data));
+    fetch("https://tools.aeropage.io/api/token/" + inputValue, {
+      redirect: "follow"
+    }).then(responseAP => responseAP.json()).then(data => setResponseAP(data));
   }, [inputValue]);
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
     var _responseAP$status4;
@@ -7746,7 +7750,7 @@ const EditPost = _ref => {
     },
     placeholder: "Token"
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
-    href: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status5 = responseAP.status) === null || _responseAP$status5 === void 0 ? void 0 : _responseAP$status5.type) !== "success" ? "" : `https://tools.aeropage.io/api-connector/${responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status6 = responseAP.status) === null || _responseAP$status6 === void 0 ? void 0 : _responseAP$status6.id}/`,
+    href: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status5 = responseAP.status) === null || _responseAP$status5 === void 0 ? void 0 : _responseAP$status5.type) !== "success" ? "" : `https://tools.aeropage.io/api-connector/${responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status6 = responseAP.status) === null || _responseAP$status6 === void 0 ? void 0 : _responseAP$status6.id}`,
     target: "_blank",
     style: {
       fontFamily: "'Inter', sans-serif",
