@@ -3,7 +3,7 @@
  * Plugin Name: Aeropage Sync for Airtable
  * Plugin URI: https://tools.aeropage.io/api-connector/
  * Description: Airtable to Wordpress Custom Post Type Sync Plugin
- * Version: 1.2.1
+ * Version: 1.2.2
  * Author: Aeropage
  * Author URI: https://tools.aeropage.io/
  * License: GPL2
@@ -612,13 +612,22 @@ function aeropage_external_image($ext_url,$parent)
   //$parent -- the parent post to attach to  
   $extension = pathinfo(parse_url($ext_url, PHP_URL_PATH), PATHINFO_EXTENSION);
   // new filename for local
-  $image_filename = sanitize_file_name( $filename.'.'.$extension);
+  
   $upload_dir = wp_upload_dir();
   $upload_folder = $upload_dir['basedir'].'/aeropage/';
         
   if(!file_exists($upload_folder)) wp_mkdir_p($upload_folder);
     
   $ext_img = wp_remote_get( $ext_url ); // check the url to make sure its valid
+
+  // We get the extension from content type header from the response
+  if(!$extension){
+    $content_type = $ext_img['headers']['content-type'];
+    $exploded = explode("/", $content_type);
+    $extension = $exploded[1]; //Contains the extension i.e. "jpeg, png, etc"
+  }
+
+  $image_filename = sanitize_file_name( $filename.'.'.$extension);
 
   if (! is_wp_error( $ext_img ) ) 
   {
@@ -628,7 +637,7 @@ function aeropage_external_image($ext_url,$parent)
     fclose( $fp ); // close the path
     $wp_filetype = wp_check_filetype( $image_filename , null ); // check the filename
     $attachment = array(
-      'post_mime_type' => $wp_filetype['type'], // mimetype
+      'post_mime_type' => $ext_img['headers']['content-type'], //We'll use the content type returned from response since this is more reliable //$wp_filetype['type'], // mimetype
       'post_title' => preg_replace( '/\.[^.]+$/', '', $image_filename ),
       'post_content' => '',
       'post_status' => 'inherit'

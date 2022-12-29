@@ -4,13 +4,12 @@ Contributors: Aeropage
 Tags: Airtable, Sync, CPT, Custom Post Type, Divi
 Requires at least: 6.0.2
 Tested up to: 6.1
-Stable tag: 1.2.1
+Stable tag: 1.2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Requires PHP: 7.0.0
 
 === Description ===
-<h1 id="wordpress-connector">Wordpress Connector</h1>
 <p>A powerful, easy to use combination of tools that allow you to automatically (or manually) generate Wordpress posts with custom metadata.</p>
 <p><strong>Create Wordpress posts from your Airtable data.</strong></p>
 <p><img src="assets/Untitled.png" alt="Untitled"></p>
