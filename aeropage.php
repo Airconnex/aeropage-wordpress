@@ -103,7 +103,7 @@ add_action( 'admin_enqueue_scripts', 'aeroplugin_admin_enqueue_scripts' );
  */
 function aeroplugin_admin_enqueue_scripts() {
   //Enqueue only in the plugin page.
-  if($_GET['page'] && $_GET['page'] === "aeropage"){
+  if(isset($_GET['page']) && $_GET['page'] === "aeropage"){
     wp_enqueue_style( 'aeroplugin-style', plugin_dir_url( __FILE__ ) . 'build/index.css', array(), '1.2.3' );
     wp_enqueue_script( 'aeroplugin-script', plugin_dir_url( __FILE__ ) . 'build/index.js', array( 'wp-element' ), date("h:i:s"), true );
     wp_add_inline_script( 'aeroplugin-script', 'const MYSCRIPT = ' . json_encode( array(
