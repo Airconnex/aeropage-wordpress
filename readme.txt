@@ -1,10 +1,10 @@
 === Aeropage Sync for Airtable ===
  
 Contributors: Aeropage
-Tags: Airtable, Sync, CPT, Custom Post Type, Divi
+Tags: Airtable, Sync, CPT, Custom Post Type, Divi, Elementor, Dynamic Tags, Metadata
 Requires at least: 6.0.2
 Tested up to: 6.1
-Stable tag: 1.2.2
+Stable tag: 1.2.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Requires PHP: 7.0.0
@@ -15,18 +15,18 @@ Requires PHP: 7.0.0
 <p><img src="assets/Untitled.png" alt="Untitled"></p>
 <h2 id="install-the-wordpress-plugin">Install the Wordpress Plugin</h2>
 <p>The Wordpress Connector has two parts, a Wordpress plugin that pulls your Airtable data into wordpress, and an API tool to connect with airtable <a href="https://tools.aeropage.io/api-connector/">here</a>.</p>
-<p>To connect to wordpress, use the <a href="https://wordpress.org/plugins/aeropage-sync-for-airtable/">Aeropage Sync for Airtable</a> plugin. You can find it in the Wordpress directory by searching for â€˜<strong>Aeropage</strong>â€™.</p>
+<p>To connect to wordpress, use the <a href="https://wordpress.org/plugins/aeropage-sync-for-airtable/">Aeropage Sync for Airtable</a> plugin. You can find it in the Wordpress directory by searching for "<strong>Aeropage</strong>".</p>
 <p><img src="assets/Untitled%201.png" alt="Untitled"></p>
 <h2 id="add-a-custom-post-type">Add a Custom Post Type</h2>
-<p>Once the plugin is installed, just open it from the sidebar and â€˜Add Postâ€™.</p>
+<p>Once the plugin is installed, just open it from the sidebar and "Add Post".</p>
 <p><img src="assets/Untitled%202.png" alt="Untitled"></p>
 <p><img src="assets/Untitled%203.png" alt="Untitled"></p>
-<p><strong>After clicking â€˜Add a Postâ€™ you will be shown a form.</strong></p>
+<p><strong>After clicking "Add a Post" you will be shown a form.</strong></p>
 <p><img src="assets/Untitled%204.png" alt="Untitled"></p>
 <p><strong>Title</strong></p>
-<p>The title of the custom post type will usually be the same name as the table youâ€™re importing data from in Airtable.</p>
+<p>The title of the custom post type will usually be the same name as the table you"re importing data from in Airtable.</p>
 <p><strong>Dynamic URL</strong> </p>
-<p>The dynamic url can be â€˜SEOâ€™ friendly by using the name eg â€˜shure-headphonesâ€™ or it can be easier to manage potential duplicate names by using the unique id of each record.</p>
+<p>The dynamic url can be "SEO" friendly by using the name eg "shure-headphones" or it can be easier to manage potential duplicate names by using the unique id of each record.</p>
 <p><strong>API Token</strong></p>
 <p><strong>Continue to the next steps</strong> to create a token to use with the api connector.</p>
 <p><strong>Auto Sync</strong></p>
@@ -40,7 +40,7 @@ Requires PHP: 7.0.0
 <p><img src="assets/Untitled%205.png" alt="Untitled"></p>
 <p><img src="assets/Untitled%206.png" alt="Untitled"></p>
 <h2 id="post-data-fields-metadata-">Post Data &amp; Fields (MetaData)</h2>
-<p>you can create dynamic values for your posts when they appear in â€˜loopsâ€™ on your Wordpress archive pages, query and loop templates</p>
+<p>you can create dynamic values for your posts when they appear in "loops" on your Wordpress archive pages, query and loop templates</p>
 <p><strong>Post Title</strong></p>
 <p>If you want to make a custom title, instead of using the default name of the records.</p>
 <p><strong>Post Image</strong></p>
@@ -59,14 +59,14 @@ Requires PHP: 7.0.0
 <p><img src="assets/Untitled%207.png" alt="Untitled"></p>
 <p><img src="assets/Untitled%208.png" alt="Untitled"></p>
 <h2 id="posts-preview">Posts Preview</h2>
-<p>You can see a preview of how your posts would look in a Wordpress loop by click on the â€˜postsâ€™ view. This can be used to confirm the Post Title, Image and Excerpt are correct before you syncronize with Wordpress.</p>
+<p>You can see a preview of how your posts would look in a Wordpress loop by click on the "posts" view. This can be used to confirm the Post Title, Image and Excerpt are correct before you syncronize with Wordpress.</p>
 <p><img src="assets/Untitled%209.png" alt="Untitled"></p>
 <h2 id="syncronizing-with-airtable">Syncronizing with Airtable</h2>
 <p>Once your data is setup in Aeropageâ€¦</p>
 <ul>
 <li>Open the settings.</li>
-<li>Click on the â€˜tokenâ€™ field to copy it.</li>
-<li>Go back to Wordrpress plugin, â€˜create postâ€™ page.</li>
+<li>Click on the "token" field to copy it.</li>
+<li>Go back to Wordrpress plugin, "create post" page.</li>
 <li>Paste your token into the API Token field.</li>
 </ul>
 <aside>
@@ -79,7 +79,7 @@ Requires PHP: 7.0.0
 <p><strong>After a few seconds, you should see your data appear in the right - and a Success message.</strong></p>
 <p>You are now ready to save the post, which will syncronize you posts for the first time.  After syncronizing your custom post will appear in the Wordpress menu, and a post will have been added for each record in your Airtable data.</p>
 <aside>
-ðŸ’¡ The first time you sync it can take longer as itâ€™s downloading your featured images.
+ðŸ’¡ The first time you sync it can take longer as it"s downloading your featured images.
 
 </aside>
 
@@ -91,12 +91,12 @@ Requires PHP: 7.0.0
 <p><img src="assets/Untitled%2014.png" alt="Untitled"></p>
 <p><strong>Gutenberg</strong></p>
 <ul>
-<li>Create loops using the â€˜Query Loopâ€™ Block</li>
+<li>Create loops using the "Query Loop" Block</li>
 <li>Make templates for your single posts.</li>
 </ul>
 <p><strong>Elementor</strong></p>
 <ul>
-<li>Create loops using the â€˜Loop Templateâ€™ widget.</li>
+<li>Create loops using the "Loop Template" widget.</li>
 <li>Make templates for your single posts.</li>
 </ul>
 <p><strong>Divi</strong></p>
@@ -133,6 +133,13 @@ Requires PHP: 7.0.0
 2. Adding a Post. 
 
 === Changelog ===
+
+1.2.3
+* Fixed the plugin import issue
+* fixed issues reported for syncing and image upload to wordpress
+
+1.2.2
+* Fixed the image upload issue
 
 1.2.1
 * Fixed sync issues

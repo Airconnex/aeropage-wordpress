@@ -3,7 +3,7 @@
  * Plugin Name: Aeropage Sync for Airtable
  * Plugin URI: https://tools.aeropage.io/api-connector/
  * Description: Airtable to Wordpress Custom Post Type Sync Plugin
- * Version: 1.2.2
+ * Version: 1.2.3
  * Author: Aeropage
  * Author URI: https://tools.aeropage.io/
  * License: GPL2
@@ -102,13 +102,16 @@ add_action( 'admin_enqueue_scripts', 'aeroplugin_admin_enqueue_scripts' );
  * @return void
  */
 function aeroplugin_admin_enqueue_scripts() {
-  wp_enqueue_style( 'aeroplugin-style', plugin_dir_url( __FILE__ ) . 'build/index.css', array(), '1.1.0' );
-  wp_enqueue_script( 'aeroplugin-script', plugin_dir_url( __FILE__ ) . 'build/index.js', array( 'wp-element' ), date("h:i:s"), true );
-  wp_add_inline_script( 'aeroplugin-script', 'const MYSCRIPT = ' . json_encode( array(
-      'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-      'plugin_admin_path' => parse_url(admin_url())["path"],
-      'plugin_name' => "aeropage" //This is the name of the plugin.
-  ) ), 'before' );
+  //Enqueue only in the plugin page.
+  if($_GET['page'] && $_GET['page'] === "aeropage"){
+    wp_enqueue_style( 'aeroplugin-style', plugin_dir_url( __FILE__ ) . 'build/index.css', array(), '1.2.3' );
+    wp_enqueue_script( 'aeroplugin-script', plugin_dir_url( __FILE__ ) . 'build/index.js', array( 'wp-element' ), date("h:i:s"), true );
+    wp_add_inline_script( 'aeroplugin-script', 'const MYSCRIPT = ' . json_encode( array(
+        'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+        'plugin_admin_path' => parse_url(admin_url())["path"],
+        'plugin_name' => "aeropage" //This is the name of the plugin.
+    ) ), 'before' );
+  }
 }
 
 add_action("wp_ajax_aeropageList", "aeropageList");
