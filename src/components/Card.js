@@ -15,7 +15,8 @@ import {
   settingsIcon,
   warningIcon,
   squareMessageIcon,
-  airtableIcon
+  airtableIcon,
+  aeroIconBlack
 } from "./Icons";
 import axios from "axios";
 
@@ -75,6 +76,7 @@ const Card = ({
             width: "100%",
             paddingBottom: "10px",
           }}
+          title="Edit Post Type"
         >
           <div
             style={{
@@ -220,7 +222,7 @@ const Card = ({
           >
             {trashIcon}
           </div>
-          <Link
+          {/* <Link
             className="link"
             onClick={() => {
               setUrl(!url);
@@ -247,7 +249,26 @@ const Card = ({
             >
               {settingsIcon}
             </div>
-          </Link>
+          </Link> */}
+          <a 
+            href={el.aero_page_id ? `https://tools.aeropage.io/api-connector/${el.aero_page_id}` : ""}
+            target={ el.aero_page_id ? "_blank": "_self" }
+            title={el.aero_page_id ? "Open project in Aeropage Tools." : "No project ID found. Please save the post type again and a link to open the project will be generated."}
+          >
+            <div
+              id="settings"
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                padding: "7px",
+                height: "28px",
+                width: "28px",
+              }}
+            >
+              {aeroIconBlack}
+            </div>
+          </a>
           <div
             id="refresh"
             className={refreshState ? "refresh-start" : ""}

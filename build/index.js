@@ -6490,7 +6490,7 @@ const aeroSvg = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement
 }));
 
 const AddPost = _ref => {
-  var _responseAP$status5, _responseAP$status6, _responseAP$status7, _responseAP$status8, _responseAP$status9, _responseAP$status10;
+  var _responseAP$status5, _responseAP$status6, _responseAP$status7, _responseAP$status8, _responseAP$status9, _responseAP$message, _post;
 
   let {
     resetView
@@ -6499,7 +6499,7 @@ const AddPost = _ref => {
   const navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_8__.useNavigate)();
   const [btnState, setBtnState] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
   const [inputValue, setInputValue] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
-  const [status, setStatus] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
+  const [status, setStatus] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
   const [title, setTitle] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
   const [slug, setSlug] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
   const [dynamic, setDynamic] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("record_id");
@@ -6509,12 +6509,16 @@ const AddPost = _ref => {
   const [responseMessage, setResponseMessage] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
   const [autoSync, setAutoSync] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
   const [postStatus, setPostStatus] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("publish");
+  const [fetchData, setFetchData] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
+  const [syncStatus, setSyncStatus] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
 
   const handleSubmit = e => {
     var _responseAP$status, _responseAP$status2, _responseAP$status3;
 
     e.preventDefault();
-    setLoading(true); // console.log(MYSCRIPT.ajaxUrl);
+    setLoading(true);
+    setError("");
+    setResponseMessage(""); // console.log(MYSCRIPT.ajaxUrl);
     // const reactAppData = window.wpRoomDesigner || {};
     // const { ajax_url } = reactAppData;
 
@@ -6527,7 +6531,8 @@ const AddPost = _ref => {
     params.append("auto_sync", autoSync);
     params.append("app", responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status = responseAP.status) === null || _responseAP$status === void 0 ? void 0 : _responseAP$status.app);
     params.append("table", responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status2 = responseAP.status) === null || _responseAP$status2 === void 0 ? void 0 : _responseAP$status2.table);
-    params.append("view", responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status3 = responseAP.status) === null || _responseAP$status3 === void 0 ? void 0 : _responseAP$status3.view);
+    params.append("view", responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status3 = responseAP.status) === null || _responseAP$status3 === void 0 ? void 0 : _responseAP$status3.view); // params.append("aero_page_id", responseAP?.status?.id);
+
     params.append("post_status", postStatus);
     axios__WEBPACK_IMPORTED_MODULE_5___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
       var _responseAP$data;
@@ -6551,7 +6556,7 @@ const AddPost = _ref => {
   };
 
   const handleChange = e => {
-    setStatus(true);
+    // setStatus(true);
     let token = "";
 
     try {
@@ -6593,11 +6598,18 @@ const AddPost = _ref => {
 
 
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-    if (!inputValue) return null;
+    if (!fetchData) return null;
+    setStatus(true);
     fetch("https://tools.aeropage.io/api/token/" + inputValue, {
       redirect: "follow"
-    }).then(responseAP => responseAP.json()).then(data => setResponseAP(data));
-  }, [inputValue]);
+    }).then(responseAP => responseAP.json()).then(data => {
+      var _data$status$type, _data$status;
+
+      setResponseAP(data);
+      setSyncStatus((_data$status$type = data === null || data === void 0 ? void 0 : (_data$status = data.status) === null || _data$status === void 0 ? void 0 : _data$status.type) !== null && _data$status$type !== void 0 ? _data$status$type : data === null || data === void 0 ? void 0 : data.status);
+      setStatus(false);
+    });
+  }, [fetchData]);
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
     var _responseAP$status4;
 
@@ -6860,7 +6872,17 @@ const AddPost = _ref => {
       lineHeight: "24px",
       margin: "0 0 0 5px"
     }
-  }, "Success")) : null, (responseAP === null || responseAP === void 0 ? void 0 : responseAP.type) === "PAGE_NOT_FOUND" && status === false ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+  }, "Success")) : (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status9 = responseAP.status) === null || _responseAP$status9 === void 0 ? void 0 : _responseAP$status9.type) === "error" ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+    style: {
+      fontFamily: "'Inter', sans-serif",
+      fontStyle: "normal",
+      fontWeight: "500",
+      fontSize: "12px",
+      lineHeight: "24px",
+      color: "red",
+      margin: "0 0 0 0"
+    }
+  }, ((_responseAP$message = responseAP === null || responseAP === void 0 ? void 0 : responseAP.message) !== null && _responseAP$message !== void 0 ? _responseAP$message : (_post = post) === null || _post === void 0 ? void 0 : _post.sync_message) + " ")) : null, (responseAP === null || responseAP === void 0 ? void 0 : responseAP.type) === "PAGE_NOT_FOUND" && status === false ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     style: {
       fontFamily: "'Inter', sans-serif",
       fontStyle: "normal",
@@ -7014,7 +7036,8 @@ const AddPost = _ref => {
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
     className: "label-text"
   }, "Auto Sync")))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
-    disabled: !(responseAP !== null && responseAP !== void 0 && (_responseAP$status9 = responseAP.status) !== null && _responseAP$status9 !== void 0 && _responseAP$status9.type) === "success" || !dynamic || !title || !slug,
+    disabled: // !responseAP?.status?.type === "success" ||
+    !inputValue || !dynamic || !title || !slug,
     style: {
       fontFamily: "'Inter', sans-serif",
       fontStyle: "normal",
@@ -7022,7 +7045,8 @@ const AddPost = _ref => {
       fontSize: "12px",
       lineHeight: "24px",
       cursor: "pointer",
-      background: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status10 = responseAP.status) === null || _responseAP$status10 === void 0 ? void 0 : _responseAP$status10.type) === "success" && dynamic && title && slug ? "#633CE3" : "#bbaaf3",
+      background: // responseAP?.status?.type === "success" &&
+      inputValue && dynamic && title && slug ? "#633CE3" : "#bbaaf3",
       color: "white",
       padding: "8px 13px 8px 13px",
       border: "none",
@@ -7048,11 +7072,32 @@ const AddPost = _ref => {
       padding: "20px 20px 20px 20px",
       borderRadius: "6px",
       maxHeight: "600px",
-      overflow: "scroll"
+      overflow: responseAP ? "scroll" : "hidden",
+      display: responseAP ? "block" : "flex",
+      alignItems: "center",
+      justifyContent: "center"
     }
   }, responseAP ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)((react_json_view__WEBPACK_IMPORTED_MODULE_2___default()), {
     src: responseAP
-  }) : null)))));
+  }) : (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
+    style: {
+      fontFamily: "'Inter', sans-serif",
+      fontStyle: "normal",
+      fontWeight: "500",
+      fontSize: "12px",
+      lineHeight: "24px",
+      cursor: "pointer",
+      background: "#633CE3",
+      color: "white",
+      padding: "8px 13px 8px 13px",
+      border: "none",
+      borderRadius: "6px",
+      display: "block"
+    },
+    onClick: () => {
+      setFetchData(true);
+    }
+  }, "Show Data")))))));
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (AddPost);
@@ -7134,7 +7179,8 @@ const Card = _ref => {
       display: "flex",
       width: "100%",
       paddingBottom: "10px"
-    }
+    },
+    title: "Edit Post Type"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       display: "flex",
@@ -7245,18 +7291,10 @@ const Card = _ref => {
       setOpenModal(true);
       setToBeDeleted(el.ID);
     }
-  }, _Icons__WEBPACK_IMPORTED_MODULE_2__.trashIcon), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_router_dom__WEBPACK_IMPORTED_MODULE_4__.Link, {
-    className: "link",
-    onClick: () => {
-      setUrl(!url);
-      setEditID(el.ID);
-      setIdx(idx);
-    },
-    style: {
-      textDecoration: "none",
-      color: "black"
-    },
-    to: `${link}&id=${el.ID}`
+  }, _Icons__WEBPACK_IMPORTED_MODULE_2__.trashIcon), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
+    href: el.aero_page_id ? `https://tools.aeropage.io/api-connector/${el.aero_page_id}` : "",
+    target: el.aero_page_id ? "_blank" : "_self",
+    title: el.aero_page_id ? "Open project in Aeropage Tools." : "No project ID found. Please save the post type again and a link to open the project will be generated."
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     id: "settings",
     style: {
@@ -7266,9 +7304,8 @@ const Card = _ref => {
       padding: "7px",
       height: "28px",
       width: "28px"
-    } // onClick={() => handleClick(el?.ID)}
-
-  }, _Icons__WEBPACK_IMPORTED_MODULE_2__.settingsIcon)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    }
+  }, _Icons__WEBPACK_IMPORTED_MODULE_2__.aeroIconBlack)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     id: "refresh",
     className: refreshState ? "refresh-start" : "",
     style: {
@@ -7384,7 +7421,7 @@ const aeroSvg = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement
 }));
 
 const EditPost = _ref => {
-  var _responseAP$status5, _responseAP$status6, _responseAP$status7, _responseAP$status8, _responseAP$status9, _responseAP$status10;
+  var _responseAP$status5, _responseAP$status$id, _responseAP$status6, _responseAP$status7, _responseAP$message;
 
   let {
     resetView,
@@ -7397,7 +7434,7 @@ const EditPost = _ref => {
   const JSON = {};
   const [btnState, setBtnState] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
   const [inputValue, setInputValue] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
-  const [status, setStatus] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
+  const [status, setStatus] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
   const [title, setTitle] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(editTitle);
   const [slug, setSlug] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(url);
   const [dynamic, setDynamic] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(editDynamic);
@@ -7408,6 +7445,8 @@ const EditPost = _ref => {
   const [loading, setLoading] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
   const [post, setPost] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
   const [postStatus, setPostStatus] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("publish");
+  const [fetchData, setFetchData] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
+  const [syncStatus, setSyncStatus] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
 
   const handleSubmit = e => {
     var _responseAP$status, _responseAP$status2, _responseAP$status3;
@@ -7415,6 +7454,7 @@ const EditPost = _ref => {
     e.preventDefault(); // console.log(MYSCRIPT.ajaxUrl);
 
     setLoading(true);
+    setError("");
     setResponseMessage(""); // const reactAppData = window.wpRoomDesigner || {};
     // const { ajax_url } = reactAppData;
 
@@ -7428,13 +7468,19 @@ const EditPost = _ref => {
     params.append("auto_sync", autoSync);
     params.append("app", responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status = responseAP.status) === null || _responseAP$status === void 0 ? void 0 : _responseAP$status.app);
     params.append("table", responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status2 = responseAP.status) === null || _responseAP$status2 === void 0 ? void 0 : _responseAP$status2.table);
-    params.append("view", responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status3 = responseAP.status) === null || _responseAP$status3 === void 0 ? void 0 : _responseAP$status3.view);
+    params.append("view", responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status3 = responseAP.status) === null || _responseAP$status3 === void 0 ? void 0 : _responseAP$status3.view); // params.append("aero_page_id", responseAP?.status?.id);
+
     params.append("post_status", postStatus);
     axios__WEBPACK_IMPORTED_MODULE_5___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
       var _responseAP$data;
 
       if ((responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data = responseAP.data) === null || _responseAP$data === void 0 ? void 0 : _responseAP$data.status) === "success") {
         setResponseMessage("Post updated sucessfully!");
+        location.reload();
+      } else {
+        var _responseAP$data2;
+
+        setError(responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data2 = responseAP.data) === null || _responseAP$data2 === void 0 ? void 0 : _responseAP$data2.message);
       }
 
       setLoading(false);
@@ -7445,7 +7491,7 @@ const EditPost = _ref => {
   };
 
   const handleChange = e => {
-    setStatus(true);
+    // setStatus(true);
     let token = "";
 
     try {
@@ -7482,7 +7528,12 @@ const EditPost = _ref => {
 
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
     if (posts) {
-      setPost(posts === null || posts === void 0 ? void 0 : posts.find(post => post.ID == id));
+      const post = posts === null || posts === void 0 ? void 0 : posts.find(post => post.ID == id);
+      console.log({
+        post
+      });
+      setPost(post);
+      setSyncStatus(post === null || post === void 0 ? void 0 : post.sync_status);
     }
   }, [posts]);
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
@@ -7493,16 +7544,25 @@ const EditPost = _ref => {
     }
   }, [post]);
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-    if (!inputValue) return null; // fetch("https://api.aeropage.io/api/v3/token/" + inputValue);
+    if (!fetchData) return null;
+    setStatus(true);
+    setSyncStatus("");
+    setError(""); // fetch("https://api.aeropage.io/api/v3/token/" + inputValue);
 
     fetch("https://tools.aeropage.io/api/token/" + inputValue, {
       redirect: "follow"
-    }).then(responseAP => responseAP.json()).then(data => setResponseAP(data));
-  }, [inputValue]);
+    }).then(responseAP => responseAP.json()).then(data => {
+      var _data$status$type, _data$status;
+
+      setResponseAP(data);
+      setSyncStatus((_data$status$type = data === null || data === void 0 ? void 0 : (_data$status = data.status) === null || _data$status === void 0 ? void 0 : _data$status.type) !== null && _data$status$type !== void 0 ? _data$status$type : data === null || data === void 0 ? void 0 : data.status);
+      setStatus(false);
+    });
+  }, [fetchData]);
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
     var _responseAP$status4;
 
-    if ((responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status4 = responseAP.status) === null || _responseAP$status4 === void 0 ? void 0 : _responseAP$status4.type) === "success") setStatus(false);
+    if ((responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status4 = responseAP.status) === null || _responseAP$status4 === void 0 ? void 0 : _responseAP$status4.type) === "success" || (responseAP === null || responseAP === void 0 ? void 0 : responseAP.status) === "error") setStatus(false);
     if ((responseAP === null || responseAP === void 0 ? void 0 : responseAP.type) === "PAGE_NOT_FOUND") setStatus(false);
   }, [responseAP]);
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
@@ -7511,28 +7571,28 @@ const EditPost = _ref => {
     params.append("action", "aeropageEditorMeta");
     params.append("id", id);
     axios__WEBPACK_IMPORTED_MODULE_5___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
-      var _responseAP$data2, _responseAP$data4, _responseAP$data6;
+      var _responseAP$data3, _responseAP$data5, _responseAP$data7;
 
-      if (responseAP !== null && responseAP !== void 0 && (_responseAP$data2 = responseAP.data) !== null && _responseAP$data2 !== void 0 && _responseAP$data2.token) {
-        var _responseAP$data3;
+      if (responseAP !== null && responseAP !== void 0 && (_responseAP$data3 = responseAP.data) !== null && _responseAP$data3 !== void 0 && _responseAP$data3.token) {
+        var _responseAP$data4;
 
         // console.log("THERE'S A TOKEN");
-        setInputValue(responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data3 = responseAP.data) === null || _responseAP$data3 === void 0 ? void 0 : _responseAP$data3.token[0]);
+        setInputValue(responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data4 = responseAP.data) === null || _responseAP$data4 === void 0 ? void 0 : _responseAP$data4.token[0]);
       }
 
-      if (responseAP !== null && responseAP !== void 0 && (_responseAP$data4 = responseAP.data) !== null && _responseAP$data4 !== void 0 && _responseAP$data4.auto_sync) {
-        var _responseAP$data5, _responseAP$data5$aut;
+      if (responseAP !== null && responseAP !== void 0 && (_responseAP$data5 = responseAP.data) !== null && _responseAP$data5 !== void 0 && _responseAP$data5.auto_sync) {
+        var _responseAP$data6, _responseAP$data6$aut;
 
-        setAutoSync((responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data5 = responseAP.data) === null || _responseAP$data5 === void 0 ? void 0 : (_responseAP$data5$aut = _responseAP$data5.auto_sync) === null || _responseAP$data5$aut === void 0 ? void 0 : _responseAP$data5$aut[0]) === "1" ? true : false);
+        setAutoSync((responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data6 = responseAP.data) === null || _responseAP$data6 === void 0 ? void 0 : (_responseAP$data6$aut = _responseAP$data6.auto_sync) === null || _responseAP$data6$aut === void 0 ? void 0 : _responseAP$data6$aut[0]) === "1" ? true : false);
       }
 
-      if (responseAP !== null && responseAP !== void 0 && (_responseAP$data6 = responseAP.data) !== null && _responseAP$data6 !== void 0 && _responseAP$data6.post_status) {
-        var _responseAP$data7, _responseAP$data7$pos;
+      if (responseAP !== null && responseAP !== void 0 && (_responseAP$data7 = responseAP.data) !== null && _responseAP$data7 !== void 0 && _responseAP$data7.post_status) {
+        var _responseAP$data8, _responseAP$data8$pos;
 
-        setPostStatus(responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data7 = responseAP.data) === null || _responseAP$data7 === void 0 ? void 0 : (_responseAP$data7$pos = _responseAP$data7.post_status) === null || _responseAP$data7$pos === void 0 ? void 0 : _responseAP$data7$pos[0]);
+        setPostStatus(responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data8 = responseAP.data) === null || _responseAP$data8 === void 0 ? void 0 : (_responseAP$data8$pos = _responseAP$data8.post_status) === null || _responseAP$data8$pos === void 0 ? void 0 : _responseAP$data8$pos[0]);
       }
     });
-  }, []); // console.log(responseAP);
+  }, []); // console.log(status);
 
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
@@ -7750,7 +7810,7 @@ const EditPost = _ref => {
     },
     placeholder: "Token"
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
-    href: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status5 = responseAP.status) === null || _responseAP$status5 === void 0 ? void 0 : _responseAP$status5.type) !== "success" ? "" : `https://tools.aeropage.io/api-connector/${responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status6 = responseAP.status) === null || _responseAP$status6 === void 0 ? void 0 : _responseAP$status6.id}`,
+    href: responseAP !== null && responseAP !== void 0 && (_responseAP$status5 = responseAP.status) !== null && _responseAP$status5 !== void 0 && _responseAP$status5.id || post !== null && post !== void 0 && post.aero_page_id ? `https://tools.aeropage.io/api-connector/${(_responseAP$status$id = responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status6 = responseAP.status) === null || _responseAP$status6 === void 0 ? void 0 : _responseAP$status6.id) !== null && _responseAP$status$id !== void 0 ? _responseAP$status$id : post === null || post === void 0 ? void 0 : post.aero_page_id}` : "",
     target: "_blank",
     style: {
       fontFamily: "'Inter', sans-serif",
@@ -7761,7 +7821,7 @@ const EditPost = _ref => {
       lineHeight: "24px",
       cursor: "pointer",
       marginLeft: "5px",
-      background: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status7 = responseAP.status) === null || _responseAP$status7 === void 0 ? void 0 : _responseAP$status7.type) === "success" ? "#505c6c" : "rgba(80, 92, 108, 0.33)",
+      background: responseAP !== null && responseAP !== void 0 && (_responseAP$status7 = responseAP.status) !== null && _responseAP$status7 !== void 0 && _responseAP$status7.id || post !== null && post !== void 0 && post.aero_page_id ? "#505c6c" : "rgba(80, 92, 108, 0.33)",
       color: "white",
       padding: "8px 13px 8px 13px",
       border: "none",
@@ -7773,7 +7833,8 @@ const EditPost = _ref => {
     style: {
       minHeight: "80px"
     }
-  }, (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status8 = responseAP.status) === null || _responseAP$status8 === void 0 ? void 0 : _responseAP$status8.type) === "success" && status === false ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, syncStatus === "success" ? //responseAP?.status?.type === "success" && status === false ? (
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       display: "flex",
       flexDirection: "row",
@@ -7789,7 +7850,17 @@ const EditPost = _ref => {
       lineHeight: "24px",
       margin: "0 0 0 5px"
     }
-  }, "Success")) : null, (responseAP === null || responseAP === void 0 ? void 0 : responseAP.type) === "PAGE_NOT_FOUND" && status === false ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+  }, "Success")) : syncStatus === "error" ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+    style: {
+      fontFamily: "'Inter', sans-serif",
+      fontStyle: "normal",
+      fontWeight: "500",
+      fontSize: "12px",
+      lineHeight: "24px",
+      color: "red",
+      margin: "0 0 0 0"
+    }
+  }, ((_responseAP$message = responseAP === null || responseAP === void 0 ? void 0 : responseAP.message) !== null && _responseAP$message !== void 0 ? _responseAP$message : post === null || post === void 0 ? void 0 : post.sync_message) + " ")) : (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null), (responseAP === null || responseAP === void 0 ? void 0 : responseAP.type) === "PAGE_NOT_FOUND" && status === false ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     style: {
       fontFamily: "'Inter', sans-serif",
       fontStyle: "normal",
@@ -7945,7 +8016,9 @@ const EditPost = _ref => {
       display: "block"
     }
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
-    disabled: !(responseAP !== null && responseAP !== void 0 && (_responseAP$status9 = responseAP.status) !== null && _responseAP$status9 !== void 0 && _responseAP$status9.type) === "success" || !dynamic || !title || !slug,
+    disabled: // !responseAP?.status?.type === "success" ||
+    // post?.sync_status === "error" ||
+    !inputValue || !dynamic || !title || !slug,
     style: {
       fontFamily: "'Inter', sans-serif",
       fontStyle: "normal",
@@ -7953,7 +8026,8 @@ const EditPost = _ref => {
       fontSize: "12px",
       lineHeight: "24px",
       cursor: "pointer",
-      background: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status10 = responseAP.status) === null || _responseAP$status10 === void 0 ? void 0 : _responseAP$status10.type) === "success" && dynamic && title && slug ? "#633CE3" : "#bbaaf3",
+      background: // responseAP?.status?.type === "success" &&
+      inputValue && dynamic && title && slug ? "#633CE3" : "#bbaaf3",
       color: "white",
       padding: "8px 13px 8px 13px",
       border: "none",
@@ -7980,11 +8054,32 @@ const EditPost = _ref => {
       padding: "20px 20px 20px 20px",
       borderRadius: "6px",
       maxHeight: "600px",
-      overflow: "scroll"
+      overflow: responseAP ? "scroll" : "hidden",
+      display: responseAP ? "block" : "flex",
+      alignItems: "center",
+      justifyContent: "center"
     }
   }, responseAP ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)((react_json_view__WEBPACK_IMPORTED_MODULE_2___default()), {
     src: responseAP
-  }) : null)))));
+  }) : (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
+    style: {
+      fontFamily: "'Inter', sans-serif",
+      fontStyle: "normal",
+      fontWeight: "500",
+      fontSize: "12px",
+      lineHeight: "24px",
+      cursor: "pointer",
+      background: "#633CE3",
+      color: "white",
+      padding: "8px 13px 8px 13px",
+      border: "none",
+      borderRadius: "6px",
+      display: "block"
+    },
+    onClick: () => {
+      setFetchData(true);
+    }
+  }, "Show Data")))))));
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (EditPost);
@@ -8000,6 +8095,8 @@ const EditPost = _ref => {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "aeroIconBlack": function() { return /* binding */ aeroIconBlack; },
+/* harmony export */   "aeroIconWhite": function() { return /* binding */ aeroIconWhite; },
 /* harmony export */   "aeroSvg": function() { return /* binding */ aeroSvg; },
 /* harmony export */   "airtableIcon": function() { return /* binding */ airtableIcon; },
 /* harmony export */   "refreshIcon": function() { return /* binding */ refreshIcon; },
@@ -8185,6 +8282,30 @@ const airtableIcon = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createEl
   fill: "white",
   transform: "translate(0.189941 0.125488)"
 }))));
+const aeroIconBlack = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
+  width: "20",
+  height: "20",
+  viewBox: "0 0 98 99",
+  fill: "none",
+  xmlns: "http://www.w3.org/2000/svg"
+}, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("path", {
+  "fill-rule": "evenodd",
+  "clip-rule": "evenodd",
+  d: "M18.6667 0.530579C8.35735 0.530579 0 8.88793 0 19.1972V79.8639C0 90.1732 8.35735 98.5306 18.6667 98.5306H79.3333C89.6426 98.5306 98 90.1732 98 79.8639V19.1972C98 8.88793 89.6426 0.530579 79.3333 0.530579H18.6667ZM50.7471 45.4709C50.6989 45.3123 50.647 45.1546 50.5915 44.9978L44.9034 28.9387L56.5595 28.9386L71.1184 70.0434H59.4504L58.5773 67.5778C58.4052 67.0032 58.2047 66.4372 57.9765 65.8816L50.7471 45.4709ZM40.1881 32.0913L45.5275 47.1657C45.8379 48.2591 45.8048 49.4249 45.4278 50.5033L45.2618 50.9781C44.5882 52.9051 42.7754 54.1985 40.7358 54.2106C37.6193 54.1395 34.5431 54.8147 31.7726 56.1633L40.1881 32.0913ZM40.1762 23.4526H40.193L57.6601 23.4526C58.4562 23.4525 59.2408 23.6932 59.9038 24.1523C60.5673 24.6118 61.0805 25.2711 61.3557 26.0482L77.3184 71.1163C77.4986 71.6252 77.5513 72.1708 77.4713 72.7055C77.3905 73.2445 77.1786 73.7466 76.8651 74.1729C76.5511 74.5999 76.1413 74.9428 75.6727 75.1769C75.2059 75.4102 74.6936 75.5294 74.1781 75.5294H58.3496C57.5537 75.5294 56.7691 75.2889 56.106 74.8296C55.7902 74.6109 55.5084 74.3469 55.2702 74.0465C54.9852 73.7647 54.7577 73.4157 54.615 73.0125L53.3434 69.4217C53.3271 69.3757 53.312 69.3292 53.2982 69.2824C53.1695 68.8461 53.0173 68.4165 52.8423 67.9953C52.0456 66.0778 50.7896 64.3694 49.1785 63.0101C47.1076 64.5817 45.5523 66.7037 44.7084 69.1177L43.3516 72.9979C43.0792 73.7771 42.5674 74.4408 41.9012 74.9041C41.2372 75.366 40.4505 75.6084 39.6515 75.6084H23.8228C23.3079 75.6084 22.7967 75.4895 22.3311 75.2574C21.8653 75.0253 21.4551 74.6847 21.1395 74.2573C20.8245 73.8308 20.6129 73.33 20.531 72.7945C20.4484 72.2544 20.5027 71.7101 20.6782 71.208L22.194 66.872C22.2926 66.5902 22.3979 66.3111 22.5099 66.035L36.4837 26.0639C36.7564 25.2838 37.2686 24.6214 37.931 24.1595C38.5935 23.6975 39.3786 23.4543 40.1762 23.4526ZM48.7394 56.2341C48.6637 56.1973 48.5877 56.161 48.5115 56.1252C48.5565 56.0731 48.601 56.0206 48.645 55.9675L48.7394 56.2341ZM27.4236 68.6033C27.3847 68.7147 27.3393 68.8219 27.288 68.9248L26.8693 70.1224H38.5454L39.5298 67.3073C40.4611 64.6434 41.9907 62.2474 43.9773 60.2771C43.3281 60.0977 42.6638 59.9647 41.9895 59.8801C40.8 59.7309 39.5997 59.735 38.4194 59.8889C38.4084 59.8903 38.3975 59.8918 38.3866 59.8932C38.366 59.896 38.3454 59.8988 38.3248 59.9016C38.2935 59.9059 38.2623 59.9103 38.2311 59.9148C36.1549 60.2144 34.1706 60.9758 32.4394 62.1477C30.9376 63.1643 29.6783 64.4541 28.7224 65.9302C28.1888 66.7672 27.7523 67.6632 27.424 68.6022L27.4236 68.6033Z",
+  fill: "black"
+}));
+const aeroIconWhite = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
+  width: "14",
+  height: "14",
+  viewBox: "0 0 98 98",
+  fill: "none",
+  xmlns: "http://www.w3.org/2000/svg"
+}, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("path", {
+  "fill-rule": "evenodd",
+  "clip-rule": "evenodd",
+  d: "M18.6667 0C8.35735 0 0 8.35735 0 18.6667V79.3333C0 89.6426 8.35735 98 18.6667 98H79.3333C89.6426 98 98 89.6426 98 79.3333V18.6667C98 8.35735 89.6426 0 79.3333 0H18.6667ZM50.7471 44.9404C50.6989 44.7818 50.647 44.624 50.5915 44.4672L44.9034 28.4082L56.5595 28.408L71.1184 69.5128H59.4504L58.5773 67.0472C58.4052 66.4726 58.2047 65.9066 57.9765 65.351L50.7471 44.9404ZM40.1881 31.5607L45.5275 46.6352C45.8379 47.7286 45.8048 48.8943 45.4278 49.9727L45.2619 50.4475C44.5882 52.3745 42.7754 53.6679 40.7358 53.68C37.6193 53.609 34.5431 54.2841 31.7726 55.6327L40.1881 31.5607ZM40.1762 22.922H40.193L57.6601 22.922C58.4562 22.922 59.2408 23.1627 59.9038 23.6217C60.5673 24.0813 61.0805 24.7405 61.3557 25.5177L77.3184 70.5857C77.4986 71.0946 77.5513 71.6402 77.4713 72.1749C77.3905 72.7139 77.1786 73.216 76.8651 73.6423C76.5511 74.0693 76.1413 74.4122 75.6727 74.6464C75.2059 74.8796 74.6936 74.9988 74.1781 74.9988H58.3496C57.5537 74.9988 56.7691 74.7583 56.106 74.299C55.7902 74.0803 55.5084 73.8163 55.2702 73.5159C54.9852 73.2341 54.7577 72.8852 54.615 72.482L53.3434 68.8912C53.3271 68.8451 53.312 68.7987 53.2982 68.7518C53.1695 68.3155 53.0173 67.8859 52.8423 67.4647C52.0456 65.5472 50.7896 63.8388 49.1785 62.4795C47.1076 64.0511 45.5523 66.1732 44.7084 68.5871L43.3516 72.4673C43.0792 73.2466 42.5673 73.9102 41.9012 74.3736C41.2372 74.8354 40.4505 75.0778 39.6515 75.0778H23.8228C23.3079 75.0778 22.7967 74.959 22.3311 74.7269C21.8653 74.4947 21.4551 74.1541 21.1395 73.7267C20.8245 73.3002 20.6129 72.7994 20.531 72.2639C20.4484 71.7238 20.5027 71.1795 20.6782 70.6774L22.194 66.3415C22.2926 66.0596 22.3979 65.7805 22.5099 65.5044L36.4837 25.5333C36.7564 24.7532 37.2686 24.0908 37.931 23.6289C38.5935 23.1669 39.3786 22.9237 40.1762 22.922ZM48.7394 55.7035C48.6637 55.6667 48.5877 55.6304 48.5115 55.5946C48.5565 55.5426 48.601 55.49 48.645 55.4369L48.7394 55.7035ZM27.4236 68.0727C27.3847 68.1841 27.3393 68.2913 27.288 68.3942L26.8693 69.5918H38.5454L39.5298 66.7767C40.4611 64.1129 41.9907 61.7168 43.9773 59.7465C43.3281 59.5671 42.6638 59.4341 41.9895 59.3496C40.8 59.2004 39.5997 59.2044 38.4194 59.3583L38.3711 59.3647C38.3244 59.371 38.2778 59.3775 38.2311 59.3842C36.1549 59.6838 34.1706 60.4453 32.4394 61.6171C30.9376 62.6337 29.6783 63.9236 28.7224 65.3996C28.1888 66.2367 27.7523 67.1326 27.424 68.0716L27.4236 68.0727Z",
+  fill: "white"
+}));
 
 /***/ }),
 

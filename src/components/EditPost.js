@@ -73,7 +73,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
 
   const [btnState, setBtnState] = useState(true);
   const [inputValue, setInputValue] = useState("");
-  const [status, setStatus] = useState(true);
+  const [status, setStatus] = useState(false);
   const [title, setTitle] = useState(editTitle);
   const [slug, setSlug] = useState(url);
   const [dynamic, setDynamic] = useState(editDynamic);
@@ -84,10 +84,13 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
   const [loading, setLoading] = useState(false);
   const [post, setPost] = useState(null);
   const [postStatus, setPostStatus] = useState("publish");
+  const [fetchData, setFetchData] = useState(false);
+  const [syncStatus, setSyncStatus] = useState("");
   const handleSubmit = (e) => {
     e.preventDefault();
     // console.log(MYSCRIPT.ajaxUrl);
     setLoading(true);
+    setError("");
     setResponseMessage("");
     // const reactAppData = window.wpRoomDesigner || {};
     // const { ajax_url } = reactAppData;
@@ -102,11 +105,15 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
     params.append("app", responseAP?.status?.app);
     params.append("table", responseAP?.status?.table);
     params.append("view", responseAP?.status?.view);
+    // params.append("aero_page_id", responseAP?.status?.id);
     params.append("post_status", postStatus);
 
     axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
       if(responseAP?.data?.status === "success"){
-        setResponseMessage("Post updated sucessfully!");
+        setResponseMessage("Post updated sucessfully!");      
+        location.reload()
+      }else{
+        setError(responseAP?.data?.message);
       }
       setLoading(false);
     })
@@ -116,7 +123,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
       });
   };
   const handleChange = (e) => {
-    setStatus(true);
+    // setStatus(true);
     let token = "";
 
     try{
@@ -150,7 +157,10 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
 
   useEffect(() => {
     if(posts){
-      setPost(posts?.find(post => post.ID == id));
+      const post = posts?.find(post => post.ID == id);
+      console.log({post});
+      setPost(post);
+      setSyncStatus(post?.sync_status);
     }
   }, [posts])
 
@@ -163,16 +173,22 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
   }, [post])
 
   useEffect(() => {
-    if(!inputValue) return null;
-
+    if(!fetchData) return null;
+    setStatus(true);
+    setSyncStatus("");
+    setError("");
     // fetch("https://api.aeropage.io/api/v3/token/" + inputValue);
     fetch("https://tools.aeropage.io/api/token/" + inputValue, { redirect: "follow" })
       .then((responseAP) => responseAP.json())
-      .then((data) => setResponseAP(data));
-  }, [inputValue]);
+      .then((data) => {
+        setResponseAP(data);
+        setSyncStatus(data?.status?.type ?? data?.status);
+        setStatus(false);
+      });
+  }, [fetchData]);
 
   useEffect(() => {
-    if (responseAP?.status?.type === "success") setStatus(false);
+    if (responseAP?.status?.type === "success" || responseAP?.status === "error") setStatus(false);
     if (responseAP?.type === "PAGE_NOT_FOUND") setStatus(false);
   }, [responseAP]);
 
@@ -196,7 +212,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
       }
     });
   }, []);
-  // console.log(responseAP);
+  // console.log(status);
 
   return (
     <div
@@ -459,7 +475,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
                 placeholder="Token"
               ></input>
               <a
-                href={responseAP?.status?.type !== "success" ? "" : `https://tools.aeropage.io/api-connector/${responseAP?.status?.id}`}
+                href={ responseAP?.status?.id || post?.aero_page_id ? `https://tools.aeropage.io/api-connector/${responseAP?.status?.id ?? post?.aero_page_id}` : ""}
                 target="_blank"
                 style={{
                   fontFamily: "'Inter', sans-serif",
@@ -471,7 +487,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
                   cursor: "pointer",
                   marginLeft: "5px",
                   background:
-                    responseAP?.status?.type === "success"
+                    responseAP?.status?.id || post?.aero_page_id
                       ? "#505c6c"
                       : "rgba(80, 92, 108, 0.33)",
                   color: "white",
@@ -485,7 +501,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
                 Open
               </a>
               <div style={{ minHeight: "80px" }}>
-                {responseAP?.status?.type === "success" && status === false ? (
+                {syncStatus === "success" ? (//responseAP?.status?.type === "success" && status === false ? (
                   <div
                     style={{
                       display: "flex",
@@ -510,7 +526,27 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
                       Success
                     </p>
                   </div>
-                ) : null}
+                ) : 
+                  syncStatus === "error" ? 
+                  (<>
+                    <p
+                      style={{
+                        fontFamily: "'Inter', sans-serif",
+                        fontStyle: "normal",
+                        fontWeight: "500",
+                        fontSize: "12px",
+                        lineHeight: "24px",
+                        color: "red",
+                        margin: "0 0 0 0",
+                      }}
+                    >
+                      {(responseAP?.message ?? post?.sync_message) + " "}
+                    </p>
+                  </>) : 
+                  (<>
+
+                  </>)
+                }
 
                 {responseAP?.type === "PAGE_NOT_FOUND" && status === false ? (
                   <>
@@ -713,7 +749,9 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
               <div style={{display: "block"}}>
                 <button
                   disabled={
-                    !responseAP?.status?.type === "success" ||
+                    // !responseAP?.status?.type === "success" ||
+                    // post?.sync_status === "error" ||
+                    !inputValue || 
                     !dynamic ||
                     !title ||
                     !slug
@@ -726,7 +764,8 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
                     lineHeight: "24px",
                     cursor: "pointer",
                     background:
-                      responseAP?.status?.type === "success" &&
+                      // responseAP?.status?.type === "success" &&
+                      inputValue && 
                       dynamic &&
                       title && 
                       slug
@@ -768,11 +807,35 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
                 padding: "20px 20px 20px 20px",
                 borderRadius: "6px",
                 maxHeight: "600px",
-
-                overflow: "scroll",
+                overflow: responseAP ? "scroll" : "hidden",
+                display: responseAP ? "block" : "flex",
+                alignItems: "center",
+                justifyContent: "center"
               }}
             >
-              {responseAP ? <ReactJson src={responseAP} /> : null}
+              {
+              responseAP ? 
+                <ReactJson src={responseAP} /> : 
+                <div>
+                  <button
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontStyle: "normal",
+                      fontWeight: "500",
+                      fontSize: "12px",
+                      lineHeight: "24px",
+                      cursor: "pointer",
+                      background: "#633CE3",
+                      color: "white",
+                      padding: "8px 13px 8px 13px",
+                      border: "none",
+                      borderRadius: "6px",
+                      display: "block"
+                    }}
+                    onClick={() => { setFetchData(true) }}
+                  >Show Data</button>
+                </div>
+              }
             </div>
           </div>
         </div>

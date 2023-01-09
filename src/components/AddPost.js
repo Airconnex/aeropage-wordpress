@@ -74,7 +74,7 @@ const AddPost = ({ resetView }) => {
 
   const [btnState, setBtnState] = useState(true);
   const [inputValue, setInputValue] = useState("");
-  const [status, setStatus] = useState(true);
+  const [status, setStatus] = useState(false);
   const [title, setTitle] = useState(null);
   const [slug, setSlug] = useState(null);
   const [dynamic, setDynamic] = useState("record_id");
@@ -84,9 +84,13 @@ const AddPost = ({ resetView }) => {
   const [responseMessage, setResponseMessage] = useState("");
   const [autoSync, setAutoSync] = useState(false);
   const [postStatus, setPostStatus] = useState("publish");
+  const [fetchData, setFetchData] = useState(false);
+  const [syncStatus, setSyncStatus] = useState("");
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
+    setResponseMessage("");
     // console.log(MYSCRIPT.ajaxUrl);
 
     // const reactAppData = window.wpRoomDesigner || {};
@@ -101,6 +105,7 @@ const AddPost = ({ resetView }) => {
     params.append("app", responseAP?.status?.app);
     params.append("table", responseAP?.status?.table);
     params.append("view", responseAP?.status?.view);
+    // params.append("aero_page_id", responseAP?.status?.id);
     params.append("post_status", postStatus);
 
     axios
@@ -123,7 +128,7 @@ const AddPost = ({ resetView }) => {
   };
 
   const handleChange = (e) => {
-    setStatus(true);
+    // setStatus(true);
     let token = "";
 
     try{
@@ -166,12 +171,16 @@ const AddPost = ({ resetView }) => {
   // console.log(dynamic);
 
   useEffect(() => {
-    if(!inputValue) return null;
-
+    if(!fetchData) return null;
+    setStatus(true);
     fetch("https://tools.aeropage.io/api/token/" + inputValue, { redirect: "follow" })
       .then((responseAP) => responseAP.json())
-      .then((data) => setResponseAP(data));
-  }, [inputValue]);
+      .then((data) => {
+        setResponseAP(data);
+        setSyncStatus(data?.status?.type ?? data?.status)
+        setStatus(false);
+      });
+  }, [fetchData]);
 
   useEffect(() => {
     if (responseAP?.status?.type === "success") setStatus(false);
@@ -492,7 +501,23 @@ const AddPost = ({ resetView }) => {
                       Success
                     </p>
                   </div>
-                ) : null}
+                ) : 
+                responseAP?.status?.type === "error" ? 
+                  (<>
+                    <p
+                      style={{
+                        fontFamily: "'Inter', sans-serif",
+                        fontStyle: "normal",
+                        fontWeight: "500",
+                        fontSize: "12px",
+                        lineHeight: "24px",
+                        color: "red",
+                        margin: "0 0 0 0",
+                      }}
+                    >
+                      {(responseAP?.message ?? post?.sync_message) + " "}
+                    </p>
+                  </>) : null}
 
                 {responseAP?.type === "PAGE_NOT_FOUND" && status === false ? (
                   <>
@@ -699,7 +724,8 @@ const AddPost = ({ resetView }) => {
               > */}
               <button
                 disabled={
-                  !responseAP?.status?.type === "success" ||
+                  // !responseAP?.status?.type === "success" ||
+                  !inputValue ||
                   !dynamic ||
                   !title ||
                   !slug
@@ -712,7 +738,8 @@ const AddPost = ({ resetView }) => {
                   lineHeight: "24px",
                   cursor: "pointer",
                   background:
-                    responseAP?.status?.type === "success" &&
+                    // responseAP?.status?.type === "success" &&
+                    inputValue &&
                     dynamic &&
                     title &&
                     slug
@@ -752,11 +779,35 @@ const AddPost = ({ resetView }) => {
                 padding: "20px 20px 20px 20px",
                 borderRadius: "6px",
                 maxHeight: "600px",
-
-                overflow: "scroll",
+                overflow: responseAP ? "scroll" : "hidden",
+                display: responseAP ? "block" : "flex",
+                alignItems: "center",
+                justifyContent: "center"
               }}
             >
-              {responseAP ? <ReactJson src={responseAP} /> : null}
+              {
+              responseAP ? 
+                <ReactJson src={responseAP} /> : 
+                <div>
+                  <button
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontStyle: "normal",
+                      fontWeight: "500",
+                      fontSize: "12px",
+                      lineHeight: "24px",
+                      cursor: "pointer",
+                      background: "#633CE3",
+                      color: "white",
+                      padding: "8px 13px 8px 13px",
+                      border: "none",
+                      borderRadius: "6px",
+                      display: "block"
+                    }}
+                    onClick={() => { setFetchData(true) }}
+                  >Show Data</button>
+                </div>
+              }
             </div>
           </div>
         </div>

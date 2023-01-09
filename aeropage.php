@@ -3,7 +3,7 @@
  * Plugin Name: Aeropage Sync for Airtable
  * Plugin URI: https://tools.aeropage.io/api-connector/
  * Description: Airtable to Wordpress Custom Post Type Sync Plugin
- * Version: 1.2.3
+ * Version: 1.3.0
  * Author: Aeropage
  * Author URI: https://tools.aeropage.io/
  * License: GPL2
@@ -126,6 +126,7 @@ function aeropageList()
     $post->sync_time = get_post_meta($post->ID, "aero_sync_time",true);
     $post->sync_message = get_post_meta($post->ID, "aero_sync_message",true);
     $post->connection = get_post_meta($post->ID, "aero_connection", true);
+    $post->aero_page_id = get_post_meta($post->ID, "aero_page_id", true);
 	}
 	
   // this is for react...
@@ -134,6 +135,7 @@ function aeropageList()
   die(json_encode($aeroPosts));
 }
 
+/** This adds sync to the admin bar */
 add_action( 'admin_bar_menu', 'aeroAddAdminBar', 100 );
 function aeroAddAdminBar( $admin_bar ){
   global $post;
@@ -172,6 +174,35 @@ function aeroAddAdminBar( $admin_bar ){
           </div>
         ',
         'href'=>'',
+      ) 
+    );
+  }
+}
+
+//This adds the View Record link in the admin bar menu
+add_action( 'admin_bar_menu', 'aeroRecordLink', 101 );
+function aeroRecordLink( $admin_bar ){
+  global $post;
+
+  if(!$post) return;
+
+  //Get the Custom Post Type ID used for the 
+  $aeroCPT = get_post_meta($post->ID, '_aero_cpt', true);
+  //If there's a value for _aero_cpt, we add this nav bar item
+  //Will only show if user is an admin, we don't want it to show for 'members' only
+  if($aeroCPT && current_user_can( 'manage_options' )){
+    //Get the connection from the parent CPT
+    $connection = get_post_meta($aeroCPT, "aero_connection", true);
+    //Get the record ID
+    $recordID = get_post_meta($post->ID, '_aero_id', true);
+    $admin_bar->add_menu( 
+      array( 
+        'id'=>'aero-record-link',
+        'title'=>'View Record',
+        'href'=>"https://airtable.com/".$connection."/".$recordID,
+        'meta' => array(
+          'target' => '_blank'
+        )
       ) 
     );
   }
@@ -318,13 +349,18 @@ function aeropageEdit() // called by ajax, adds the cpt
 
     update_post_meta ($id,'aero_token', sanitize_text_field($_POST['token']));
     update_post_meta ($id,'aero_auto_sync', $auto_sync);
-    update_post_meta ($id,'aero_connection', sanitize_text_field($_POST["app"])."/".sanitize_text_field($_POST["table"])."/".sanitize_text_field($_POST["view"]));
+    // update_post_meta ($id,'aero_connection', sanitize_text_field($_POST["app"])."/".sanitize_text_field($_POST["table"])."/".sanitize_text_field($_POST["view"]));
     update_post_meta ($id, 'aero_post_status', sanitize_text_field($_POST["post_status"]));
-    aeropageSyncPosts($id);
-  }
+    $response = aeropageSyncPosts($id);
 
-  die(json_encode(array("status" => "success", "post_id" => $id)));
-	
+    if($response['status'] === "error"){
+      header('Status: 503 Service Temporarily Unavailable');
+      die(json_encode(array("status" => "error", "message" => $response["message"])));
+    }else{
+      die(json_encode(array("status" => "success", "post_id" => $id)));
+    }
+  }
+  die(json_encode(array("status" => "error", "message" => "No ID found in the database.")));
 }
 
 // function aeropageTokenCheck()
@@ -399,180 +435,185 @@ function aeropageSyncPosts($parentId)
 
   $response = array();
 
-  if ($apiData['status']['type'] == 'success' and $apiData['records'])
+  if ( 
+    isset($apiData['status']['type']) && 
+    $apiData['status']['type'] == 'success' && 
+    $apiData['records']
+  )
   {
-	$response['status'] = 'success';
-	update_post_meta ($parentId,'aero_sync_status','success');
-  $sync_time = time();
-	update_post_meta ($parentId,'aero_sync_time', $sync_time);
-  // trash posts 
-  
-  
-  // fields are indexed numerically - iterate to create an array of types, indexed by name
-  
-  $fieldsByName = array();
-  
-  foreach ($apiData['fields'] as $key=>$datafield)
-  {
-  $name = sanitize_text_field($datafield['name']);
-  $type = sanitize_text_field($datafield['type']);
-  $fieldsByName[$name] = $type;
-  }
-  
-  update_post_meta ($parentId,'aero_sync_fields', $fieldsByName); // add to the parent cpt
-
-
-  $trash = "
-    UPDATE $wpdb->posts p
-        INNER JOIN $wpdb->postmeta pm ON (p.ID = pm.post_id AND pm.meta_key = '_aero_cpt') 
-    SET p.post_status = 'trash' 
-    WHERE pm.meta_value = %d";
-  $results = $wpdb->get_results($wpdb->prepare($trash, $parentId));
-  $count = 1;
-  
-  foreach ($apiData['records'] as $record)
-  {
-  $record_id = sanitize_text_field($record['id']);
-  $record_name = sanitize_text_field($record['name']); 
-  $record_slug = sanitize_text_field($record['slug']); 
-  
-  $post_type = $parent->post_name;
-  
-  $dynamic = $parent->post_excerpt; //record_id or name
-  
-  if ($dynamic !== 'name')
-  {
-  $record_slug = $record_id;
-  }
-  
-  $field_names = array_column($apiData['fields'], 'name'); // get just the types
-
-  // find if theres a trashed post with this record id already
-
-  $existing = get_posts([
-    'post_type'=> $post_type,
-    'post_status' => 'trash',
-    'numberposts' => 1,
-    'meta_key' => '_aero_id', 
-    'meta_value' => $record_id 
-  ]);
-  
-  $post_status = $record_post_status;
-
-  //If there's a post, use that post ID otherwise just left it empty
-  if ($existing){
-    $existing_id = $existing[0]->ID;
-    $post_status = "publish";
-  }else{
-    $existing_id = "";
-  }
-  
-  
-  if (strlen($record['post_title']) > 0)
-  {
-  $post_title = sanitize_text_field($record['post_title']);
-  $post_title_msg = "<br>--> adding custom post_title as $post_title.";
-  }
-  else
-  {
-  $post_title = $record_name;
-  $post_title_msg = "<br>--> no custom post title.";
-  }
-  
-  if (strlen($record['post_excerpt']) > 0)
-  {
-  $post_excerpt = sanitize_text_field($record['post_excerpt']);
-  $post_excerpt_msg = "<br>--> adding custom post_excerpt as $post_excerpt.";
-  }
-  else
-  {
-  $post_excerpt = $record_name;
-  $post_excerpt_msg = "<br>--> no custom post excerpt.";
-  }
-
-
-  $record_post = array(
-    'ID' => $existing_id,
-    'post_title' => $post_title,
-    'post_excerpt' => $post_excerpt,
-    'post_name' => $record_slug,
-    'post_parent' => '',
-    'post_type' => $post_type,
-    'post_status' => $post_status
-  );
+    $response['status'] = 'success';
+    update_post_meta ($parentId,'aero_sync_status','success');
+    $sync_time = time();
+    update_post_meta ($parentId,'aero_sync_time', $sync_time);
+    // trash posts 
     
-  $record_post_id = wp_insert_post($record_post);
-  
-  $count++;
-
-  update_post_meta ($record_post_id, '_aero_cpt', $parentId);
-  update_post_meta ($record_post_id, '_aero_id', $record_id);
-
-
-  if ($existing)
-  {
-  $response['message'] .= "<br>record $record_id : $record_name already exists as $record_post_id and is being updated.".$post_title_msg.$post_excerpt_msg;
-  }
-  else
-  {
-  $response['message'] .= "<br>record $record_id : $record_name has been created as $record_post_id.".$post_title_msg.$post_excerpt_msg;
-  }
-
-
- // featured image download
-	if (strlen($record['post_image']) > 0)
-  {
-    $image_value = sanitize_url($record['post_image']);
-    $thumbnail_id = get_post_meta( $record_post_id, '_thumbnail_id',true ); // check if this post already has thumbnails...
-
-    if (!$thumbnail_id) // if we dont already have the thumb for this post
+    
+    // fields are indexed numerically - iterate to create an array of types, indexed by name
+    
+    $fieldsByName = array();
+    
+    foreach ($apiData['fields'] as $key=>$datafield)
     {
-      $response['message'] .= "<br>--> There is a post_image, but no thumbnail found. downloading now.";
-      $thumbnail_id = aeropage_external_image($image_value,$record_post_id);
+    $name = sanitize_text_field($datafield['name']);
+    $type = sanitize_text_field($datafield['type']);
+    $fieldsByName[$name] = $type;
+    }
+    
+    update_post_meta ($parentId,'aero_sync_fields', $fieldsByName); // add to the parent cpt
 
-      //Set the attachment as featured image.
-      delete_post_meta( $record_post_id, '_thumbnail_id' );
-      add_post_meta( $record_post_id , '_thumbnail_id' , $thumbnail_id, true );
+
+    $trash = "
+      UPDATE $wpdb->posts p
+          INNER JOIN $wpdb->postmeta pm ON (p.ID = pm.post_id AND pm.meta_key = '_aero_cpt') 
+      SET p.post_status = 'trash' 
+      WHERE pm.meta_value = %d";
+    $results = $wpdb->get_results($wpdb->prepare($trash, $parentId));
+    $count = 1;
+    
+    foreach ($apiData['records'] as $record)
+    {
+    $record_id = sanitize_text_field($record['id']);
+    $record_name = sanitize_text_field($record['name']); 
+    $record_slug = sanitize_text_field($record['slug']); 
+    
+    $post_type = $parent->post_name;
+    
+    $dynamic = $parent->post_excerpt; //record_id or name
+    
+    if ($dynamic !== 'name')
+    {
+    $record_slug = $record_id;
+    }
+    
+    $field_names = array_column($apiData['fields'], 'name'); // get just the types
+
+    // find if theres a trashed post with this record id already
+
+    $existing = get_posts([
+      'post_type'=> $post_type,
+      'post_status' => 'trash',
+      'numberposts' => 1,
+      'meta_key' => '_aero_id', 
+      'meta_value' => $record_id 
+    ]);
+    
+    $post_status = $record_post_status;
+
+    //If there's a post, use that post ID otherwise just left it empty
+    if ($existing){
+      $existing_id = $existing[0]->ID;
+      $post_status = "publish";
+    }else{
+      $existing_id = "";
+    }
+    
+    
+    if (strlen($record['post_title']) > 0)
+    {
+    $post_title = sanitize_text_field($record['post_title']);
+    $post_title_msg = "<br>--> adding custom post_title as $post_title.";
+    }
+    else
+    {
+    $post_title = $record_name;
+    $post_title_msg = "<br>--> no custom post title.";
+    }
+    
+    if (strlen($record['post_excerpt']) > 0)
+    {
+    $post_excerpt = sanitize_text_field($record['post_excerpt']);
+    $post_excerpt_msg = "<br>--> adding custom post_excerpt as $post_excerpt.";
+    }
+    else
+    {
+    $post_excerpt = $record_name;
+    $post_excerpt_msg = "<br>--> no custom post excerpt.";
+    }
+
+
+    $record_post = array(
+      'ID' => $existing_id,
+      'post_title' => $post_title,
+      'post_excerpt' => $post_excerpt,
+      'post_name' => $record_slug,
+      'post_parent' => '',
+      'post_type' => $post_type,
+      'post_status' => $post_status
+    );
+      
+    $record_post_id = wp_insert_post($record_post);
+    
+    $count++;
+
+    update_post_meta ($record_post_id, '_aero_cpt', $parentId);
+    update_post_meta ($record_post_id, '_aero_id', $record_id);
+
+
+    if ($existing)
+    {
+    $response['message'] .= "<br>record $record_id : $record_name already exists as $record_post_id and is being updated.".$post_title_msg.$post_excerpt_msg;
+    }
+    else
+    {
+    $response['message'] .= "<br>record $record_id : $record_name has been created as $record_post_id.".$post_title_msg.$post_excerpt_msg;
+    }
+
+    // featured image download
+    if (strlen($record['post_image']) > 0)
+    {
+      $image_value = sanitize_url($record['post_image']);
+      $thumbnail_id = get_post_meta( $record_post_id, '_thumbnail_id',true ); // check if this post already has thumbnails...
+
+      if (!$thumbnail_id) // if we dont already have the thumb for this post
+      {
+        $response['message'] .= "<br>--> There is a post_image, but no thumbnail found. downloading now.";
+        $thumbnail_id = aeropage_external_image($image_value,$record_post_id);
+
+        //Set the attachment as featured image.
+        delete_post_meta( $record_post_id, '_thumbnail_id' );
+        add_post_meta( $record_post_id , '_thumbnail_id' , $thumbnail_id, true );
+
+      }
+      unset($thumbnail_id);
+    }
+
+
+    foreach ($record['fields'] as $key=>$value)
+    {
+    $type = $fieldsByName[$key]; // get the type
+
+    //We sanitize the URL just to be sure...
+    if ($type == 'attachment_img')
+    {
+    $value = sanitize_url($value[0]['thumbnails']['large']['url']);
+    }elseif ($type == 'attachment_doc')
+    {
+    $value = sanitize_url($value[0]['url']);
+    }else
+    {
+    $value = sanitize_text_field($value);
+    }
+
+    update_post_meta ($record_post_id, "aero_$key", $value);
+
+    $response['message'] .= "<br> ---> field $key of type $type has been added.";
 
     }
-    unset($thumbnail_id);
-  }
+    // end foreach field
 
-
-  foreach ($record['fields'] as $key=>$value)
-  {
-  $type = $fieldsByName[$key]; // get the type
-
-  //We sanitize the URL just to be sure...
-  if ($type == 'attachment_img')
-  {
-  $value = sanitize_url($value[0]['thumbnails']['large']['url']);
-  }elseif ($type == 'attachment_doc')
-  {
-  $value = sanitize_url($value[0]['url']);
-  }else
-  {
-  $value = sanitize_text_field($value);
-  }
-
-  update_post_meta ($record_post_id, "aero_$key", $value);
-
-  $response['message'] .= "<br> ---> field $key of type $type has been added.";
-
-  }
-  // end foreach field
-
-  }
-  // end foreach record
-  update_post_meta ($parentId,'aero_sync_message', $response['message']);
+    }
+    // end foreach record
+    update_post_meta ($parentId,'aero_sync_message', $response['message']);
+    update_post_meta ($parentId,'aero_page_id', sanitize_text_field($apiData['status']['id']));
+    update_post_meta ($parentId,'aero_connection', sanitize_text_field($apiData['status']["app"])."/".sanitize_text_field($apiData['status']["table"])."/".sanitize_text_field($apiData['status']["view"]));
   }
   else // some problem with api
   {
-  $response['status'] = 'error';
-  update_post_meta ($parentId,'aero_sync_status','error');
-  $message = sanitize_text_field($apiData['status']['message']);
-  update_post_meta ($parentId,'aero_sync_message',$message);
-  $response['message'] = $message;
+    $response['status'] = 'error';
+    update_post_meta ($parentId,'aero_sync_status','error');
+    $message = sanitize_text_field($apiData['message']);
+    update_post_meta ($parentId,'aero_sync_message',$message);
+    $response['message'] = $message;
   }
 
   //If doing AJAX
