@@ -189,7 +189,7 @@ const Dashboard = () => {
                 <Header toolType={"My Posts"}></Header>
                 <div>
                   <a 
-                    href="https://tools.aeropage.io/api-connector/?notion=true" 
+                    href="https://tools.aeropage.io/api-connector/dashboard?notion=true" 
                     target={"_blank"}
                     style={{
                       textDecoration: "none"

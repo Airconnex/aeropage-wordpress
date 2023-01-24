@@ -64,7 +64,7 @@ export default function Header({
         paddingRight: "15px",
       }}
     >
-      <a href={"https://tools.aeropage.io/api-connector/" } target={"_blank"}>
+      <a href={"https://tools.aeropage.io/api-connector/dashboard" } target={"_blank"}>
         <div
           style={{
             display: "flex",

@@ -244,7 +244,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
           ></Header>
           <div>
             <a 
-              href="https://tools.aeropage.io/api-connector/?notion=true" 
+              href="https://tools.aeropage.io/api-connector/dashboard?notion=true" 
               target={"_blank"}
               style={{
                 textDecoration: "none"
@@ -450,7 +450,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
                 <a
                   style={{ textDecoration: "none" }}
                   target="_blank"
-                  href="https://tools.aeropage.io/api-connector/"
+                  href="https://tools.aeropage.io/api-connector/dashboard"
                 >
                   click here...
                 </a>
@@ -475,7 +475,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
                 placeholder="Token"
               ></input>
               <a
-                href={ responseAP?.status?.id || post?.aero_page_id ? `https://tools.aeropage.io/api-connector/${responseAP?.status?.id ?? post?.aero_page_id}` : ""}
+                href={ responseAP?.status?.id || post?.aero_page_id ? `https://tools.aeropage.io/api-connector/editor/${responseAP?.status?.id ?? post?.aero_page_id}` : ""}
                 target="_blank"
                 style={{
                   fontFamily: "'Inter', sans-serif",

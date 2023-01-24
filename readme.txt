@@ -4,7 +4,7 @@ Contributors: Aeropage
 Tags: Airtable, Sync, CPT, Custom Post Type, Divi, Elementor, Dynamic Tags, Metadata
 Requires at least: 6.0.2
 Tested up to: 6.1
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Requires PHP: 7.0.0
@@ -14,7 +14,7 @@ Requires PHP: 7.0.0
 <p><strong>Create Wordpress posts from your Airtable data.</strong></p>
 <p><img src="assets/Untitled.png" alt="Untitled"></p>
 <h2 id="install-the-wordpress-plugin">Install the Wordpress Plugin</h2>
-<p>The Wordpress Connector has two parts, a Wordpress plugin that pulls your Airtable data into wordpress, and an API tool to connect with airtable <a href="https://tools.aeropage.io/api-connector/">here</a>.</p>
+<p>The Wordpress Connector has two parts, a Wordpress plugin that pulls your Airtable data into wordpress, and an API tool to connect with airtable <a href="https://tools.aeropage.io/api-connector/dashboard">here</a>.</p>
 <p>To connect to wordpress, use the <a href="https://wordpress.org/plugins/aeropage-sync-for-airtable/">Aeropage Sync for Airtable</a> plugin. You can find it in the Wordpress directory by searching for "<strong>Aeropage</strong>".</p>
 <p><img src="assets/Untitled%201.png" alt="Untitled"></p>
 <h2 id="add-a-custom-post-type">Add a Custom Post Type</h2>
@@ -133,6 +133,9 @@ Requires PHP: 7.0.0
 2. Adding a Post. 
 
 === Changelog ===
+
+1.3.1
+* Fixed the links for the tools website.
 
 1.3.0
 * Added View Record menu item in the admin bar

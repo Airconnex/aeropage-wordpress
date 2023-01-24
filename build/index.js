@@ -6646,7 +6646,7 @@ const AddPost = _ref => {
     pathLevel: 1,
     resetView: resetView
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
-    href: "https://tools.aeropage.io/api-connector/?notion=true",
+    href: "https://tools.aeropage.io/api-connector/dashboard?notion=true",
     target: "_blank",
     style: {
       textDecoration: "none"
@@ -6813,7 +6813,7 @@ const AddPost = _ref => {
       textDecoration: "none"
     },
     target: "_blank",
-    href: "https://tools.aeropage.io/api-connector/"
+    href: "https://tools.aeropage.io/api-connector/dashboard"
   }, "click here...")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("input", {
     value: inputValue,
     onChange: handleChange,
@@ -6833,7 +6833,7 @@ const AddPost = _ref => {
     },
     placeholder: "Token"
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
-    href: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status5 = responseAP.status) === null || _responseAP$status5 === void 0 ? void 0 : _responseAP$status5.type) !== "success" ? "" : `https://tools.aeropage.io/api-connector/${responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status6 = responseAP.status) === null || _responseAP$status6 === void 0 ? void 0 : _responseAP$status6.id}`,
+    href: (responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status5 = responseAP.status) === null || _responseAP$status5 === void 0 ? void 0 : _responseAP$status5.type) !== "success" ? "" : `https://tools.aeropage.io/api-connector/editor/${responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status6 = responseAP.status) === null || _responseAP$status6 === void 0 ? void 0 : _responseAP$status6.id}`,
     target: "_blank",
     style: {
       fontFamily: "'Inter', sans-serif",
@@ -7292,7 +7292,7 @@ const Card = _ref => {
       setToBeDeleted(el.ID);
     }
   }, _Icons__WEBPACK_IMPORTED_MODULE_2__.trashIcon), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
-    href: el.aero_page_id ? `https://tools.aeropage.io/api-connector/${el.aero_page_id}` : "",
+    href: el.aero_page_id ? `https://tools.aeropage.io/api-connector/editor/${el.aero_page_id}` : "",
     target: el.aero_page_id ? "_blank" : "_self",
     title: el.aero_page_id ? "Open project in Aeropage Tools." : "No project ID found. Please save the post type again and a link to open the project will be generated."
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
@@ -7623,7 +7623,7 @@ const EditPost = _ref => {
     pathLevel: 1,
     resetView: resetView
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
-    href: "https://tools.aeropage.io/api-connector/?notion=true",
+    href: "https://tools.aeropage.io/api-connector/dashboard?notion=true",
     target: "_blank",
     style: {
       textDecoration: "none"
@@ -7790,7 +7790,7 @@ const EditPost = _ref => {
       textDecoration: "none"
     },
     target: "_blank",
-    href: "https://tools.aeropage.io/api-connector/"
+    href: "https://tools.aeropage.io/api-connector/dashboard"
   }, "click here...")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("input", {
     value: inputValue,
     onChange: handleChange,
@@ -7810,7 +7810,7 @@ const EditPost = _ref => {
     },
     placeholder: "Token"
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
-    href: responseAP !== null && responseAP !== void 0 && (_responseAP$status5 = responseAP.status) !== null && _responseAP$status5 !== void 0 && _responseAP$status5.id || post !== null && post !== void 0 && post.aero_page_id ? `https://tools.aeropage.io/api-connector/${(_responseAP$status$id = responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status6 = responseAP.status) === null || _responseAP$status6 === void 0 ? void 0 : _responseAP$status6.id) !== null && _responseAP$status$id !== void 0 ? _responseAP$status$id : post === null || post === void 0 ? void 0 : post.aero_page_id}` : "",
+    href: responseAP !== null && responseAP !== void 0 && (_responseAP$status5 = responseAP.status) !== null && _responseAP$status5 !== void 0 && _responseAP$status5.id || post !== null && post !== void 0 && post.aero_page_id ? `https://tools.aeropage.io/api-connector/editor/${(_responseAP$status$id = responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status6 = responseAP.status) === null || _responseAP$status6 === void 0 ? void 0 : _responseAP$status6.id) !== null && _responseAP$status$id !== void 0 ? _responseAP$status$id : post === null || post === void 0 ? void 0 : post.aero_page_id}` : "",
     target: "_blank",
     style: {
       fontFamily: "'Inter', sans-serif",
@@ -8508,7 +8508,7 @@ const Dashboard = () => {
       }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_header__WEBPACK_IMPORTED_MODULE_2__["default"], {
         toolType: "My Posts"
       }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
-        href: "https://tools.aeropage.io/api-connector/?notion=true",
+        href: "https://tools.aeropage.io/api-connector/dashboard?notion=true",
         target: "_blank",
         style: {
           textDecoration: "none"
@@ -8783,7 +8783,7 @@ function Header(_ref) {
       paddingRight: "15px"
     }
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
-    href: "https://tools.aeropage.io/api-connector/",
+    href: "https://tools.aeropage.io/api-connector/dashboard",
     target: "_blank"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {

@@ -251,7 +251,7 @@ const Card = ({
             </div>
           </Link> */}
           <a 
-            href={el.aero_page_id ? `https://tools.aeropage.io/api-connector/${el.aero_page_id}` : ""}
+            href={el.aero_page_id ? `https://tools.aeropage.io/api-connector/editor/${el.aero_page_id}` : ""}
             target={ el.aero_page_id ? "_blank": "_self" }
             title={el.aero_page_id ? "Open project in Aeropage Tools." : "No project ID found. Please save the post type again and a link to open the project will be generated."}
           >
