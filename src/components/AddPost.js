@@ -759,7 +759,7 @@ const AddPost = ({ resetView }) => {
                   {loading ? "Submitting..." : "Save Post"}
                 </button>
                 {
-                  true ? (
+                  loading ? (
                     <div style={{ 
                       display: "flex",
                       alignItems: "center"
