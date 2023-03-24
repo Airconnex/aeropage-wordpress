@@ -6,6 +6,7 @@ import { Oval } from "react-loader-spinner";
 import axios from "axios";
 import { convertToSlug } from "./utils";
 import Toggle from "react-toggle";
+import { refreshIconBig } from "./Icons";
 
 export const tickIcon = (
   <svg
@@ -746,7 +747,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
                 ) }
               </div>
               {/* <Link to="/"> */}
-              <div style={{display: "block"}}>
+              <div style={{display: "flex"}}>
                 <button
                   disabled={
                     // !responseAP?.status?.type === "success" ||
@@ -783,6 +784,47 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
                 >
                   {loading ? "Submitting..." : "Save Post"}
                 </button>
+                {
+                  loading ? (
+                    <div style={{ 
+                      display: "flex",
+                      alignItems: "center"
+                    }}>
+                      <div 
+                        className="refresh-start"
+                        style={{ 
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          padding: "7px",
+                          height: "25px",
+                          width: "25px",
+                          cursor: "pointer"
+                        }}>
+                        { refreshIconBig }
+                      </div>
+                      <div style={{ 
+                        display: "flex",
+                        alignItems: "center" 
+                      }}>
+                        <p
+                          style={{
+                            color: "#595B5C",
+                            fontFamily: "'Inter', sans-serif",
+                            fontStyle: "normal",
+                            fontWeight: "400",
+                            fontSize: "15px",
+                            lineHeight: "175%",
+                            marginTop: "0",
+                            marginBottom: "0px",
+                          }}
+                        >
+                          Please wait, this can take a while... 
+                        </p>
+                      </div>
+                    </div>
+                  ) : (<></>)
+                }
               </div>
               {/* </Link> */}
             </form>

@@ -6,6 +6,7 @@ import { Oval } from "react-loader-spinner";
 import axios from "axios";
 import { convertToSlug } from "./utils";
 import Toggle from "react-toggle";
+import { refreshIconBig } from "./Icons";
 
 export const tickIcon = (
   <svg
@@ -722,40 +723,83 @@ const AddPost = ({ resetView }) => {
                 onClick={() => resetView()}
                 to="/wordpress/wp-admin/admin.php?page=aeroplugin"
               > */}
-              <button
-                disabled={
-                  // !responseAP?.status?.type === "success" ||
-                  !inputValue ||
-                  !dynamic ||
-                  !title ||
-                  !slug
+              <div style={{display: "flex"}}>
+                <button
+                  disabled={
+                    // !responseAP?.status?.type === "success" ||
+                    !inputValue ||
+                    !dynamic ||
+                    !title ||
+                    !slug
+                  }
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontStyle: "normal",
+                    fontWeight: "500",
+                    fontSize: "12px",
+                    lineHeight: "24px",
+                    cursor: "pointer",
+                    background:
+                      // responseAP?.status?.type === "success" &&
+                      inputValue &&
+                      dynamic &&
+                      title &&
+                      slug
+                        ? "#633CE3"
+                        : "#bbaaf3",
+                    color: "white",
+                    padding: "8px 13px 8px 13px",
+                    border: "none",
+                    borderRadius: "6px",
+                  }}
+                  // onClick={() => {
+                  //   handleMyClick();
+                  // }}
+                >
+                  {loading ? "Submitting..." : "Save Post"}
+                </button>
+                {
+                  true ? (
+                    <div style={{ 
+                      display: "flex",
+                      alignItems: "center"
+                    }}>
+                      <div 
+                        className="refresh-start"
+                        style={{ 
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          padding: "7px",
+                          height: "25px",
+                          width: "25px",
+                          cursor: "pointer"
+                        }}>
+                        { refreshIconBig }
+                      </div>
+                      <div style={{ 
+                        display: "flex",
+                        alignItems: "center" 
+                      }}>
+                        <p
+                          style={{
+                            color: "#595B5C",
+                            fontFamily: "'Inter', sans-serif",
+                            fontStyle: "normal",
+                            fontWeight: "400",
+                            fontSize: "15px",
+                            lineHeight: "175%",
+                            marginTop: "0",
+                            marginBottom: "0px",
+                          }}
+                        >
+                          Please wait, this can take a while... 
+                        </p>
+                      </div>
+                    </div>
+                  ) : (<></>)
                 }
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontStyle: "normal",
-                  fontWeight: "500",
-                  fontSize: "12px",
-                  lineHeight: "24px",
-                  cursor: "pointer",
-                  background:
-                    // responseAP?.status?.type === "success" &&
-                    inputValue &&
-                    dynamic &&
-                    title &&
-                    slug
-                      ? "#633CE3"
-                      : "#bbaaf3",
-                  color: "white",
-                  padding: "8px 13px 8px 13px",
-                  border: "none",
-                  borderRadius: "6px",
-                }}
-                // onClick={() => {
-                //   handleMyClick();
-                // }}
-              >
-                {loading ? "Submitting..." : "Save Post"}
-              </button>
+              </div>
               {/* </Link> */}
             </form>
           </div>
