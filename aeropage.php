@@ -3,7 +3,7 @@
  * Plugin Name: Aeropage Sync for Airtable
  * Plugin URI: https://tools.aeropage.io/api-connector/dashboard
  * Description: Airtable to Wordpress Custom Post Type Sync Plugin
- * Version: 2.0.0
+ * Version: 2.0.1
  * Author: Aeropage
  * Author URI: https://tools.aeropage.io/
  * License: GPL2
@@ -320,30 +320,30 @@ function aeroRegisterTypes()
 
 // add custom types to category / archive page queries
 
-function aeroPostTypesInQuery ($query) 
-{
+// function aeroPostTypesInQuery ($query) 
+// {
 
-  if(empty($query->query['post_type']) or $query->query['post_type'] === 'post')
-  {
+//   if(empty($query->query['post_type']) or $query->query['post_type'] === 'post')
+//   {
 
-    $defaultTypes = array ('post', 'page');
-    $aeroTypes = array();
-    $aeroPosts = get_posts(['post_type' => 'aero-template','post_status' => 'private','numberposts' => -1]);
+//     $defaultTypes = array ('post', 'page');
+//     $aeroTypes = array();
+//     $aeroPosts = get_posts(['post_type' => 'aero-template','post_status' => 'private','numberposts' => -1]);
 
-    foreach ($aeroPosts as $template)
-    {
-      $slug = $template->post_name; // eg Headphone
-      $aeroTypes[] = $slug; // add to array
-    }
+//     foreach ($aeroPosts as $template)
+//     {
+//       $slug = $template->post_name; // eg Headphone
+//       $aeroTypes[] = $slug; // add to array
+//     }
 
-    $postArray = array_merge($defaultTypes,$aeroTypes);
+//     $postArray = array_merge($defaultTypes,$aeroTypes);
 
-    $query->set('post_type', $postArray);
+//     $query->set('post_type', $postArray);
 
-  }
-}
+//   }
+// }
  
-add_action('pre_get_posts', 'aeroPostTypesInQuery');
+// add_action('pre_get_posts', 'aeroPostTypesInQuery');
 
 add_action("wp_ajax_aeropageEdit", "aeropageEdit");
 function aeropageEdit() // called by ajax, adds the cpt
