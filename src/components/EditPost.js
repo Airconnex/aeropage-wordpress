@@ -7,6 +7,7 @@ import axios from "axios";
 import { convertToSlug } from "./utils";
 import Toggle from "react-toggle";
 import { refreshIconBig } from "./Icons";
+import { processMedia } from "./functions";
 
 export const tickIcon = (
   <svg
@@ -69,7 +70,19 @@ export const aeroSvg = (
   </svg>
 );
 
-const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
+const EditPost = ({ 
+  resetView, 
+  id, 
+  editTitle, 
+  url, 
+  editDynamic, 
+  posts,
+  setOpenMediaModal,
+  setTotalMedia,
+  isMediaCancelled,
+  setCurrentMedia,
+  setOpenSyncRecordModal
+}) => {
   const JSON = {};
 
   const [btnState, setBtnState] = useState(true);
@@ -87,7 +100,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
   const [postStatus, setPostStatus] = useState("publish");
   const [fetchData, setFetchData] = useState(false);
   const [syncStatus, setSyncStatus] = useState("");
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // console.log(MYSCRIPT.ajaxUrl);
     setLoading(true);
@@ -108,17 +121,29 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
     params.append("view", responseAP?.status?.view);
     // params.append("aero_page_id", responseAP?.status?.id);
     params.append("post_status", postStatus);
-
-    axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
+    setOpenSyncRecordModal(true);
+    await axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
+      // console.log(responseAP?.data?.response);
+      setOpenSyncRecordModal(false);
       if(responseAP?.data?.status === "success"){
-        setResponseMessage("Post updated sucessfully!");      
-        location.reload()
+        processMedia({
+          responseData: responseAP?.data?.response,
+          setOpenMediaModal,
+          setTotalMedia,
+          isMediaCancelled,
+          setCurrentMedia
+        })
+          .then(res => {
+            location.reload()
+            setResponseMessage("Post updated sucessfully!");
+          });     
       }else{
         setError(responseAP?.data?.message);
       }
       setLoading(false);
     })
       .catch(err => {
+        setOpenSyncRecordModal(false);
         setLoading(false);
         setError(err?.message);
       });
@@ -784,7 +809,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
                 >
                   {loading ? "Submitting..." : "Save Post"}
                 </button>
-                {
+                {/* {
                   loading ? (
                     <div style={{ 
                       display: "flex",
@@ -824,7 +849,7 @@ const EditPost = ({ resetView, id, editTitle, url, editDynamic, posts }) => {
                       </div>
                     </div>
                   ) : (<></>)
-                }
+                } */}
               </div>
               {/* </Link> */}
             </form>

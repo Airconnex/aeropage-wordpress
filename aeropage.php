@@ -3,7 +3,7 @@
  * Plugin Name: Aeropage Sync for Airtable
  * Plugin URI: https://tools.aeropage.io/api-connector/dashboard
  * Description: Airtable to Wordpress Custom Post Type Sync Plugin
- * Version: 2.0.1
+ * Version: 2.0.1 
  * Author: Aeropage
  * Author URI: https://tools.aeropage.io/
  * License: GPL2
@@ -386,7 +386,7 @@ function aeropageEdit() // called by ajax, adds the cpt
       header('Status: 503 Service Temporarily Unavailable');
       die(json_encode(array("status" => "error", "message" => $response["message"])));
     }else{
-      die(json_encode(array("status" => "success", "post_id" => $id)));
+      die(json_encode(array("status" => "success", "post_id" => $id, "response" => $response)));
     }
   }
   die(json_encode(array("status" => "error", "message" => "No ID found in the database.")));
@@ -639,219 +639,221 @@ function aeropageSyncPosts($parentId)
     $results = $wpdb->get_results($wpdb->prepare($trash, $parentId));
     $count = 1;
     
+    //Media array of the records to be downloaded.
+    $response["media"] = array();
     foreach ($apiData['records'] as $record)
     {
-    $record_id = sanitize_text_field($record['id']);
-    $record_name = sanitize_text_field($record['name']); 
-    $record_slug = sanitize_text_field($record['slug']); 
-    
-    
-    
-    if ($dynamic !== 'name')
-    {
-    $record_slug = $record_id;
-    }
-    
-    // find if theres a trashed post with this record id already
-
-    $existing = get_posts([
-      'post_type'=> $post_type,
-      'post_status' => 'trash',
-      'numberposts' => 1,
-      'meta_key' => '_aero_id', 
-      'meta_value' => $record_id 
-    ]);
-    
-    $post_status = $record_post_status;
-
-    //If there's a post, use that post ID otherwise just left it empty
-    if ($existing){
-      $existing_id = $existing[0]->ID;
-      $post_status = "publish";
-    }else{
-      $existing_id = "";
-    }
-    
-    
-    if (strlen($record['post_title']) > 0)
-    {
-    $post_title = sanitize_text_field($record['post_title']);
-    $post_title_msg = "<br>--> adding custom post_title as $post_title.";
-    }
-    else
-    {
-    $post_title = $record_name;
-    $post_title_msg = "<br>--> no custom post title.";
-    }
-    
-    if (strlen($record['post_excerpt']) > 0)
-    {
-    $post_excerpt = sanitize_text_field($record['post_excerpt']);
-    $post_excerpt_msg = "<br>--> adding custom post_excerpt as $post_excerpt.";
-    }
-    else
-    {
-    $post_excerpt = $record_name;
-    $post_excerpt_msg = "<br>--> no custom post excerpt.";
-    }
-
-
-    $record_post = array(
-      'ID' => $existing_id,
-      'post_title' => $post_title,
-      'post_excerpt' => $post_excerpt,
-      'post_name' => $record_slug,
-      'post_parent' => '',
-      'post_type' => $post_type,
-      'post_status' => $post_status
-    );
+      $record_id = sanitize_text_field($record['id']);
+      $record_name = sanitize_text_field($record['name']); 
+      $record_slug = sanitize_text_field($record['slug']); 
       
-    $record_post_id = wp_insert_post($record_post);
-    
-    $count++;
-
-    update_post_meta ($record_post_id, '_aero_cpt', $parentId);
-    update_post_meta ($record_post_id, '_aero_id', $record_id);
-
-
-    if ($existing)
-    {
-      $response['message'] .= "<br>record $record_id : $record_name already exists as $record_post_id and is being updated.".$post_title_msg.$post_excerpt_msg;
-    }
-    else
-    {
-      $response['message'] .= "<br>record $record_id : $record_name has been created as $record_post_id.".$post_title_msg.$post_excerpt_msg;
-    }
-
-
-
-    foreach ($record['fields'] as $key=>$value)
-    {
-	
-      $type = $fieldTypeByName[$key]; // get the type
       
-      if ($type == 'select_multiple' or $type == 'lookup_text_short' or $type == 'linked' )
+      
+      if ($dynamic !== 'name')
       {
-        $value = implode(',',$value); // implode array into string before we add it
-        $response['message'] .= "<br> ---> field $key array to csv is $value.";
+      $record_slug = $record_id;
       }
       
-      if (substr($type,0,11) == 'attachment_' )
-      {
-        $value = sanitize_url($value[0]['url']);
+      // find if theres a trashed post with this record id already
+
+      $existing = get_posts([
+        'post_type'=> $post_type,
+        'post_status' => 'trash',
+        'numberposts' => 1,
+        'meta_key' => '_aero_id', 
+        'meta_value' => $record_id 
+      ]);
+      
+      $post_status = $record_post_status;
+
+      //If there's a post, use that post ID otherwise just left it empty
+      if ($existing){
+        $existing_id = $existing[0]->ID;
+        $post_status = "publish";
+      }else{
+        $existing_id = "";
       }
       
-      if ($value)
-      {
-        $value = sanitize_text_field($value);  
-        update_post_meta ($record_post_id, "aero_$key", $value);
-        $response['message'] .= "<br> ---> field $key of type $type has been added.";
-      }
-      //for ACF --> update_field using the field key
-      //$field_id = $fieldIDByName[$key]; // get the field id
-      //$acf_field_key = 'field_'.$parentId.$field_id;
-      //update_field( $acf_field_key, $value, $record_post_id );
-    }
-    // end foreach field
-	
-
-	
-		// POST MEDIA (ARRAY) DOWNLOAD
-	
-    if (is_array($apiData['status']['media']))
-    {
-    
-      $count = 0;
       
-      foreach ($apiData['status']['media'] as $mediaFieldID)
+      if (strlen($record['post_title']) > 0)
       {
-        $mediaFieldName = $fieldData[$mediaFieldID]['name'];
-        $mediaFieldType = $fieldData[$mediaFieldID]['type'];
-        $mediaFieldValue = $record['fields'][$mediaFieldName];
-        $response['message'] .= "<br>--> media field is $mediaFieldName ";
-        
-        foreach ($mediaFieldValue as $key => $mediaObject)
-        {
-          $response['message'] .= "<br>------> media $mediaFieldName $key is being checked... ";
-          $mediaResponse = aeropage_media_downloader($mediaObject,$record_post_id);
-          $mediaPostid = $mediaResponse[0];
-          $mediaPostMsg = $mediaResponse[1];
-          $response['message'] .= "<br>-------->$mediaPostMsg";
-          
-          if (is_int($mediaPostid) and $count == 0) //set first as thumbnail
-          {
-            $response['message'] .= "<br>----------->Setting as thumbnail -> $mediaPostid";
-            update_post_meta( $record_post_id , '_thumbnail_id' , $mediaPostid, true );
-          }
-
-          $count++;
-        }
-      }
-        // end foreach media field
-    }
-    elseif (strlen($record['post_image']) > 0) // this was using url, superceded by the above
-    {
-      $image_value = sanitize_url($record['post_image']);
-      $thumbnail_id = get_post_meta( $record_post_id, '_thumbnail_id',true ); // check if this post already has thumbnails...
-
-      if (!$thumbnail_id) // if we dont already have the thumb for this post
-      {
-        $response['message'] .= "<br>--> There is a post_image, but no thumbnail found. downloading now.";
-        $thumbnail_id = aeropage_external_image($image_value,$record_post_id,$record_name);
-
-        //Set the attachment as featured image.
-        delete_post_meta( $record_post_id, '_thumbnail_id' );
-        add_post_meta( $record_post_id , '_thumbnail_id' , $thumbnail_id, true );
-      }
-      unset($thumbnail_id);
-    }
-
-
-    //----------------------
-	// CATEGORY ASSIGNMENTS --------
-	
-	if (is_array($categoryArray) && count($categoryArray) > 0)
-	{
-    $postCategories = array(); //make an array
-    
-    foreach ($apiData['status']['categories'] as $categoryFieldID)
-    {
-      $categoryFieldName = $fieldData[$categoryFieldID]['name'];
-      $categoryValue = $record['fields'][$categoryFieldName]; // get the csv
-      
-      if (is_array($categoryValue)) // already an array
-      {
-        $categoryValueArray = $categoryValue;
+      $post_title = sanitize_text_field($record['post_title']);
+      $post_title_msg = "<br>--> adding custom post_title as $post_title.";
       }
       else
       {
-        $categoryValueArray = explode(',',$categoryValue); // comma sep,  explode to array
+      $post_title = $record_name;
+      $post_title_msg = "<br>--> no custom post title.";
       }
       
-      if (count($categoryValueArray) == 0 && strlen($categoryValue) > 0 ) // still not array and string
+      if (strlen($record['post_excerpt']) > 0)
       {
-        $categoryValueArray = array($categoryValue); // 
+      $post_excerpt = sanitize_text_field($record['post_excerpt']);
+      $post_excerpt_msg = "<br>--> adding custom post_excerpt as $post_excerpt.";
       }
+      else
+      {
+      $post_excerpt = $record_name;
+      $post_excerpt_msg = "<br>--> no custom post excerpt.";
+      }
+
+
+      $record_post = array(
+        'ID' => $existing_id,
+        'post_title' => $post_title,
+        'post_excerpt' => $post_excerpt,
+        'post_name' => $record_slug,
+        'post_parent' => '',
+        'post_type' => $post_type,
+        'post_status' => $post_status
+      );
+        
+      $record_post_id = wp_insert_post($record_post);
       
-      foreach ($categoryValueArray as $categoryName)
+      $count++;
+
+      update_post_meta ($record_post_id, '_aero_cpt', $parentId);
+      update_post_meta ($record_post_id, '_aero_id', $record_id);
+
+
+      if ($existing)
       {
-        $categoryName = trim($categoryName);// get rid of spaces!
-        $categoryTermId = $categoryArray[$categoryName]; // get the term id
-        if (is_int($categoryTermId)){$postCategories[] = $categoryTermId;} // add to array if valid
+        $response['message'] .= "<br>record $record_id : $record_name already exists as $record_post_id and is being updated.".$post_title_msg.$post_excerpt_msg;
       }
-        //end foreach category	
-      if (is_array($postCategories)){
-        $response['message'] .= "<br> -----> Post Categories | $categoryFieldName : $categoryName";
-        wp_set_post_categories($record_post_id,$postCategories);
-      } // set the post categories    
-    }
-    // end foreach category field
-	}
+      else
+      {
+        $response['message'] .= "<br>record $record_id : $record_name has been created as $record_post_id.".$post_title_msg.$post_excerpt_msg;
+      }
+
+
+
+      foreach ($record['fields'] as $key=>$value)
+      {
+    
+        $type = $fieldTypeByName[$key]; // get the type
+        
+        if ($type == 'select_multiple' or $type == 'lookup_text_short' or $type == 'linked' )
+        {
+          $value = implode(',',$value); // implode array into string before we add it
+          $response['message'] .= "<br> ---> field $key array to csv is $value.";
+        }
+        
+        if (substr($type,0,11) == 'attachment_' )
+        {
+          $value = sanitize_url($value[0]['url']);
+        }
+        
+        if ($value)
+        {
+          $value = sanitize_text_field($value);  
+          update_post_meta ($record_post_id, "aero_$key", $value);
+          $response['message'] .= "<br> ---> field $key of type $type has been added.";
+        }
+        //for ACF --> update_field using the field key
+        //$field_id = $fieldIDByName[$key]; // get the field id
+        //$acf_field_key = 'field_'.$parentId.$field_id;
+        //update_field( $acf_field_key, $value, $record_post_id );
+      }
+      // end foreach field
+    
+
+    
+      // POST MEDIA (ARRAY) DOWNLOAD
+    
+      if (is_array($apiData['status']['media']))
+      {
+      
+        $check = true; 
+
+        if ( defined( 'DOING_CRON' ) )
+        {
+          $check = false;
+        }
+
+        $count = 0;
+        $mediaArray = array();
+        
+        foreach ($apiData['status']['media'] as $mediaFieldID)
+        {
+          $mediaFieldName = $fieldData[$mediaFieldID]['name'];
+          $mediaFieldType = $fieldData[$mediaFieldID]['type'];
+          $mediaFieldValue = $record['fields'][$mediaFieldName];
+          $response['message'] .= "<br>--> media field is $mediaFieldName ";
+          
+          foreach ($mediaFieldValue as $key => $mediaObject)
+          {
+            $response['message'] .= "<br>------> media $mediaFieldName $key is being checked... ";
+            $mediaResponse = aeropage_media_downloader($mediaObject,$record_post_id, $count, $check);
+            $mediaPostid = $mediaResponse[0];
+            $mediaPostMsg = $mediaResponse[1];
+            $response["media"][] = $mediaResponse[3];
+            $response['message'] .= "<br>-------->$mediaPostMsg";
+            $count++;
+          }
+        }
+          // end foreach media field
+      }
+      elseif (strlen($record['post_image']) > 0) // this was using url, superceded by the above
+      {
+        $image_value = sanitize_url($record['post_image']);
+        $thumbnail_id = get_post_meta( $record_post_id, '_thumbnail_id', true ); // check if this post already has thumbnails...
+
+        if (!$thumbnail_id) // if we dont already have the thumb for this post
+        {
+          $response['message'] .= "<br>--> There is a post_image, but no thumbnail found. downloading now.";
+          $thumbnail_id = aeropage_external_image($image_value,$record_post_id,$record_name);
+
+          //Set the attachment as featured image.
+          delete_post_meta( $record_post_id, '_thumbnail_id' );
+          add_post_meta( $record_post_id , '_thumbnail_id' , $thumbnail_id, true );
+        }
+        unset($thumbnail_id);
+      }
+
+
+      //----------------------
+    // CATEGORY ASSIGNMENTS --------
+    
+      if (is_array($categoryArray) && count($categoryArray) > 0)
+      {
+        $postCategories = array(); //make an array
+        
+        foreach ($apiData['status']['categories'] as $categoryFieldID)
+        {
+          $categoryFieldName = $fieldData[$categoryFieldID]['name'];
+          $categoryValue = $record['fields'][$categoryFieldName]; // get the csv
+          
+          if (is_array($categoryValue)) // already an array
+          {
+            $categoryValueArray = $categoryValue;
+          }
+          else
+          {
+            $categoryValueArray = explode(',',$categoryValue); // comma sep,  explode to array
+          }
+          
+          if (count($categoryValueArray) == 0 && strlen($categoryValue) > 0 ) // still not array and string
+          {
+            $categoryValueArray = array($categoryValue); // 
+          }
+          
+          foreach ($categoryValueArray as $categoryName)
+          {
+            $categoryName = trim($categoryName);// get rid of spaces!
+            $categoryTermId = $categoryArray[$categoryName]; // get the term id
+            if (is_int($categoryTermId)){$postCategories[] = $categoryTermId;} // add to array if valid
+          }
+            //end foreach category	
+          if (is_array($postCategories)){
+            $response['message'] .= "<br> -----> Post Categories | $categoryFieldName : $categoryName";
+            wp_set_post_categories($record_post_id,$postCategories);
+          } // set the post categories    
+        }
+        // end foreach category field
+      }
 	// end if categories ----------
-
-
-
     }
+    
     // end foreach record
     update_post_meta ($parentId,'aero_sync_message', $response['message']);
     update_post_meta ($parentId,'aero_page_id', sanitize_text_field($apiData['status']['id']));
@@ -881,96 +883,130 @@ function aeropageSyncPosts($parentId)
 }
 // end function
 
+add_action("wp_ajax_aeropageMediaDownload", "aeropageMediaDownload");
+function aeropageMediaDownload() {
+  try{
+    $media = json_decode(stripslashes($_POST["media"]), true);
 
+    if(is_array($media)){
+      $response = aeropage_media_downloader($media["media"], $media["record_post_id"], $media["field_index"]);
+      die(json_encode(array("status" => "success", "message" => $response[1])));
+    }else{
+      throw new Exception("Invalid data type received by the request handler.");
+    }
+  }catch(Exception $e){
+    header('Status: 503 Service Temporarily Unavailable');
+    die(json_encode(array("status" => "error", "message" => $e->getMessage())));
+  }
+}
 
 // MEDIA DOWNLOADER  --------------------------------------
 
-function aeropage_media_downloader($mediaObject,$parent)
+//$mediaObject => Airtable Media structure
+//$parent => wordpress post ID where the image will be attached
+//$field_index => index of the airtable field--will be used to set the featured image
+//$check => flag for checking if we add the image to an array when syncing.
+function aeropage_media_downloader($mediaObject, $parent, $field_index, $check = NULL)
 {
 
-global $wpdb;
+  global $wpdb;
 
-$response = array();
-
-
-
-$attachmentURL = sanitize_url($mediaObject['url']);
-$attachmentID = sanitize_text_field($mediaObject['id']);
-$attachmentFileType = sanitize_text_field($mediaObject['type']);
-$attachmentFileName = sanitize_file_name(strtolower($mediaObject['filename']));
-
-$response[1] = "Checking Attachment : $attachmentID <br>";
-
-$uploadDir = wp_upload_dir();
-$uploadFolder = $uploadDir['basedir'].'/airtable/';
-$uploadPath = $uploadFolder.$attachmentFileName;
-
-if (!file_exists($uploadFolder)) wp_mkdir_p($uploadFolder); // if no folder, create.
-
-// CHECK IF FILE NEEDS TO BE DOWNLOADED
-
-if (!file_exists($uploadPath)) // file doesnt already exist in folder, download it
-{
-	
-		$checkURL = wp_remote_get( $attachmentURL ); // check the url to make sure its valid
-
-		if (! is_wp_error( $checkURL ) ) 
-		{
-			$response[1] .= "File doesnt exist and url is valid. Downloading.";
-			$downloadedFile = wp_remote_retrieve_body( $checkURL ); // get the image file
-			$fp = fopen($uploadPath , 'w' ); // set the path to save
-			fwrite( $fp, $downloadedFile ); // write the contents to the file
-			fclose( $fp ); // close the path
-		}
-
-}
-else
-{
-$response[1] .= "File already exists in the folder.";
-$downloadedFile = true; // indicate that the file is already downloaded.
-}
+  $response = array();
 
 
-// CHECK IF THIS ATTACHMENT WAS ALREADY PROCESSED ON A PREVIOUS RUN
 
-$existingMediaCheck = get_posts(['meta_key' => "aero_media_$attachmentID",'post_parent' => $parent,'post_type' => 'attachment', 'numberposts' => 1]);
-$existingMedia = $existingMediaCheck[0]->ID;
+  $attachmentURL = sanitize_url($mediaObject['url']);
+  $attachmentID = sanitize_text_field($mediaObject['id']);
+  $attachmentFileType = sanitize_text_field($mediaObject['type']);
+  $fileNameExploded = explode(".", $mediaObject['filename']);
+  $fileTypeExploded = explode("/", $attachmentFileType);
+  $attachmentFileName = sanitize_file_name(strtolower($fileNameExploded[0]));
 
-// check for an attachment with meta_key matching this
+  $response[1] = "Checking Attachment : $attachmentID <br>";
 
-if ($existingMedia) // attachment exists, skip this
-{
-	$response[0] = $existingMedia;
-	$response[1] .= " > Attachment Post already exists as : $existingMedia. Skipping.";
-}
-elseif ($downloadedFile) // no attachment exists and we have the file
-{
-	$attachment = array(
-	  'post_title' => $attachmentFileName,
-	  'post_mime_type' => $attachmentFileType,
-	  'post_status' => 'inherit'
-	);
+  $uploadDir = wp_upload_dir();
+  $uploadFolder = $uploadDir['basedir'].'/airtable/';
+  $uploadPathWithAttachmentID = $uploadFolder.$attachmentID.'_'.$attachmentFileName.'.'.$fileTypeExploded[1];
+  //$check is a flag that tells us if we are just adding to media array, if true we will add the media object to an array along with the record post ID
+  //This will be used for the media download in the second step.
+  if($check){
+    $response[1] .= "Adding media for ".$parent."to be downloaded later.";
+    $response[3] = array(
+      "media" => $mediaObject,
+      "record_post_id" => $parent,
+      "field_index" => $field_index
+    );
+  }else{
+    //Otherwise if we are not checking the image
+    if (!file_exists($uploadFolder)) wp_mkdir_p($uploadFolder); // if no folder, create.
 
-	$mediaPostid = wp_insert_attachment( $attachment, $uploadPath, $parent ); //create / attach file to its parent post
-	
-	if (is_int($mediaPostid))
-	{
-			require_once ABSPATH . 'wp-admin/includes/image.php'; //require for wp_generate_attachment_metadata
-			$attachmentMeta = wp_generate_attachment_metadata( $mediaPostid, $uploadPath);
-			wp_update_attachment_metadata( $mediaPostid, $attachmentMeta );
-			update_post_meta($mediaPostid,"aero_media_$attachmentID",'done');// mark media with attachment id.
-			$response[0] = $mediaPostid;
-			$response[1] .= " > Attachment Post was inserted as : $mediaPostid";
-	}
-	else
-	{
-	$response[1] .= "The file was downloaded, but a problem occurred with wp_insert_attachment.";
-	}
-}	
+    // CHECK IF FILE NEEDS TO BE DOWNLOADED
 
+    if (!file_exists($uploadPathWithAttachmentID)) // file doesnt already exist in folder, download it
+    {
+      //If we aren't
+      $checkURL = wp_remote_get( $attachmentURL ); // check the url to make sure its valid
 
-return $response;
+      if (! is_wp_error( $checkURL ) ) 
+      {
+        $response[1] .= "File doesnt exist and url is valid. Downloading.";
+        $downloadedFile = wp_remote_retrieve_body( $checkURL ); // get the image file
+        $fp = fopen($uploadPathWithAttachmentID , 'w' ); // set the path to save
+        fwrite( $fp, $downloadedFile ); // write the contents to the file
+        fclose( $fp ); // close the path
+      }
+    }
+    else
+    {
+      $response[1] .= "File already exists in the folder.";
+      $downloadedFile = true; // indicate that the file is already downloaded.
+    }
+  }
 
+  // CHECK IF THIS ATTACHMENT WAS ALREADY PROCESSED ON A PREVIOUS RUN
+  $existingMediaCheck = get_posts(['meta_key' => "aero_media_$attachmentID",'post_parent' => $parent,'post_type' => 'attachment', 'numberposts' => 1]);
+  $existingMedia = $existingMediaCheck[0]->ID;
+
+  // check for an attachment with meta_key matching this
+
+  if ($existingMedia) // attachment exists, skip this
+  {
+    $response[0] = $existingMedia;
+    $response[1] .= " > Attachment Post already exists as : $existingMedia. Skipping.";
+  }
+  elseif ($downloadedFile) // no attachment exists and we have the file. If there's no downloaded file, then we just skip this code block.
+  {
+    $attachment = array(
+      'post_title' => $attachmentFileName,
+      'post_mime_type' => $attachmentFileType,
+      'post_status' => 'inherit'
+    );
+
+    $mediaPostid = wp_insert_attachment( $attachment, $uploadPathWithAttachmentID, $parent ); //create / attach file to its parent post
+    
+    if (is_int($mediaPostid))
+    {
+        require_once ABSPATH . 'wp-admin/includes/image.php'; //require for wp_generate_attachment_metadata
+        $attachmentMeta = wp_generate_attachment_metadata( $mediaPostid, $uploadPathWithAttachmentID);
+        wp_update_attachment_metadata( $mediaPostid, $attachmentMeta );
+        update_post_meta($mediaPostid,"aero_media_$attachmentID",'done');// mark media with attachment id.
+        $response[0] = $mediaPostid;
+        $response[1] .= " > Attachment Post was inserted as : $mediaPostid";
+    }
+    else
+    {
+    $response[1] .= "The file was downloaded, but a problem occurred with wp_insert_attachment.";
+    }
+  }	
+
+  //If the field is the first index in the media/attachments and there is a mediaID, we will add the media as a feature image
+  if (is_int($response[0]) and $field_index == 0) //set first as thumbnail
+  {
+    $response[1] .= "<br>----------->Setting as thumbnail -> $response[0]";
+    update_post_meta( $parent , '_thumbnail_id' , $response[0], true );
+  }
+
+  return $response;
 }
 
 

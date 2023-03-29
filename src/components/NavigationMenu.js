@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Header from "./header";
 import axios from "axios";
 import {
@@ -15,8 +15,11 @@ import EditPost from "./EditPost";
 import Card from "./Card";
 import Modal from 'react-modal';
 import {
-  aeroSvg
+  aeroSvg,
+  refreshIconLarge,
+  tickIconLarge
 } from "./Icons";
+import { processMedia } from "./functions";
 
 const customStyles = {
   content: {
@@ -55,8 +58,13 @@ const Dashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [openLogModal, setOpenLogModal] = useState(false);
   const [syncLog, setSyncLog] = useState(false);
-
-  console.log("PLUGIN NAME: ", MYSCRIPT.plugin_name);
+  const [openMediaModal, setOpenMediaModal] = useState(false);
+  const [openSyncRecordModal, setOpenSyncRecordModal] = useState(false);
+  const [currentMedia, setCurrentMedia] = useState(null);
+  const [totalMedia, setTotalMedia] = useState(null);
+  // const [isMediaCancelled, setIsMediaCancelled] = useState(false);
+  let isMediaCancelled = useRef(0);
+  // console.log("PLUGIN NAME: ", MYSCRIPT.plugin_name);
   useEffect(() => {
     console.log("use effect");
     listAeropagePages();
@@ -99,24 +107,24 @@ const Dashboard = () => {
     // console.log("id: " + id);
     // console.log(MYSCRIPT.ajaxUrl);
 
-    let params = new URLSearchParams();
-    params.append("action", "aeropageSyncPosts");
-    params.append("id", id);
+    // let params = new URLSearchParams();
+    // params.append("action", "aeropageSyncPosts");
+    // params.append("id", id);
 
-    axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
-      console.log("RESPONSE DATA: ", responseAP.data);
-    });
+    // axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
+    //   console.log("RESPONSE DATA: ", responseAP.data);
+    // });
   };
 
   const handleRefresh = async (id) => {
     // console.log("id: " + id);
     // console.log(MYSCRIPT.ajaxUrl);
-
+    setOpenSyncRecordModal(true);
     let params = new URLSearchParams();
     params.append("action", "aeropageSyncPosts");
     params.append("id", id);
 
-    return await axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
+    const responseData = await axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
       if(response){
         const b = [...response];
         const a = b?.find(re => re.ID === id);
@@ -127,9 +135,24 @@ const Dashboard = () => {
 
         setResponse(b);
       }
-      
       return responseAP?.data;
-    });
+    })
+      .catch(err => {
+        console.log(err);
+        return null;
+      });
+
+    setOpenSyncRecordModal(false);
+
+    await processMedia({
+      responseData,
+      setOpenMediaModal,
+      setTotalMedia,
+      isMediaCancelled,
+      setCurrentMedia
+    })
+
+    return responseData;
   };
 
   const deletePost = async () => {
@@ -432,7 +455,14 @@ const Dashboard = () => {
         </>
       );
     } else if (path === "addPost") {
-      return <AddPost resetView={resetView} />;
+      return <AddPost 
+        resetView={resetView}
+        setOpenMediaModal={setOpenMediaModal}
+        setTotalMedia={setTotalMedia}
+        isMediaCancelled={isMediaCancelled}
+        setCurrentMedia={setCurrentMedia}
+        setOpenSyncRecordModal={setOpenSyncRecordModal} 
+      />;
     } else if (path === "editPost") {
       console.log(response);
       return (
@@ -442,12 +472,118 @@ const Dashboard = () => {
           url={response?.[idx]?.post_name}
           editDynamic={response?.[idx]?.post_excerpt}
           posts={response}
+          setOpenMediaModal={setOpenMediaModal}
+          setTotalMedia={setTotalMedia}
+          isMediaCancelled={isMediaCancelled}
+          setCurrentMedia={setCurrentMedia}
+          setOpenSyncRecordModal={setOpenSyncRecordModal}
         />
       );
     }
+    
   };
 
-  return conditionalRender();
+  return (
+    <>
+      { conditionalRender() }
+      <Modal
+        isOpen={openSyncRecordModal}
+        style={customStyles}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: "20px",
+            flexDirection: "column",
+            width: "250px"
+          }}
+        >
+          <h2>Syncing Record</h2>
+          <div
+            id="refresh"
+            className={"refresh-start"}
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              padding: "7px",
+              height: "70px",
+              width: "70px",
+            }}
+          >
+            {refreshIconLarge}
+          </div>
+          <div>
+            <p
+              style={{ 
+                fontSize: "13px",
+                //textDecoration: "underline",
+                margin: "0",
+                //cursor: "pointer"
+              }}
+            >Please wait, this can take a while... </p>
+          </div>
+          <div></div>
+        </div>
+      </Modal>
+      <Modal
+        isOpen={openMediaModal}
+        style={customStyles}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: "20px",
+            flexDirection: "column",
+            width: "250px"
+          }}
+        >
+          <h2>{ currentMedia?.index === totalMedia ? "Media Downloaded" : "Downloading Media" }</h2>
+          <div
+            id="refresh"
+            className={currentMedia?.index === totalMedia ? "" : "refresh-start" }
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              padding: "7px",
+              height: "70px",
+              width: "70px",
+            }}
+          >
+            { currentMedia?.index === totalMedia ? tickIconLarge : refreshIconLarge}
+          </div>
+          <div>
+            <p
+              style={{ 
+                fontSize: "20px",
+                margin: "0"
+              }}
+            >{ currentMedia?.index ?? 1 } / { totalMedia }</p>
+          </div>
+          <div>
+            <p
+              style={{ 
+                fontSize: "13px",
+                textDecoration: "underline",
+                margin: "0",
+                cursor: "pointer"
+              }}
+              onClick={() => {
+                // setIsMediaCancelled(true)
+                isMediaCancelled.current = 1;
+                setOpenMediaModal(false)
+              }}
+            >{currentMedia?.index === totalMedia ? "Close" : "Cancel"}</p>
+          </div>
+        </div>
+      </Modal>
+    </>
+  );
 };
 
 export default Dashboard;

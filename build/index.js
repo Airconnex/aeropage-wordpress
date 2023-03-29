@@ -6420,13 +6420,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_json_view__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-json-view */ "./node_modules/react-json-view/dist/main.js");
 /* harmony import */ var react_json_view__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_json_view__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _header__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./header */ "./src/components/header.js");
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
 /* harmony import */ var react_loader_spinner__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-loader-spinner */ "./node_modules/react-loader-spinner/dist/esm/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./utils */ "./src/components/utils.js");
 /* harmony import */ var react_toggle__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! react-toggle */ "./node_modules/react-toggle/dist/component/index.js");
 /* harmony import */ var _Icons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Icons */ "./src/components/Icons.js");
+/* harmony import */ var _functions__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./functions */ "./src/components/functions.js");
+
 
 
 
@@ -6495,10 +6497,15 @@ const AddPost = _ref => {
   var _responseAP$status5, _responseAP$status6, _responseAP$status7, _responseAP$status8, _responseAP$status9, _responseAP$message, _post;
 
   let {
-    resetView
+    resetView,
+    setOpenMediaModal,
+    setTotalMedia,
+    isMediaCancelled,
+    setCurrentMedia,
+    setOpenSyncRecordModal
   } = _ref;
   const JSON = {};
-  const navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_9__.useNavigate)();
+  const navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_10__.useNavigate)();
   const [btnState, setBtnState] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
   const [inputValue, setInputValue] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
   const [status, setStatus] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
@@ -6514,7 +6521,7 @@ const AddPost = _ref => {
   const [fetchData, setFetchData] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
   const [syncStatus, setSyncStatus] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     var _responseAP$status, _responseAP$status2, _responseAP$status3;
 
     e.preventDefault();
@@ -6536,18 +6543,35 @@ const AddPost = _ref => {
     params.append("view", responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status3 = responseAP.status) === null || _responseAP$status3 === void 0 ? void 0 : _responseAP$status3.view); // params.append("aero_page_id", responseAP?.status?.id);
 
     params.append("post_status", postStatus);
-    axios__WEBPACK_IMPORTED_MODULE_5___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
+    setOpenSyncRecordModal(true);
+    await axios__WEBPACK_IMPORTED_MODULE_5___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
       var _responseAP$data;
 
+      console.log({
+        responseAP
+      });
+      setOpenSyncRecordModal(false);
+
       if ((responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data = responseAP.data) === null || _responseAP$data === void 0 ? void 0 : _responseAP$data.status) === "success") {
+        var _responseAP$data2;
+
         // console.log("YES THIS WORKS...");
-        setResponseMessage("Post was added sucessfully!");
-        window.location = `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}`;
+        (0,_functions__WEBPACK_IMPORTED_MODULE_9__.processMedia)({
+          responseData: responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data2 = responseAP.data) === null || _responseAP$data2 === void 0 ? void 0 : _responseAP$data2.response,
+          setOpenMediaModal,
+          setTotalMedia,
+          isMediaCancelled,
+          setCurrentMedia
+        }).then(res => {
+          window.location = `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}`;
+          setResponseMessage("Post was added sucessfully!");
+        }); // setResponseMessage("Post was added sucessfully!");
+        // window.location = `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}`;
       } else {
-        var _response, _response$data;
+        var _responseAP$data3;
 
         //ADD AN ERROR CODE THAT HANDLES IT.
-        setError((_response = response) === null || _response === void 0 ? void 0 : (_response$data = _response.data) === null || _response$data === void 0 ? void 0 : _response$data.message);
+        setError(responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data3 = responseAP.data) === null || _responseAP$data3 === void 0 ? void 0 : _responseAP$data3.message);
       }
 
       setLoading(false);
@@ -7061,39 +7085,7 @@ const AddPost = _ref => {
     //   handleMyClick();
     // }}
 
-  }, loading ? "Submitting..." : "Save Post"), loading ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    style: {
-      display: "flex",
-      alignItems: "center"
-    }
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "refresh-start",
-    style: {
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      padding: "7px",
-      height: "25px",
-      width: "25px",
-      cursor: "pointer"
-    }
-  }, _Icons__WEBPACK_IMPORTED_MODULE_8__.refreshIconBig), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    style: {
-      display: "flex",
-      alignItems: "center"
-    }
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
-    style: {
-      color: "#595B5C",
-      fontFamily: "'Inter', sans-serif",
-      fontStyle: "normal",
-      fontWeight: "400",
-      fontSize: "15px",
-      lineHeight: "175%",
-      marginTop: "0",
-      marginBottom: "0px"
-    }
-  }, "Please wait, this can take a while..."))) : (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null)))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, loading ? "Submitting..." : "Save Post")))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       marginTop: "50px",
       marginBottom: "50px",
@@ -7396,6 +7388,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./utils */ "./src/components/utils.js");
 /* harmony import */ var react_toggle__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! react-toggle */ "./node_modules/react-toggle/dist/component/index.js");
 /* harmony import */ var _Icons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Icons */ "./src/components/Icons.js");
+/* harmony import */ var _functions__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./functions */ "./src/components/functions.js");
+
 
 
 
@@ -7469,7 +7463,12 @@ const EditPost = _ref => {
     editTitle,
     url,
     editDynamic,
-    posts
+    posts,
+    setOpenMediaModal,
+    setTotalMedia,
+    isMediaCancelled,
+    setCurrentMedia,
+    setOpenSyncRecordModal
   } = _ref;
   const JSON = {};
   const [btnState, setBtnState] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
@@ -7488,7 +7487,7 @@ const EditPost = _ref => {
   const [fetchData, setFetchData] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
   const [syncStatus, setSyncStatus] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     var _responseAP$status, _responseAP$status2, _responseAP$status3;
 
     e.preventDefault(); // console.log(MYSCRIPT.ajaxUrl);
@@ -7511,20 +7510,35 @@ const EditPost = _ref => {
     params.append("view", responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status3 = responseAP.status) === null || _responseAP$status3 === void 0 ? void 0 : _responseAP$status3.view); // params.append("aero_page_id", responseAP?.status?.id);
 
     params.append("post_status", postStatus);
-    axios__WEBPACK_IMPORTED_MODULE_5___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
+    setOpenSyncRecordModal(true);
+    await axios__WEBPACK_IMPORTED_MODULE_5___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
       var _responseAP$data;
 
+      // console.log(responseAP?.data?.response);
+      setOpenSyncRecordModal(false);
+
       if ((responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data = responseAP.data) === null || _responseAP$data === void 0 ? void 0 : _responseAP$data.status) === "success") {
-        setResponseMessage("Post updated sucessfully!");
-        location.reload();
-      } else {
         var _responseAP$data2;
 
-        setError(responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data2 = responseAP.data) === null || _responseAP$data2 === void 0 ? void 0 : _responseAP$data2.message);
+        (0,_functions__WEBPACK_IMPORTED_MODULE_9__.processMedia)({
+          responseData: responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data2 = responseAP.data) === null || _responseAP$data2 === void 0 ? void 0 : _responseAP$data2.response,
+          setOpenMediaModal,
+          setTotalMedia,
+          isMediaCancelled,
+          setCurrentMedia
+        }).then(res => {
+          location.reload();
+          setResponseMessage("Post updated sucessfully!");
+        });
+      } else {
+        var _responseAP$data3;
+
+        setError(responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data3 = responseAP.data) === null || _responseAP$data3 === void 0 ? void 0 : _responseAP$data3.message);
       }
 
       setLoading(false);
     }).catch(err => {
+      setOpenSyncRecordModal(false);
       setLoading(false);
       setError(err === null || err === void 0 ? void 0 : err.message);
     });
@@ -7611,25 +7625,25 @@ const EditPost = _ref => {
     params.append("action", "aeropageEditorMeta");
     params.append("id", id);
     axios__WEBPACK_IMPORTED_MODULE_5___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
-      var _responseAP$data3, _responseAP$data5, _responseAP$data7;
+      var _responseAP$data4, _responseAP$data6, _responseAP$data8;
 
-      if (responseAP !== null && responseAP !== void 0 && (_responseAP$data3 = responseAP.data) !== null && _responseAP$data3 !== void 0 && _responseAP$data3.token) {
-        var _responseAP$data4;
+      if (responseAP !== null && responseAP !== void 0 && (_responseAP$data4 = responseAP.data) !== null && _responseAP$data4 !== void 0 && _responseAP$data4.token) {
+        var _responseAP$data5;
 
         // console.log("THERE'S A TOKEN");
-        setInputValue(responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data4 = responseAP.data) === null || _responseAP$data4 === void 0 ? void 0 : _responseAP$data4.token[0]);
+        setInputValue(responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data5 = responseAP.data) === null || _responseAP$data5 === void 0 ? void 0 : _responseAP$data5.token[0]);
       }
 
-      if (responseAP !== null && responseAP !== void 0 && (_responseAP$data5 = responseAP.data) !== null && _responseAP$data5 !== void 0 && _responseAP$data5.auto_sync) {
-        var _responseAP$data6, _responseAP$data6$aut;
+      if (responseAP !== null && responseAP !== void 0 && (_responseAP$data6 = responseAP.data) !== null && _responseAP$data6 !== void 0 && _responseAP$data6.auto_sync) {
+        var _responseAP$data7, _responseAP$data7$aut;
 
-        setAutoSync((responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data6 = responseAP.data) === null || _responseAP$data6 === void 0 ? void 0 : (_responseAP$data6$aut = _responseAP$data6.auto_sync) === null || _responseAP$data6$aut === void 0 ? void 0 : _responseAP$data6$aut[0]) === "1" ? true : false);
+        setAutoSync((responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data7 = responseAP.data) === null || _responseAP$data7 === void 0 ? void 0 : (_responseAP$data7$aut = _responseAP$data7.auto_sync) === null || _responseAP$data7$aut === void 0 ? void 0 : _responseAP$data7$aut[0]) === "1" ? true : false);
       }
 
-      if (responseAP !== null && responseAP !== void 0 && (_responseAP$data7 = responseAP.data) !== null && _responseAP$data7 !== void 0 && _responseAP$data7.post_status) {
-        var _responseAP$data8, _responseAP$data8$pos;
+      if (responseAP !== null && responseAP !== void 0 && (_responseAP$data8 = responseAP.data) !== null && _responseAP$data8 !== void 0 && _responseAP$data8.post_status) {
+        var _responseAP$data9, _responseAP$data9$pos;
 
-        setPostStatus(responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data8 = responseAP.data) === null || _responseAP$data8 === void 0 ? void 0 : (_responseAP$data8$pos = _responseAP$data8.post_status) === null || _responseAP$data8$pos === void 0 ? void 0 : _responseAP$data8$pos[0]);
+        setPostStatus(responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data9 = responseAP.data) === null || _responseAP$data9 === void 0 ? void 0 : (_responseAP$data9$pos = _responseAP$data9.post_status) === null || _responseAP$data9$pos === void 0 ? void 0 : _responseAP$data9$pos[0]);
       }
     });
   }, []); // console.log(status);
@@ -8077,39 +8091,7 @@ const EditPost = _ref => {
     //   handleMyClick();
     // }}
 
-  }, loading ? "Submitting..." : "Save Post"), loading ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    style: {
-      display: "flex",
-      alignItems: "center"
-    }
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "refresh-start",
-    style: {
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      padding: "7px",
-      height: "25px",
-      width: "25px",
-      cursor: "pointer"
-    }
-  }, _Icons__WEBPACK_IMPORTED_MODULE_8__.refreshIconBig), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    style: {
-      display: "flex",
-      alignItems: "center"
-    }
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
-    style: {
-      color: "#595B5C",
-      fontFamily: "'Inter', sans-serif",
-      fontStyle: "normal",
-      fontWeight: "400",
-      fontSize: "15px",
-      lineHeight: "175%",
-      marginTop: "0",
-      marginBottom: "0px"
-    }
-  }, "Please wait, this can take a while..."))) : (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null)))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, loading ? "Submitting..." : "Save Post")))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       marginTop: "50px",
       marginBottom: "50px",
@@ -8173,9 +8155,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "airtableIcon": function() { return /* binding */ airtableIcon; },
 /* harmony export */   "refreshIcon": function() { return /* binding */ refreshIcon; },
 /* harmony export */   "refreshIconBig": function() { return /* binding */ refreshIconBig; },
+/* harmony export */   "refreshIconLarge": function() { return /* binding */ refreshIconLarge; },
 /* harmony export */   "settingsIcon": function() { return /* binding */ settingsIcon; },
 /* harmony export */   "squareMessageIcon": function() { return /* binding */ squareMessageIcon; },
 /* harmony export */   "tickIcon": function() { return /* binding */ tickIcon; },
+/* harmony export */   "tickIconLarge": function() { return /* binding */ tickIconLarge; },
 /* harmony export */   "trashIcon": function() { return /* binding */ trashIcon; },
 /* harmony export */   "warningIcon": function() { return /* binding */ warningIcon; }
 /* harmony export */ });
@@ -8235,6 +8219,20 @@ const tickIcon = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElemen
 }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("polyline", {
   points: "20 6 9 17 4 12"
 }));
+const tickIconLarge = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
+  xmlns: "http://www.w3.org/2000/svg",
+  width: "70",
+  height: "70",
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "#22BB33",
+  "stroke-width": "2",
+  "stroke-linecap": "round",
+  "stroke-linejoin": "round",
+  class: "feather feather-check"
+}, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("polyline", {
+  points: "20 6 9 17 4 12"
+}));
 const trashIcon = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
   xmlns: "http://www.w3.org/2000/svg",
   width: "14",
@@ -8273,6 +8271,24 @@ const refreshIconBig = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.create
   xmlns: "http://www.w3.org/2000/svg",
   width: "16",
   height: "16",
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "#595B5C",
+  "stroke-width": "2",
+  "stroke-linecap": "round",
+  "stroke-linejoin": "round",
+  class: "feather feather-refresh-cw"
+}, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("polyline", {
+  points: "23 4 23 10 17 10"
+}), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("polyline", {
+  points: "1 20 1 14 7 14"
+}), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("path", {
+  d: "M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"
+}));
+const refreshIconLarge = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
+  xmlns: "http://www.w3.org/2000/svg",
+  width: "70",
+  height: "70",
   viewBox: "0 0 24 24",
   fill: "none",
   stroke: "#595B5C",
@@ -8415,13 +8431,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _header__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./header */ "./src/components/header.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/dist/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/dist/index.js");
 /* harmony import */ var _AddPost__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./AddPost */ "./src/components/AddPost.js");
 /* harmony import */ var _EditPost__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./EditPost */ "./src/components/EditPost.js");
 /* harmony import */ var _Card__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Card */ "./src/components/Card.js");
 /* harmony import */ var react_modal__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! react-modal */ "./node_modules/react-modal/lib/index.js");
 /* harmony import */ var react_modal__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(react_modal__WEBPACK_IMPORTED_MODULE_7__);
 /* harmony import */ var _Icons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Icons */ "./src/components/Icons.js");
+/* harmony import */ var _functions__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./functions */ "./src/components/functions.js");
+
 
 
 
@@ -8459,6 +8477,8 @@ const logModalStyles = {
 react_modal__WEBPACK_IMPORTED_MODULE_7___default().setAppElement('#aeroplugin');
 
 const Dashboard = () => {
+  var _currentMedia$index;
+
   const [response, setResponse] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)([]);
   const [url, setUrl] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
   const [path, setPath] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
@@ -8467,10 +8487,16 @@ const Dashboard = () => {
   const [openModal, setOpenModal] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
   const [toBeDeleted, setToBeDeleted] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
   const [isLoadingDelete, setIsLoadingDelete] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
-  const [searchParams, setSearchParams] = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_9__.useSearchParams)();
+  const [searchParams, setSearchParams] = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_10__.useSearchParams)();
   const [openLogModal, setOpenLogModal] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
   const [syncLog, setSyncLog] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
-  console.log("PLUGIN NAME: ", MYSCRIPT.plugin_name);
+  const [openMediaModal, setOpenMediaModal] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
+  const [openSyncRecordModal, setOpenSyncRecordModal] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
+  const [currentMedia, setCurrentMedia] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
+  const [totalMedia, setTotalMedia] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null); // const [isMediaCancelled, setIsMediaCancelled] = useState(false);
+
+  let isMediaCancelled = (0,react__WEBPACK_IMPORTED_MODULE_1__.useRef)(0); // console.log("PLUGIN NAME: ", MYSCRIPT.plugin_name);
+
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
     console.log("use effect");
     listAeropagePages();
@@ -8505,24 +8531,24 @@ const Dashboard = () => {
     setPath(null);
   };
 
-  const handleClick = id => {
-    // console.log("id: " + id);
+  const handleClick = id => {// console.log("id: " + id);
     // console.log(MYSCRIPT.ajaxUrl);
-    let params = new URLSearchParams();
-    params.append("action", "aeropageSyncPosts");
-    params.append("id", id);
-    axios__WEBPACK_IMPORTED_MODULE_3___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
-      console.log("RESPONSE DATA: ", responseAP.data);
-    });
+    // let params = new URLSearchParams();
+    // params.append("action", "aeropageSyncPosts");
+    // params.append("id", id);
+    // axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
+    //   console.log("RESPONSE DATA: ", responseAP.data);
+    // });
   };
 
   const handleRefresh = async id => {
     // console.log("id: " + id);
     // console.log(MYSCRIPT.ajaxUrl);
+    setOpenSyncRecordModal(true);
     let params = new URLSearchParams();
     params.append("action", "aeropageSyncPosts");
     params.append("id", id);
-    return await axios__WEBPACK_IMPORTED_MODULE_3___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
+    const responseData = await axios__WEBPACK_IMPORTED_MODULE_3___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
       if (response) {
         const b = [...response];
         const a = b === null || b === void 0 ? void 0 : b.find(re => re.ID === id);
@@ -8537,7 +8563,19 @@ const Dashboard = () => {
       }
 
       return responseAP === null || responseAP === void 0 ? void 0 : responseAP.data;
+    }).catch(err => {
+      console.log(err);
+      return null;
     });
+    setOpenSyncRecordModal(false);
+    await (0,_functions__WEBPACK_IMPORTED_MODULE_9__.processMedia)({
+      responseData,
+      setOpenMediaModal,
+      setTotalMedia,
+      isMediaCancelled,
+      setCurrentMedia
+    });
+    return responseData;
   };
 
   const deletePost = async () => {
@@ -8648,7 +8686,7 @@ const Dashboard = () => {
           justifyContent: "right",
           alignItems: "center"
         }
-      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_router_dom__WEBPACK_IMPORTED_MODULE_9__.Link, {
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_router_dom__WEBPACK_IMPORTED_MODULE_10__.Link, {
         to: `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}&path=addPost`
       }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
         onClick: () => setUrl(!url),
@@ -8773,7 +8811,12 @@ const Dashboard = () => {
       })));
     } else if (path === "addPost") {
       return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_AddPost__WEBPACK_IMPORTED_MODULE_4__["default"], {
-        resetView: resetView
+        resetView: resetView,
+        setOpenMediaModal: setOpenMediaModal,
+        setTotalMedia: setTotalMedia,
+        isMediaCancelled: isMediaCancelled,
+        setCurrentMedia: setCurrentMedia,
+        setOpenSyncRecordModal: setOpenSyncRecordModal
       });
     } else if (path === "editPost") {
       var _response$idx, _response$idx2, _response$idx3;
@@ -8784,15 +8827,159 @@ const Dashboard = () => {
         editTitle: response === null || response === void 0 ? void 0 : (_response$idx = response[idx]) === null || _response$idx === void 0 ? void 0 : _response$idx.post_title,
         url: response === null || response === void 0 ? void 0 : (_response$idx2 = response[idx]) === null || _response$idx2 === void 0 ? void 0 : _response$idx2.post_name,
         editDynamic: response === null || response === void 0 ? void 0 : (_response$idx3 = response[idx]) === null || _response$idx3 === void 0 ? void 0 : _response$idx3.post_excerpt,
-        posts: response
+        posts: response,
+        setOpenMediaModal: setOpenMediaModal,
+        setTotalMedia: setTotalMedia,
+        isMediaCancelled: isMediaCancelled,
+        setCurrentMedia: setCurrentMedia,
+        setOpenSyncRecordModal: setOpenSyncRecordModal
       });
     }
   };
 
-  return conditionalRender();
+  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, conditionalRender(), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)((react_modal__WEBPACK_IMPORTED_MODULE_7___default()), {
+    isOpen: openSyncRecordModal,
+    style: customStyles
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      gap: "20px",
+      flexDirection: "column",
+      width: "250px"
+    }
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, "Syncing Record"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    id: "refresh",
+    className: "refresh-start",
+    style: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: "7px",
+      height: "70px",
+      width: "70px"
+    }
+  }, _Icons__WEBPACK_IMPORTED_MODULE_8__.refreshIconLarge), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+    style: {
+      fontSize: "13px",
+      //textDecoration: "underline",
+      margin: "0" //cursor: "pointer"
+
+    }
+  }, "Please wait, this can take a while... ")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)((react_modal__WEBPACK_IMPORTED_MODULE_7___default()), {
+    isOpen: openMediaModal,
+    style: customStyles
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      gap: "20px",
+      flexDirection: "column",
+      width: "250px"
+    }
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, (currentMedia === null || currentMedia === void 0 ? void 0 : currentMedia.index) === totalMedia ? "Media Downloaded" : "Downloading Media"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    id: "refresh",
+    className: (currentMedia === null || currentMedia === void 0 ? void 0 : currentMedia.index) === totalMedia ? "" : "refresh-start",
+    style: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: "7px",
+      height: "70px",
+      width: "70px"
+    }
+  }, (currentMedia === null || currentMedia === void 0 ? void 0 : currentMedia.index) === totalMedia ? _Icons__WEBPACK_IMPORTED_MODULE_8__.tickIconLarge : _Icons__WEBPACK_IMPORTED_MODULE_8__.refreshIconLarge), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+    style: {
+      fontSize: "20px",
+      margin: "0"
+    }
+  }, (_currentMedia$index = currentMedia === null || currentMedia === void 0 ? void 0 : currentMedia.index) !== null && _currentMedia$index !== void 0 ? _currentMedia$index : 1, " / ", totalMedia)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+    style: {
+      fontSize: "13px",
+      textDecoration: "underline",
+      margin: "0",
+      cursor: "pointer"
+    },
+    onClick: () => {
+      // setIsMediaCancelled(true)
+      isMediaCancelled.current = 1;
+      setOpenMediaModal(false);
+    }
+  }, (currentMedia === null || currentMedia === void 0 ? void 0 : currentMedia.index) === totalMedia ? "Close" : "Cancel")))));
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (Dashboard);
+
+/***/ }),
+
+/***/ "./src/components/functions.js":
+/*!*************************************!*\
+  !*** ./src/components/functions.js ***!
+  \*************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "processMedia": function() { return /* binding */ processMedia; }
+/* harmony export */ });
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+
+const processMedia = async _ref => {
+  let {
+    responseData,
+    setOpenMediaModal,
+    setTotalMedia,
+    isMediaCancelled,
+    setCurrentMedia
+  } = _ref;
+  console.log({
+    responseData
+  });
+
+  if (responseData !== null && responseData !== void 0 && responseData.media) {
+    var _responseData$media;
+
+    setOpenMediaModal(true);
+    setTotalMedia(responseData === null || responseData === void 0 ? void 0 : (_responseData$media = responseData.media) === null || _responseData$media === void 0 ? void 0 : _responseData$media.length);
+
+    for (let i = 0; i < (responseData === null || responseData === void 0 ? void 0 : (_responseData$media2 = responseData.media) === null || _responseData$media2 === void 0 ? void 0 : _responseData$media2.length); i += 1) {
+      var _responseData$media2;
+
+      //If the media modal is closed (cancelled), we will not proceed with the downloading
+      if (isMediaCancelled.current > 0) {
+        isMediaCancelled.current = 0;
+        break;
+      }
+
+      const media = responseData === null || responseData === void 0 ? void 0 : responseData.media[i];
+      const index = i + 1;
+      setCurrentMedia({ ...media,
+        index: index
+      }); // console.log("LOOPING: ", media?.record_post_id, isMediaCancelled);
+
+      let params = new URLSearchParams();
+      params.append("action", "aeropageMediaDownload");
+      params.append("media", JSON.stringify(media));
+      await axios__WEBPACK_IMPORTED_MODULE_0___default().post(MYSCRIPT.ajaxUrl, params).then(res => console.log(res)).catch(err => {
+        var _err$response$data$me, _err$response, _err$response$data;
+
+        alert((_err$response$data$me = err === null || err === void 0 ? void 0 : (_err$response = err.response) === null || _err$response === void 0 ? void 0 : (_err$response$data = _err$response.data) === null || _err$response$data === void 0 ? void 0 : _err$response$data.message) !== null && _err$response$data$me !== void 0 ? _err$response$data$me : err === null || err === void 0 ? void 0 : err.message);
+      });
+    }
+
+    await sleep(3000);
+    setOpenMediaModal(false);
+    isMediaCancelled.current = 0;
+  }
+};
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 /***/ }),
 

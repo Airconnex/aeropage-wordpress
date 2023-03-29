@@ -7,6 +7,7 @@ import axios from "axios";
 import { convertToSlug } from "./utils";
 import Toggle from "react-toggle";
 import { refreshIconBig } from "./Icons";
+import { processMedia } from "./functions";
 
 export const tickIcon = (
   <svg
@@ -69,7 +70,14 @@ export const aeroSvg = (
   </svg>
 );
 
-const AddPost = ({ resetView }) => {
+const AddPost = ({ 
+  resetView,
+  setOpenMediaModal,
+  setTotalMedia,
+  isMediaCancelled,
+  setCurrentMedia,
+  setOpenSyncRecordModal
+}) => {
   const JSON = {};
   const navigate = useNavigate();
 
@@ -87,7 +95,7 @@ const AddPost = ({ resetView }) => {
   const [postStatus, setPostStatus] = useState("publish");
   const [fetchData, setFetchData] = useState(false);
   const [syncStatus, setSyncStatus] = useState("");
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
@@ -108,17 +116,30 @@ const AddPost = ({ resetView }) => {
     params.append("view", responseAP?.status?.view);
     // params.append("aero_page_id", responseAP?.status?.id);
     params.append("post_status", postStatus);
-
-    axios
+    setOpenSyncRecordModal(true);
+    await axios
       .post(MYSCRIPT.ajaxUrl, params)
       .then(function (responseAP) {
+        console.log({responseAP});
+        setOpenSyncRecordModal(false);
         if (responseAP?.data?.status === "success") {
           // console.log("YES THIS WORKS...");
-          setResponseMessage("Post was added sucessfully!");
-          window.location = `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}`;
+          processMedia({
+            responseData: responseAP?.data?.response,
+            setOpenMediaModal,
+            setTotalMedia,
+            isMediaCancelled,
+            setCurrentMedia
+          })
+            .then(res => {
+              window.location = `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}`;
+              setResponseMessage("Post was added sucessfully!");
+            });     
+          // setResponseMessage("Post was added sucessfully!");
+          // window.location = `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}`;
         } else {
           //ADD AN ERROR CODE THAT HANDLES IT.
-          setError(response?.data?.message);
+          setError(responseAP?.data?.message);
         }
         setLoading(false);
       })
@@ -758,7 +779,7 @@ const AddPost = ({ resetView }) => {
                 >
                   {loading ? "Submitting..." : "Save Post"}
                 </button>
-                {
+                {/* {
                   loading ? (
                     <div style={{ 
                       display: "flex",
@@ -798,7 +819,7 @@ const AddPost = ({ resetView }) => {
                       </div>
                     </div>
                   ) : (<></>)
-                }
+                } */}
               </div>
               {/* </Link> */}
             </form>
