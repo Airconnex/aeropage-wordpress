@@ -3,7 +3,7 @@
  * Plugin Name: Aeropage Sync for Airtable
  * Plugin URI: https://tools.aeropage.io/api-connector/dashboard
  * Description: Airtable to Wordpress Custom Post Type Sync Plugin
- * Version: 2.0.2 
+ * Version: 2.0.3
  * Author: Aeropage
  * Author URI: https://tools.aeropage.io/
  * License: GPL2
@@ -786,7 +786,12 @@ function aeropageSyncPosts($parentId)
             $mediaResponse = aeropage_media_downloader($mediaObject,$record_post_id, $count, $check);
             $mediaPostid = $mediaResponse[0];
             $mediaPostMsg = $mediaResponse[1];
-            $response["media"][] = $mediaResponse[3];
+
+            //If media needs to be downloaded we add it to the media array
+            if($mediaResponse[3]){
+              $response["media"][] = $mediaResponse[3];
+            }
+            
             $response['message'] .= "<br>-------->$mediaPostMsg";
             $count++;
           }
@@ -912,9 +917,6 @@ function aeropage_media_downloader($mediaObject, $parent, $field_index, $check =
   global $wpdb;
 
   $response = array();
-
-
-
   $attachmentURL = sanitize_url($mediaObject['url']);
   $attachmentID = sanitize_text_field($mediaObject['id']);
   $attachmentFileType = sanitize_text_field($mediaObject['type']);
@@ -929,22 +931,23 @@ function aeropage_media_downloader($mediaObject, $parent, $field_index, $check =
   $uploadPathWithAttachmentID = $uploadFolder.$attachmentID.'_'.$attachmentFileName.'.'.$fileTypeExploded[1];
   //$check is a flag that tells us if we are just adding to media array, if true we will add the media object to an array along with the record post ID
   //This will be used for the media download in the second step.
-  if($check){
-    $response[1] .= "Adding media for ".$parent."to be downloaded later.";
-    $response[3] = array(
-      "media" => $mediaObject,
-      "record_post_id" => $parent,
-      "field_index" => $field_index
-    );
-  }else{
+ 
     //Otherwise if we are not checking the image
     if (!file_exists($uploadFolder)) wp_mkdir_p($uploadFolder); // if no folder, create.
 
     // CHECK IF FILE NEEDS TO BE DOWNLOADED
 
-    if (!file_exists($uploadPathWithAttachmentID)) // file doesnt already exist in folder, download it
-    {
-      //If we aren't
+  if (!file_exists($uploadPathWithAttachmentID)) // file doesnt already exist in folder, download it
+  {
+    if($check){
+      $response[1] .= "Adding media for ".$parent."to be downloaded later.";
+      $response[3] = array(
+        "media" => $mediaObject,
+        "record_post_id" => $parent,
+        "field_index" => $field_index
+      );
+    }else{
+      //If the 
       $checkURL = wp_remote_get( $attachmentURL ); // check the url to make sure its valid
 
       if (! is_wp_error( $checkURL ) ) 
@@ -956,12 +959,11 @@ function aeropage_media_downloader($mediaObject, $parent, $field_index, $check =
         fclose( $fp ); // close the path
       }
     }
-    else
-    {
-      $response[1] .= "File already exists in the folder.";
-      $downloadedFile = true; // indicate that the file is already downloaded.
-    }
+  }else{
+    $response[1] .= "File already exists in the folder.";
+    $downloadedFile = true; // indicate that the file is already downloaded.
   }
+  
 
   // CHECK IF THIS ATTACHMENT WAS ALREADY PROCESSED ON A PREVIOUS RUN
   $existingMediaCheck = get_posts(['meta_key' => "aero_media_$attachmentID",'post_parent' => $parent,'post_type' => 'attachment', 'numberposts' => 1]);

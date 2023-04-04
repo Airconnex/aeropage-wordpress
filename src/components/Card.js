@@ -32,7 +32,7 @@ const Card = ({
   setOpenModal,
   setToBeDeleted,
   setOpenLogModal,
-  setSyncLog,
+  setSyncLog
 }) => {
   const link = `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}&path=editPost`;
   const [refreshState, setRefreshState] = useState(false);

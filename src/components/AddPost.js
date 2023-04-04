@@ -7,7 +7,7 @@ import axios from "axios";
 import { convertToSlug } from "./utils";
 import Toggle from "react-toggle";
 import { refreshIconBig } from "./Icons";
-import { processMedia } from "./functions";
+import { processMedia, sleep } from "./functions";
 
 export const tickIcon = (
   <svg
@@ -76,7 +76,8 @@ const AddPost = ({
   setTotalMedia,
   isMediaCancelled,
   setCurrentMedia,
-  setOpenSyncRecordModal
+  setOpenSyncRecordModal,
+  setIsSyncDone
 }) => {
   const JSON = {};
   const navigate = useNavigate();
@@ -100,6 +101,7 @@ const AddPost = ({
     setLoading(true);
     setError("");
     setResponseMessage("");
+    setIsSyncDone(false);
     // console.log(MYSCRIPT.ajaxUrl);
 
     // const reactAppData = window.wpRoomDesigner || {};
@@ -119,8 +121,10 @@ const AddPost = ({
     setOpenSyncRecordModal(true);
     await axios
       .post(MYSCRIPT.ajaxUrl, params)
-      .then(function (responseAP) {
+      .then(async function (responseAP) {
         console.log({responseAP});
+        setIsSyncDone(true);
+        await sleep(750);
         setOpenSyncRecordModal(false);
         if (responseAP?.data?.status === "success") {
           // console.log("YES THIS WORKS...");
@@ -193,7 +197,7 @@ const AddPost = ({
   // console.log(dynamic);
 
   useEffect(() => {
-    if(!fetchData) return null;
+    if(!fetchData) return;
     setStatus(true);
     fetch("https://tools.aeropage.io/api/token/" + inputValue, { redirect: "follow" })
       .then((responseAP) => responseAP.json())
@@ -852,7 +856,11 @@ const AddPost = ({
             >
               {
               responseAP ? 
-                <ReactJson src={responseAP} /> : 
+                (
+                  <>
+                    <ReactJson src={responseAP} />
+                  </>
+                ) : 
                 <div>
                   <button
                     style={{

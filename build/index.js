@@ -6502,7 +6502,8 @@ const AddPost = _ref => {
     setTotalMedia,
     isMediaCancelled,
     setCurrentMedia,
-    setOpenSyncRecordModal
+    setOpenSyncRecordModal,
+    setIsSyncDone
   } = _ref;
   const JSON = {};
   const navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_10__.useNavigate)();
@@ -6527,7 +6528,8 @@ const AddPost = _ref => {
     e.preventDefault();
     setLoading(true);
     setError("");
-    setResponseMessage(""); // console.log(MYSCRIPT.ajaxUrl);
+    setResponseMessage("");
+    setIsSyncDone(false); // console.log(MYSCRIPT.ajaxUrl);
     // const reactAppData = window.wpRoomDesigner || {};
     // const { ajax_url } = reactAppData;
 
@@ -6544,12 +6546,14 @@ const AddPost = _ref => {
 
     params.append("post_status", postStatus);
     setOpenSyncRecordModal(true);
-    await axios__WEBPACK_IMPORTED_MODULE_5___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
+    await axios__WEBPACK_IMPORTED_MODULE_5___default().post(MYSCRIPT.ajaxUrl, params).then(async function (responseAP) {
       var _responseAP$data;
 
       console.log({
         responseAP
       });
+      setIsSyncDone(true);
+      await (0,_functions__WEBPACK_IMPORTED_MODULE_9__.sleep)(750);
       setOpenSyncRecordModal(false);
 
       if ((responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data = responseAP.data) === null || _responseAP$data === void 0 ? void 0 : _responseAP$data.status) === "success") {
@@ -6624,7 +6628,7 @@ const AddPost = _ref => {
 
 
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-    if (!fetchData) return null;
+    if (!fetchData) return;
     setStatus(true);
     fetch("https://tools.aeropage.io/api/token/" + inputValue, {
       redirect: "follow"
@@ -7107,9 +7111,9 @@ const AddPost = _ref => {
       alignItems: "center",
       justifyContent: "center"
     }
-  }, responseAP ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)((react_json_view__WEBPACK_IMPORTED_MODULE_2___default()), {
+  }, responseAP ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)((react_json_view__WEBPACK_IMPORTED_MODULE_2___default()), {
     src: responseAP
-  }) : (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
+  })) : (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
     style: {
       fontFamily: "'Inter', sans-serif",
       fontStyle: "normal",
@@ -7468,7 +7472,8 @@ const EditPost = _ref => {
     setTotalMedia,
     isMediaCancelled,
     setCurrentMedia,
-    setOpenSyncRecordModal
+    setOpenSyncRecordModal,
+    setIsSyncDone
   } = _ref;
   const JSON = {};
   const [btnState, setBtnState] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
@@ -7494,7 +7499,8 @@ const EditPost = _ref => {
 
     setLoading(true);
     setError("");
-    setResponseMessage(""); // const reactAppData = window.wpRoomDesigner || {};
+    setResponseMessage("");
+    setIsSyncDone(false); // const reactAppData = window.wpRoomDesigner || {};
     // const { ajax_url } = reactAppData;
 
     var params = new URLSearchParams();
@@ -7511,10 +7517,12 @@ const EditPost = _ref => {
 
     params.append("post_status", postStatus);
     setOpenSyncRecordModal(true);
-    await axios__WEBPACK_IMPORTED_MODULE_5___default().post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
+    await axios__WEBPACK_IMPORTED_MODULE_5___default().post(MYSCRIPT.ajaxUrl, params).then(async function (responseAP) {
       var _responseAP$data;
 
-      // console.log(responseAP?.data?.response);
+      setIsSyncDone(true);
+      await (0,_functions__WEBPACK_IMPORTED_MODULE_9__.sleep)(750); // console.log(responseAP?.data?.response);
+
       setOpenSyncRecordModal(false);
 
       if ((responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$data = responseAP.data) === null || _responseAP$data === void 0 ? void 0 : _responseAP$data.status) === "success") {
@@ -7598,7 +7606,7 @@ const EditPost = _ref => {
     }
   }, [post]);
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-    if (!fetchData) return null;
+    if (!fetchData) return;
     setStatus(true);
     setSyncStatus("");
     setError(""); // fetch("https://api.aeropage.io/api/v3/token/" + inputValue);
@@ -7608,6 +7616,7 @@ const EditPost = _ref => {
     }).then(responseAP => responseAP.json()).then(data => {
       var _data$status$type, _data$status;
 
+      console.log("DATA: ", data);
       setResponseAP(data);
       setSyncStatus((_data$status$type = data === null || data === void 0 ? void 0 : (_data$status = data.status) === null || _data$status === void 0 ? void 0 : _data$status.type) !== null && _data$status$type !== void 0 ? _data$status$type : data === null || data === void 0 ? void 0 : data.status);
       setStatus(false);
@@ -8113,9 +8122,9 @@ const EditPost = _ref => {
       alignItems: "center",
       justifyContent: "center"
     }
-  }, responseAP ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)((react_json_view__WEBPACK_IMPORTED_MODULE_2___default()), {
+  }, responseAP ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)((react_json_view__WEBPACK_IMPORTED_MODULE_2___default()), {
     src: responseAP
-  }) : (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
+  })) : (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
     style: {
       fontFamily: "'Inter', sans-serif",
       fontStyle: "normal",
@@ -8131,6 +8140,7 @@ const EditPost = _ref => {
       display: "block"
     },
     onClick: () => {
+      console.log("SETTING FETCH DATA...");
       setFetchData(true);
     }
   }, "Show Data")))))));
@@ -8493,7 +8503,8 @@ const Dashboard = () => {
   const [openMediaModal, setOpenMediaModal] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
   const [openSyncRecordModal, setOpenSyncRecordModal] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
   const [currentMedia, setCurrentMedia] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
-  const [totalMedia, setTotalMedia] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null); // const [isMediaCancelled, setIsMediaCancelled] = useState(false);
+  const [totalMedia, setTotalMedia] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
+  const [isSyncDone, setIsSyncDone] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false); // const [isMediaCancelled, setIsMediaCancelled] = useState(false);
 
   let isMediaCancelled = (0,react__WEBPACK_IMPORTED_MODULE_1__.useRef)(0); // console.log("PLUGIN NAME: ", MYSCRIPT.plugin_name);
 
@@ -8544,6 +8555,7 @@ const Dashboard = () => {
   const handleRefresh = async id => {
     // console.log("id: " + id);
     // console.log(MYSCRIPT.ajaxUrl);
+    setIsSyncDone(false);
     setOpenSyncRecordModal(true);
     let params = new URLSearchParams();
     params.append("action", "aeropageSyncPosts");
@@ -8567,6 +8579,8 @@ const Dashboard = () => {
       console.log(err);
       return null;
     });
+    setIsSyncDone(true);
+    await (0,_functions__WEBPACK_IMPORTED_MODULE_9__.sleep)(750);
     setOpenSyncRecordModal(false);
     await (0,_functions__WEBPACK_IMPORTED_MODULE_9__.processMedia)({
       responseData,
@@ -8816,7 +8830,8 @@ const Dashboard = () => {
         setTotalMedia: setTotalMedia,
         isMediaCancelled: isMediaCancelled,
         setCurrentMedia: setCurrentMedia,
-        setOpenSyncRecordModal: setOpenSyncRecordModal
+        setOpenSyncRecordModal: setOpenSyncRecordModal,
+        setIsSyncDone: setIsSyncDone
       });
     } else if (path === "editPost") {
       var _response$idx, _response$idx2, _response$idx3;
@@ -8832,7 +8847,8 @@ const Dashboard = () => {
         setTotalMedia: setTotalMedia,
         isMediaCancelled: isMediaCancelled,
         setCurrentMedia: setCurrentMedia,
-        setOpenSyncRecordModal: setOpenSyncRecordModal
+        setOpenSyncRecordModal: setOpenSyncRecordModal,
+        setIsSyncDone: setIsSyncDone
       });
     }
   };
@@ -8849,9 +8865,9 @@ const Dashboard = () => {
       flexDirection: "column",
       width: "250px"
     }
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, "Syncing Record"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, isSyncDone ? "Done Syncing Records" : "Syncing Records"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     id: "refresh",
-    className: "refresh-start",
+    className: isSyncDone ? "" : "refresh-start",
     style: {
       display: "flex",
       justifyContent: "center",
@@ -8860,7 +8876,18 @@ const Dashboard = () => {
       height: "70px",
       width: "70px"
     }
-  }, _Icons__WEBPACK_IMPORTED_MODULE_8__.refreshIconLarge), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+  }, isSyncDone ? _Icons__WEBPACK_IMPORTED_MODULE_8__.tickIconLarge : _Icons__WEBPACK_IMPORTED_MODULE_8__.refreshIconLarge), isSyncDone ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+    style: {
+      fontSize: "13px",
+      textDecoration: "underline",
+      margin: "0",
+      cursor: "pointer"
+    },
+    onClick: () => {
+      // setIsMediaCancelled(true)
+      setOpenSyncRecordModal(false);
+    }
+  }, "Close")) : (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     style: {
       fontSize: "13px",
       //textDecoration: "underline",
@@ -8923,12 +8950,15 @@ const Dashboard = () => {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "processMedia": function() { return /* binding */ processMedia; }
+/* harmony export */   "processMedia": function() { return /* binding */ processMedia; },
+/* harmony export */   "sleep": function() { return /* binding */ sleep; }
 /* harmony export */ });
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
 
 const processMedia = async _ref => {
+  var _responseData$media;
+
   let {
     responseData,
     setOpenMediaModal,
@@ -8940,14 +8970,14 @@ const processMedia = async _ref => {
     responseData
   });
 
-  if (responseData !== null && responseData !== void 0 && responseData.media) {
-    var _responseData$media;
+  if ((responseData === null || responseData === void 0 ? void 0 : (_responseData$media = responseData.media) === null || _responseData$media === void 0 ? void 0 : _responseData$media.length) > 0) {
+    var _responseData$media2;
 
     setOpenMediaModal(true);
-    setTotalMedia(responseData === null || responseData === void 0 ? void 0 : (_responseData$media = responseData.media) === null || _responseData$media === void 0 ? void 0 : _responseData$media.length);
+    setTotalMedia(responseData === null || responseData === void 0 ? void 0 : (_responseData$media2 = responseData.media) === null || _responseData$media2 === void 0 ? void 0 : _responseData$media2.length);
 
-    for (let i = 0; i < (responseData === null || responseData === void 0 ? void 0 : (_responseData$media2 = responseData.media) === null || _responseData$media2 === void 0 ? void 0 : _responseData$media2.length); i += 1) {
-      var _responseData$media2;
+    for (let i = 0; i < (responseData === null || responseData === void 0 ? void 0 : (_responseData$media3 = responseData.media) === null || _responseData$media3 === void 0 ? void 0 : _responseData$media3.length); i += 1) {
+      var _responseData$media3;
 
       //If the media modal is closed (cancelled), we will not proceed with the downloading
       if (isMediaCancelled.current > 0) {
@@ -8964,7 +8994,8 @@ const processMedia = async _ref => {
       let params = new URLSearchParams();
       params.append("action", "aeropageMediaDownload");
       params.append("media", JSON.stringify(media));
-      await axios__WEBPACK_IMPORTED_MODULE_0___default().post(MYSCRIPT.ajaxUrl, params).then(res => console.log(res)).catch(err => {
+      await axios__WEBPACK_IMPORTED_MODULE_0___default().post(MYSCRIPT.ajaxUrl, params).then(res => {}) //console.log(res))
+      .catch(err => {
         var _err$response$data$me, _err$response, _err$response$data;
 
         alert((_err$response$data$me = err === null || err === void 0 ? void 0 : (_err$response = err.response) === null || _err$response === void 0 ? void 0 : (_err$response$data = _err$response.data) === null || _err$response$data === void 0 ? void 0 : _err$response$data.message) !== null && _err$response$data$me !== void 0 ? _err$response$data$me : err === null || err === void 0 ? void 0 : err.message);
@@ -8976,10 +9007,9 @@ const processMedia = async _ref => {
     isMediaCancelled.current = 0;
   }
 };
-
-function sleep(ms) {
+const sleep = ms => {
   return new Promise(resolve => setTimeout(resolve, ms));
-}
+};
 
 /***/ }),
 

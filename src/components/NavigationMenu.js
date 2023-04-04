@@ -19,7 +19,7 @@ import {
   refreshIconLarge,
   tickIconLarge
 } from "./Icons";
-import { processMedia } from "./functions";
+import { processMedia, sleep } from "./functions";
 
 const customStyles = {
   content: {
@@ -62,6 +62,7 @@ const Dashboard = () => {
   const [openSyncRecordModal, setOpenSyncRecordModal] = useState(false);
   const [currentMedia, setCurrentMedia] = useState(null);
   const [totalMedia, setTotalMedia] = useState(null);
+  const [isSyncDone, setIsSyncDone] = useState(false);
   // const [isMediaCancelled, setIsMediaCancelled] = useState(false);
   let isMediaCancelled = useRef(0);
   // console.log("PLUGIN NAME: ", MYSCRIPT.plugin_name);
@@ -119,6 +120,7 @@ const Dashboard = () => {
   const handleRefresh = async (id) => {
     // console.log("id: " + id);
     // console.log(MYSCRIPT.ajaxUrl);
+    setIsSyncDone(false);
     setOpenSyncRecordModal(true);
     let params = new URLSearchParams();
     params.append("action", "aeropageSyncPosts");
@@ -141,7 +143,9 @@ const Dashboard = () => {
         console.log(err);
         return null;
       });
-
+    
+    setIsSyncDone(true);
+    await sleep(750);
     setOpenSyncRecordModal(false);
 
     await processMedia({
@@ -462,6 +466,7 @@ const Dashboard = () => {
         isMediaCancelled={isMediaCancelled}
         setCurrentMedia={setCurrentMedia}
         setOpenSyncRecordModal={setOpenSyncRecordModal} 
+        setIsSyncDone={setIsSyncDone}
       />;
     } else if (path === "editPost") {
       console.log(response);
@@ -477,6 +482,7 @@ const Dashboard = () => {
           isMediaCancelled={isMediaCancelled}
           setCurrentMedia={setCurrentMedia}
           setOpenSyncRecordModal={setOpenSyncRecordModal}
+          setIsSyncDone={setIsSyncDone}
         />
       );
     }
@@ -500,10 +506,10 @@ const Dashboard = () => {
             width: "250px"
           }}
         >
-          <h2>Syncing Record</h2>
+          <h2>{isSyncDone ? "Done Syncing Records" :"Syncing Records"}</h2>
           <div
             id="refresh"
-            className={"refresh-start"}
+            className={isSyncDone ? "" : "refresh-start"}
             style={{
               display: "flex",
               justifyContent: "center",
@@ -513,9 +519,24 @@ const Dashboard = () => {
               width: "70px",
             }}
           >
-            {refreshIconLarge}
+            {isSyncDone ? tickIconLarge : refreshIconLarge}
           </div>
-          <div>
+          { isSyncDone ? 
+            <>
+              <p
+              style={{ 
+                fontSize: "13px",
+                textDecoration: "underline",
+                margin: "0",
+                cursor: "pointer"
+              }}
+              onClick={() => {
+                // setIsMediaCancelled(true)
+                setOpenSyncRecordModal(false);
+              }}
+            >Close</p>
+          </>: 
+            <div>
             <p
               style={{ 
                 fontSize: "13px",
@@ -524,7 +545,8 @@ const Dashboard = () => {
                 //cursor: "pointer"
               }}
             >Please wait, this can take a while... </p>
-          </div>
+            </div>
+          }
           <div></div>
         </div>
       </Modal>

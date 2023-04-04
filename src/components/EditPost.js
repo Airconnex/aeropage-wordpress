@@ -7,7 +7,7 @@ import axios from "axios";
 import { convertToSlug } from "./utils";
 import Toggle from "react-toggle";
 import { refreshIconBig } from "./Icons";
-import { processMedia } from "./functions";
+import { processMedia, sleep } from "./functions";
 
 export const tickIcon = (
   <svg
@@ -81,7 +81,8 @@ const EditPost = ({
   setTotalMedia,
   isMediaCancelled,
   setCurrentMedia,
-  setOpenSyncRecordModal
+  setOpenSyncRecordModal,
+  setIsSyncDone
 }) => {
   const JSON = {};
 
@@ -106,6 +107,7 @@ const EditPost = ({
     setLoading(true);
     setError("");
     setResponseMessage("");
+    setIsSyncDone(false);
     // const reactAppData = window.wpRoomDesigner || {};
     // const { ajax_url } = reactAppData;
     var params = new URLSearchParams();
@@ -122,7 +124,9 @@ const EditPost = ({
     // params.append("aero_page_id", responseAP?.status?.id);
     params.append("post_status", postStatus);
     setOpenSyncRecordModal(true);
-    await axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
+    await axios.post(MYSCRIPT.ajaxUrl, params).then(async function (responseAP) {
+      setIsSyncDone(true);
+      await sleep(750);
       // console.log(responseAP?.data?.response);
       setOpenSyncRecordModal(false);
       if(responseAP?.data?.status === "success"){
@@ -199,7 +203,7 @@ const EditPost = ({
   }, [post])
 
   useEffect(() => {
-    if(!fetchData) return null;
+    if(!fetchData) return;
     setStatus(true);
     setSyncStatus("");
     setError("");
@@ -207,6 +211,7 @@ const EditPost = ({
     fetch("https://tools.aeropage.io/api/token/" + inputValue, { redirect: "follow" })
       .then((responseAP) => responseAP.json())
       .then((data) => {
+        console.log("DATA: ", data)
         setResponseAP(data);
         setSyncStatus(data?.status?.type ?? data?.status);
         setStatus(false);
@@ -882,7 +887,11 @@ const EditPost = ({
             >
               {
               responseAP ? 
-                <ReactJson src={responseAP} /> : 
+                (
+                  <>
+                    <ReactJson src={responseAP} /> 
+                  </>
+                ): 
                 <div>
                   <button
                     style={{
@@ -899,7 +908,10 @@ const EditPost = ({
                       borderRadius: "6px",
                       display: "block"
                     }}
-                    onClick={() => { setFetchData(true) }}
+                    onClick={() => { 
+                      console.log("SETTING FETCH DATA...")
+                      setFetchData(true) 
+                    }}
                   >Show Data</button>
                 </div>
               }

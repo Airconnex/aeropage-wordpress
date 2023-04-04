@@ -8,7 +8,7 @@ export const processMedia = async ({
   setCurrentMedia
 }) => {
   console.log({responseData})
-  if(responseData?.media){
+  if(responseData?.media?.length > 0){
     setOpenMediaModal(true);
     setTotalMedia(responseData?.media?.length);
 
@@ -28,7 +28,7 @@ export const processMedia = async ({
       params.append("action", "aeropageMediaDownload");  
       params.append("media", JSON.stringify(media));
       await axios.post(MYSCRIPT.ajaxUrl, params)
-        .then(res => console.log(res))
+        .then(res => {})//console.log(res))
         .catch(err => {
           alert(err?.response?.data?.message ?? err?.message);
         });
@@ -40,6 +40,6 @@ export const processMedia = async ({
   }
 }
 
-function sleep(ms) {
+export const sleep = (ms) => {
   return new Promise(resolve => setTimeout(resolve, ms));
 }

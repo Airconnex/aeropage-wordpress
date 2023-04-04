@@ -134,6 +134,10 @@ Requires PHP: 7.0.0
 
 === Changelog ===
 
+2.0.3
+* Fixed bugs
+* UI Improvements
+
 2.0.2
 * Fixed bugs
 * Added a new flow for syncing
