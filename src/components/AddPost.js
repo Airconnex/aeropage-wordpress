@@ -8,6 +8,7 @@ import { convertToSlug } from "./utils";
 import Toggle from "react-toggle";
 import { refreshIconBig } from "./Icons";
 import { processMedia, sleep } from "./functions";
+import PostTypeMapping from "./PostTypeMapping";
 
 export const tickIcon = (
   <svg
@@ -79,9 +80,6 @@ const AddPost = ({
   setOpenSyncRecordModal,
   setIsSyncDone
 }) => {
-  const JSON = {};
-  const navigate = useNavigate();
-
   const [btnState, setBtnState] = useState(true);
   const [inputValue, setInputValue] = useState("");
   const [status, setStatus] = useState(false);
@@ -96,6 +94,8 @@ const AddPost = ({
   const [postStatus, setPostStatus] = useState("publish");
   const [fetchData, setFetchData] = useState(false);
   const [syncStatus, setSyncStatus] = useState("");
+  const [mappedFields, setMappedFields] = useState({});
+  const [selectedPostType, setSelectedPostType] = useState("");
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -116,9 +116,12 @@ const AddPost = ({
     params.append("app", responseAP?.status?.app);
     params.append("table", responseAP?.status?.table);
     params.append("view", responseAP?.status?.view);
+    params.append("post_type", selectedPostType);
+    params.append("mapped_fields", JSON.stringify(mappedFields));
     // params.append("aero_page_id", responseAP?.status?.id);
     params.append("post_status", postStatus);
     setOpenSyncRecordModal(true);
+
     await axios
       .post(MYSCRIPT.ajaxUrl, params)
       .then(async function (responseAP) {
@@ -219,8 +222,8 @@ const AddPost = ({
     <div
       style={{
         background: "white",
-        minHeight: "800px",
-        height: "80vh",
+        minHeight: "80vh",
+        height: "100%",
         width: "100%",
       }}
     >
@@ -748,6 +751,15 @@ const AddPost = ({
                 onClick={() => resetView()}
                 to="/wordpress/wp-admin/admin.php?page=aeroplugin"
               > */}
+              
+              <PostTypeMapping 
+                token={inputValue}
+                tokenData={responseAP}
+                setMappedFields={setMappedFields}
+                mappedFields={mappedFields}
+                selectedPostType={selectedPostType}
+                setSelectedPostType={setSelectedPostType}
+              />
               <div style={{display: "flex"}}>
                 <button
                   disabled={

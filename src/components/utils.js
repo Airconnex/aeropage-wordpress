@@ -14,3 +14,8 @@ export const convertToSlug = (text) => {
     return "";
   }
 };
+
+export const fetchToken = async (token) => {
+  return fetch("https://tools.aeropage.io/api/token/" + token, { redirect: "follow" })
+      .then((responseAP) => responseAP.json())
+}

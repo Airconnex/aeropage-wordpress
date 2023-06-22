@@ -258,6 +258,17 @@ function aeropageEditorMeta(){
   ));
 }
 
+add_action("wp_ajax_aeropageGetRegisteredPostTypes", "aeropageGetRegisteredPostTypes");
+function aeropageGetRegisteredPostTypes(){
+  $registeredPostTypes = get_post_types(array(
+    "public" => true
+  ), "objects");
+  die(json_encode(array(
+    "status" => "success",
+    "post_types" => $registeredPostTypes
+  )));
+}
+
 
 // make sure all the custom post types are registered.
 add_action( 'init', 'aeroRegisterTypes' );
@@ -309,7 +320,20 @@ function aeroRegisterTypes()
 
 		}
 
-		}
+    //Register the post meta for the posts
+    $synced_fields = get_post_meta($template->ID, "aero_sync_fields", true);
+
+    if($synced_fields){
+      //Add the cpt meta key and the record ID meta key
+      register_post_meta($slug, "_aero_cpt", array("show_in_rest" => true, "description" => "Custom post type ID"));
+      register_post_meta($slug, "_aero_id", array("show_in_rest" => true, "description" => "Airtable Record ID"));
+
+      foreach($synced_fields as $key => $value){
+        //Register the fields
+        register_post_meta($slug, "aero_$key", array("show_in_rest" => true, "description" => $key));
+      }
+    }
+    }
 		if ($flush){flush_rewrite_rules();}
   }catch(Exception $e){
     echo esc_attr($e->getMessage());
@@ -401,7 +425,6 @@ function aeropageEdit() // called by ajax, adds the cpt
 function aeropageTokenApiCall($token)
 {
 	$api_url = "https://tools.aeropage.io/api/token/$token/";
-  // $api_url = "http://localhost:3002/api/token/$token";
   $result = json_decode(wp_remote_retrieve_body(wp_remote_get($api_url)), true);
   return $result;
 }
@@ -409,7 +432,6 @@ function aeropageTokenApiCall($token)
 function aeropageModCheckApiCall($token)
 {
 	$api_url = "https://tools.aeropage.io/api/modcheck/$token/";
-  // $api_url = "http://localhost:3002/api/modcheck/$token";
   $result = json_decode(wp_remote_retrieve_body(wp_remote_get($api_url)), true);
   return $result;
 }
@@ -452,6 +474,36 @@ function aeropageDeletePost()
   die(json_encode(array("status" => "success"))); 
 }
 
+add_action("wp_ajax_aeropageGetPostMetaForSelectedPostType", "aeropageGetPostMetaForSelectedPostType");
+function aeropageGetPostMetaForSelectedPostType(){
+  $postType = $_POST["post_type"];
+  $postMetaKeys = get_registered_meta_keys("post", $postType);
+  $acfFields = array();
+  //Get the ACF fields
+  if (function_exists('acf_get_field_groups')) {
+    $acf_field_group = acf_get_field_groups(array('post_type' => $postType));
+    $acf_fields = acf_get_fields(5112);
+
+    foreach ($acf_field_group as $key => $value) {
+      $acfGroupID = $value["key"];
+      $acf_fields = acf_get_fields($acfGroupID);
+
+      if($acf_fields){
+        foreach ($acf_fields as $key => $field) {
+          $acfFields[$field["name"]] = $field;
+        }
+      }
+    }
+  }
+
+  die(json_encode(array(
+    "status" => "success",
+    "meta_keys" => array(
+      "Registered Meta" => $postMetaKeys,
+      "ACF" => $acfFields
+    )
+  )));
+}
 
 //echo aeropageSyncPosts(343);
 //global $wpdb;

@@ -6420,7 +6420,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_json_view__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-json-view */ "./node_modules/react-json-view/dist/main.js");
 /* harmony import */ var react_json_view__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_json_view__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _header__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./header */ "./src/components/header.js");
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
 /* harmony import */ var react_loader_spinner__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-loader-spinner */ "./node_modules/react-loader-spinner/dist/esm/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_5__);
@@ -6428,6 +6427,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_toggle__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! react-toggle */ "./node_modules/react-toggle/dist/component/index.js");
 /* harmony import */ var _Icons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Icons */ "./src/components/Icons.js");
 /* harmony import */ var _functions__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./functions */ "./src/components/functions.js");
+/* harmony import */ var _PostTypeMapping__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./PostTypeMapping */ "./src/components/PostTypeMapping.js");
+
 
 
 
@@ -6505,8 +6506,6 @@ const AddPost = _ref => {
     setOpenSyncRecordModal,
     setIsSyncDone
   } = _ref;
-  const JSON = {};
-  const navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_10__.useNavigate)();
   const [btnState, setBtnState] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
   const [inputValue, setInputValue] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
   const [status, setStatus] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
@@ -6521,6 +6520,8 @@ const AddPost = _ref => {
   const [postStatus, setPostStatus] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("publish");
   const [fetchData, setFetchData] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
   const [syncStatus, setSyncStatus] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
+  const [mappedFields, setMappedFields] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)({});
+  const [selectedPostType, setSelectedPostType] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
 
   const handleSubmit = async e => {
     var _responseAP$status, _responseAP$status2, _responseAP$status3;
@@ -6542,7 +6543,9 @@ const AddPost = _ref => {
     params.append("auto_sync", autoSync);
     params.append("app", responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status = responseAP.status) === null || _responseAP$status === void 0 ? void 0 : _responseAP$status.app);
     params.append("table", responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status2 = responseAP.status) === null || _responseAP$status2 === void 0 ? void 0 : _responseAP$status2.table);
-    params.append("view", responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status3 = responseAP.status) === null || _responseAP$status3 === void 0 ? void 0 : _responseAP$status3.view); // params.append("aero_page_id", responseAP?.status?.id);
+    params.append("view", responseAP === null || responseAP === void 0 ? void 0 : (_responseAP$status3 = responseAP.status) === null || _responseAP$status3 === void 0 ? void 0 : _responseAP$status3.view);
+    params.append("post_type", selectedPostType);
+    params.append("mapped_fields", JSON.stringify(mappedFields)); // params.append("aero_page_id", responseAP?.status?.id);
 
     params.append("post_status", postStatus);
     setOpenSyncRecordModal(true);
@@ -6650,8 +6653,8 @@ const AddPost = _ref => {
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       background: "white",
-      minHeight: "800px",
-      height: "80vh",
+      minHeight: "80vh",
+      height: "100%",
       width: "100%"
     }
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
@@ -7065,7 +7068,14 @@ const AddPost = _ref => {
     }
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
     className: "label-text"
-  }, "Auto Sync")))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, "Auto Sync")))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_PostTypeMapping__WEBPACK_IMPORTED_MODULE_10__["default"], {
+    token: inputValue,
+    tokenData: responseAP,
+    setMappedFields: setMappedFields,
+    mappedFields: mappedFields,
+    selectedPostType: selectedPostType,
+    setSelectedPostType: setSelectedPostType
+  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       display: "flex"
     }
@@ -8941,6 +8951,202 @@ const Dashboard = () => {
 
 /***/ }),
 
+/***/ "./src/components/PostTypeMapping.js":
+/*!*******************************************!*\
+  !*** ./src/components/PostTypeMapping.js ***!
+  \*******************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_toggle__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-toggle */ "./node_modules/react-toggle/dist/component/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils */ "./src/components/utils.js");
+
+
+
+
+
+
+const PostTypeMapping = _ref => {
+  var _Object$keys, _Object$keys$sort, _Object$keys2;
+
+  let {
+    token,
+    tokenData,
+    setMappedFields,
+    mappedFields,
+    selectedPostType,
+    setSelectedPostType
+  } = _ref;
+  const [enableMapping, setEnableMapping] = (0,react__WEBPACK_IMPORTED_MODULE_2__.useState)(false);
+  const [registeredPostTypes, setRegisteredPostTypes] = (0,react__WEBPACK_IMPORTED_MODULE_2__.useState)({});
+  const [postMetaKeys, setPostMetaKeys] = (0,react__WEBPACK_IMPORTED_MODULE_2__.useState)(null);
+  const [fetchedTokenData, setFetchedTokenData] = (0,react__WEBPACK_IMPORTED_MODULE_2__.useState)(null);
+
+  const getRegisteredPostFields = async () => {
+    var params = new URLSearchParams();
+    params.append("action", "aeropageGetRegisteredPostTypes");
+    await axios__WEBPACK_IMPORTED_MODULE_3___default().post(MYSCRIPT.ajaxUrl, params).then(response => {
+      var _response$data;
+
+      if ((response === null || response === void 0 ? void 0 : (_response$data = response.data) === null || _response$data === void 0 ? void 0 : _response$data.status) === "success") {
+        var _response$data2;
+
+        setRegisteredPostTypes(response === null || response === void 0 ? void 0 : (_response$data2 = response.data) === null || _response$data2 === void 0 ? void 0 : _response$data2.post_types);
+      }
+    });
+  };
+
+  const getPostMetaForSelectedPostType = async postType => {
+    var params = new URLSearchParams();
+    params.append("action", "aeropageGetPostMetaForSelectedPostType");
+    params.append("post_type", postType);
+    await axios__WEBPACK_IMPORTED_MODULE_3___default().post(MYSCRIPT.ajaxUrl, params).then(response => {
+      var _response$data3;
+
+      if ((response === null || response === void 0 ? void 0 : (_response$data3 = response.data) === null || _response$data3 === void 0 ? void 0 : _response$data3.status) === "success") {
+        var _response$data4;
+
+        setPostMetaKeys(response === null || response === void 0 ? void 0 : (_response$data4 = response.data) === null || _response$data4 === void 0 ? void 0 : _response$data4.meta_keys);
+      }
+    });
+  };
+
+  const mapField = (metaField, airtableField) => {
+    const temp = { ...mappedFields
+    };
+    temp[metaField] = airtableField;
+    setMappedFields(temp);
+  };
+
+  (0,react__WEBPACK_IMPORTED_MODULE_2__.useEffect)(() => {
+    console.log(mappedFields);
+  }, [mappedFields]);
+  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "div-wrapper"
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_toggle__WEBPACK_IMPORTED_MODULE_1__["default"], {
+    defaultChecked: enableMapping,
+    icons: false,
+    checked: enableMapping,
+    onChange: e => {
+      setEnableMapping(!enableMapping); //If enableMapping is true.
+
+      if (!enableMapping) {
+        getRegisteredPostFields();
+      } //Retrieve the post types and the airtable fields from the token
+
+    }
+  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
+    className: "label-text"
+  }, "Map to a Public Post Type")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("br", null), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("br", null), Object.keys(registeredPostTypes).length > 0 && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("select", {
+    value: selectedPostType,
+    onChange: e => {
+      if (e.target.value === "") {
+        setSelectedPostType("");
+        setPostMetaKeys(null);
+        return;
+      }
+
+      ;
+      setSelectedPostType(e.target.value); //Get the registered post meta for each type
+
+      getPostMetaForSelectedPostType(e.target.value); //get the token data to retrieve the fields
+
+      if (!tokenData && !fetchedTokenData) {
+        (0,_utils__WEBPACK_IMPORTED_MODULE_4__.fetchToken)(token).then(res => setFetchedTokenData(res));
+      }
+    },
+    style: {
+      height: "32px",
+      borderRadius: "6px",
+      backgroundColor: "white",
+      color: "#595B5C",
+      fontFamily: "'Inter', sans-serif",
+      fontStyle: "normal",
+      fontWeight: "400",
+      width: "75%",
+      border: "1px solid lightGray",
+      fontSize: "12px",
+      lineHeight: "18px",
+      marginTop: "6px"
+    }
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {
+    style: {
+      borderRadius: "6px",
+      color: "#595B5C",
+      fontFamily: "'Inter', sans-serif",
+      fontStyle: "normal",
+      fontWeight: "400",
+      fontSize: "12px",
+      lineHeight: "150%"
+    },
+    value: ""
+  }, "Post Type"), (_Object$keys = Object.keys(registeredPostTypes)) === null || _Object$keys === void 0 ? void 0 : (_Object$keys$sort = _Object$keys.sort()) === null || _Object$keys$sort === void 0 ? void 0 : _Object$keys$sort.map(postType => {
+    var _registeredPostTypes$;
+
+    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {
+      style: {
+        borderRadius: "6px",
+        color: "#595B5C",
+        fontFamily: "'Inter', sans-serif",
+        fontStyle: "normal",
+        fontWeight: "400",
+        fontSize: "12px",
+        lineHeight: "150%"
+      },
+      value: postType
+    }, (_registeredPostTypes$ = registeredPostTypes[postType]) === null || _registeredPostTypes$ === void 0 ? void 0 : _registeredPostTypes$.label);
+  })), postMetaKeys && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    style: {
+      width: "75%"
+    }
+  }, (_Object$keys2 = Object.keys(postMetaKeys)) === null || _Object$keys2 === void 0 ? void 0 : _Object$keys2.map(key => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: "10px",
+      marginTop: "10px"
+    }
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    style: {
+      fontWeight: "bolder"
+    }
+  }, key), Object.keys(postMetaKeys[key]).map(metaKey => {
+    var _postMetaKeys$key$met, _postMetaKeys$key$met2, _fetchedTokenData$fie;
+
+    if (metaKey === "_aero_cpt" || metaKey === "_aero_id") return;
+    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      style: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between"
+      }
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, "Map ", (_postMetaKeys$key$met = (_postMetaKeys$key$met2 = postMetaKeys[key][metaKey]) === null || _postMetaKeys$key$met2 === void 0 ? void 0 : _postMetaKeys$key$met2.label) !== null && _postMetaKeys$key$met !== void 0 ? _postMetaKeys$key$met : metaKey, " to \xA0"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("select", {
+      style: {
+        width: "150px"
+      },
+      defaultValue: "",
+      onChange: e => {
+        mapField(metaKey, e.target.value);
+      }
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {
+      value: ""
+    }, "--"), fetchedTokenData === null || fetchedTokenData === void 0 ? void 0 : (_fetchedTokenData$fie = fetchedTokenData.fields) === null || _fetchedTokenData$fie === void 0 ? void 0 : _fetchedTokenData$fie.map(field => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {
+      value: field === null || field === void 0 ? void 0 : field.name
+    }, field === null || field === void 0 ? void 0 : field.name))));
+  }), Object.keys(postMetaKeys[key]).length <= 0 && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, "No meta keys or fields found.")))))));
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (PostTypeMapping);
+
+/***/ }),
+
 /***/ "./src/components/functions.js":
 /*!*************************************!*\
   !*** ./src/components/functions.js ***!
@@ -9156,7 +9362,8 @@ function Header(_ref) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "convertToSlug": function() { return /* binding */ convertToSlug; }
+/* harmony export */   "convertToSlug": function() { return /* binding */ convertToSlug; },
+/* harmony export */   "fetchToken": function() { return /* binding */ fetchToken; }
 /* harmony export */ });
 const convertToSlug = text => {
   //OLD METHOD
@@ -9169,6 +9376,11 @@ const convertToSlug = text => {
   } else {
     return "";
   }
+};
+const fetchToken = async token => {
+  return fetch("https://tools.aeropage.io/api/token/" + token, {
+    redirect: "follow"
+  }).then(responseAP => responseAP.json());
 };
 
 /***/ }),
