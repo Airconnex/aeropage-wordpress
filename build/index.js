@@ -6716,7 +6716,7 @@ const AddPost = _ref => {
       fontSize: "14px",
       lineHeight: "120%"
     }
-  }, "Create Dynamic Pages"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+  }, "Sync Dynamic Posts"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     style: {
       color: "#595B5C",
       fontFamily: "'Inter', sans-serif",
@@ -9044,7 +9044,7 @@ const PostTypeMapping = _ref => {
     }
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
     className: "label-text"
-  }, "Map to a Public Post Type")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("br", null), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("br", null), Object.keys(registeredPostTypes).length > 0 && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("select", {
+  }, "Map to a Existing Post Type")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("br", null), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("br", null), Object.keys(registeredPostTypes).length > 0 && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("select", {
     value: selectedPostType,
     onChange: e => {
       if (e.target.value === "") {
@@ -9087,7 +9087,7 @@ const PostTypeMapping = _ref => {
       lineHeight: "150%"
     },
     value: ""
-  }, "Post Type"), (_Object$keys = Object.keys(registeredPostTypes)) === null || _Object$keys === void 0 ? void 0 : (_Object$keys$sort = _Object$keys.sort()) === null || _Object$keys$sort === void 0 ? void 0 : _Object$keys$sort.map(postType => {
+  }, "-- Post Type --"), (_Object$keys = Object.keys(registeredPostTypes)) === null || _Object$keys === void 0 ? void 0 : (_Object$keys$sort = _Object$keys.sort()) === null || _Object$keys$sort === void 0 ? void 0 : _Object$keys$sort.map(postType => {
     var _registeredPostTypes$;
 
     return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {

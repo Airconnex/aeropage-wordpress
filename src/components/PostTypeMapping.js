@@ -66,7 +66,7 @@ const PostTypeMapping = ({
             }
             //Retrieve the post types and the airtable fields from the token
           }} />
-        <span className="label-text">Map to a Public Post Type</span>
+        <span className="label-text">Map to a Existing Post Type</span>
       </label>
       <br />
       <br />
@@ -118,7 +118,7 @@ const PostTypeMapping = ({
               }}
               value=""
             >
-              Post Type
+              -- Post Type -- 
             </option>
             {
               Object.keys(registeredPostTypes)

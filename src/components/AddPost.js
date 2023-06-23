@@ -296,7 +296,7 @@ const AddPost = ({
                 lineHeight: "120%",
               }}
             >
-              Create Dynamic Pages
+              Sync Dynamic Posts
             </p>
             <p
               style={{

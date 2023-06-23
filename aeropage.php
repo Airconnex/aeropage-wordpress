@@ -260,9 +260,7 @@ function aeropageEditorMeta(){
 
 add_action("wp_ajax_aeropageGetRegisteredPostTypes", "aeropageGetRegisteredPostTypes");
 function aeropageGetRegisteredPostTypes(){
-  $registeredPostTypes = get_post_types(array(
-    "public" => true
-  ), "objects");
+  $registeredPostTypes = get_post_types(array(), "objects");
   die(json_encode(array(
     "status" => "success",
     "post_types" => $registeredPostTypes
@@ -425,7 +423,9 @@ function aeropageEdit() // called by ajax, adds the cpt
 function aeropageTokenApiCall($token)
 {
 	$api_url = "https://tools.aeropage.io/api/token/$token/";
+  $res = wp_remote_retrieve_body(wp_remote_get($api_url));
   $result = json_decode(wp_remote_retrieve_body(wp_remote_get($api_url)), true);
+  // echo $res;
   return $result;
 }
 
@@ -541,6 +541,11 @@ function aeropageSyncPosts($parentId)
 
   $response = array();
 
+  // echo "RECEIVED TOKEN DATA...";
+  // echo "<pre>";
+  // print_r($apiData);
+  // echo "</pre>";
+
   if ( 
     isset($apiData['status']['type']) && 
     $apiData['status']['type'] == 'success' && 
@@ -559,6 +564,7 @@ function aeropageSyncPosts($parentId)
     
     $fieldData = array();
     $fieldTypeByName = array();
+    $postContentFieldNames = array();
 	
     foreach ($apiData['fields'] as $key=>$datafield)
     {
@@ -570,8 +576,16 @@ function aeropageSyncPosts($parentId)
       $fieldData[$fld_id]['name'] = $fld_name;
       $fieldData[$fld_id]['type'] = $fld_type;
       $fieldTypeByName[$fld_name] = $fld_type;
+
+      if(is_array($apiData["status"]["content"]) && in_array($fld_id, $apiData["status"]["content"])){
+        $postContentFieldNames[] = $fld_name;
+      }
     }
     
+    // echo "<pre>";
+    // print_r($postContentFieldNames);
+    // echo "</pre>";
+
     update_post_meta ($parentId,'aero_sync_fields', $fieldTypeByName); // add to the parent cpt
 	
 	  $post_type = $parent->post_name;
@@ -749,7 +763,6 @@ function aeropageSyncPosts($parentId)
       $post_excerpt_msg = "<br>--> no custom post excerpt.";
       }
 
-
       $record_post = array(
         'ID' => $existing_id,
         'post_title' => $post_title,
@@ -759,6 +772,15 @@ function aeropageSyncPosts($parentId)
         'post_type' => $post_type,
         'post_status' => $post_status
       );
+
+      if(count($postContentFieldNames) > 0){
+        $post_content = "<br>--> Post Content added.";
+        //Concatenate all the post content fields in the records
+        foreach($postContentFieldNames as $key => $field){
+          $record_post["post_content"] .= $record["fields"][$field] . " ";
+          $post_content .= "<br>------> Added Content for field $field";
+        }
+      }
         
       $record_post_id = wp_insert_post($record_post);
       
@@ -770,11 +792,11 @@ function aeropageSyncPosts($parentId)
 
       if ($existing)
       {
-        $response['message'] .= "<br>record $record_id : $record_name already exists as $record_post_id and is being updated.".$post_title_msg.$post_excerpt_msg;
+        $response['message'] .= "<br>record $record_id : $record_name already exists as $record_post_id and is being updated.".$post_title_msg.$post_excerpt_msg.$post_content;
       }
       else
       {
-        $response['message'] .= "<br>record $record_id : $record_name has been created as $record_post_id.".$post_title_msg.$post_excerpt_msg;
+        $response['message'] .= "<br>record $record_id : $record_name has been created as $record_post_id.".$post_title_msg.$post_excerpt_msg.$post_content;
       }
 
 
