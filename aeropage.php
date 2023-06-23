@@ -423,9 +423,8 @@ function aeropageEdit() // called by ajax, adds the cpt
 function aeropageTokenApiCall($token)
 {
 	$api_url = "https://tools.aeropage.io/api/token/$token/";
-  $res = wp_remote_retrieve_body(wp_remote_get($api_url));
-  $result = json_decode(wp_remote_retrieve_body(wp_remote_get($api_url)), true);
-  // echo $res;
+  $response = wp_remote_get($api_url, array("timeout" => 30));
+  $result = json_decode( wp_remote_retrieve_body($response), true);
   return $result;
 }
 
@@ -736,6 +735,7 @@ function aeropageSyncPosts($parentId)
       if ($existing){
         $existing_id = $existing[0]->ID;
         $post_status = "publish";
+        $existing_post_content = $existing[0]->post_content;
       }else{
         $existing_id = "";
       }
@@ -770,7 +770,8 @@ function aeropageSyncPosts($parentId)
         'post_name' => $record_slug,
         'post_parent' => '',
         'post_type' => $post_type,
-        'post_status' => $post_status
+        'post_status' => $post_status,
+        'post_content' => $existing_post_content
       );
 
       if(count($postContentFieldNames) > 0){
