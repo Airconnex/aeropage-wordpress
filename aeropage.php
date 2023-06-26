@@ -247,13 +247,17 @@ function aeropageEditorMeta(){
   $sync_time = get_post_meta($pid, "aero_sync_time");
   $auto_sync = get_post_meta($pid, "aero_auto_sync");
   $record_post_status = get_post_meta($pid, "aero_post_status");
+  $mapped_post_type = get_post_meta($pid, "aero_mapped_post_type", true);
+  $mapped_fields = get_post_meta($pid, "aero_mapped_post_meta_fields", true);
   die(json_encode(
     array(
       "token" => $token,
       "status" => $status, 
       "sync_time" => $sync_time, 
       "auto_sync" => $auto_sync,
-      "post_status" => $record_post_status
+      "post_status" => $record_post_status,
+      "mapped_fields" => $mapped_fields,
+      "mapped_post_type" => $mapped_post_type
     )
   ));
 }
@@ -286,7 +290,10 @@ function aeroRegisterTypes()
 
 		$slug = $template->post_name; // eg Headphones
 
-		if (!post_type_exists($slug) && $slug)
+    $mapped_post_type = get_post_meta($template->ID, "aero_mapped_post_type", true);
+
+    //Prevent mapped post types from being registered.
+		if (!post_type_exists($slug) && $slug && !$mapped_post_type)
 		{
 
     // echo "SLUG: ";
@@ -402,6 +409,15 @@ function aeropageEdit() // called by ajax, adds the cpt
     update_post_meta ($id,'aero_auto_sync', $auto_sync);
     // update_post_meta ($id,'aero_connection', sanitize_text_field($_POST["app"])."/".sanitize_text_field($_POST["table"])."/".sanitize_text_field($_POST["view"]));
     update_post_meta ($id, 'aero_post_status', sanitize_text_field($_POST["post_status"]));
+    
+    $post_type = sanitize_text_field($_POST["post_type"]);
+
+    //If there is a post type, we will save it to the post meta
+    if($post_type != ""){
+      update_post_meta($id, 'aero_mapped_post_type', $post_type);
+      update_post_meta($id, 'aero_mapped_post_meta_fields', json_decode(stripslashes($_POST["mapped_fields"])));
+    }
+
     $response = aeropageSyncPosts($id);
 
     if($response['status'] === "error"){
@@ -431,7 +447,7 @@ function aeropageTokenApiCall($token)
 function aeropageModCheckApiCall($token)
 {
 	$api_url = "https://tools.aeropage.io/api/modcheck/$token/";
-  $result = json_decode(wp_remote_retrieve_body(wp_remote_get($api_url)), true);
+  $result = json_decode(wp_remote_retrieve_body(wp_remote_get($api_url, array("timeout" => 30))), true);
   return $result;
 }
 
@@ -481,7 +497,6 @@ function aeropageGetPostMetaForSelectedPostType(){
   //Get the ACF fields
   if (function_exists('acf_get_field_groups')) {
     $acf_field_group = acf_get_field_groups(array('post_type' => $postType));
-    $acf_fields = acf_get_fields(5112);
 
     foreach ($acf_field_group as $key => $value) {
       $acfGroupID = $value["key"];
@@ -509,6 +524,9 @@ function aeropageGetPostMetaForSelectedPostType(){
 //$dump = get_posts(['meta_key' => "aero_media_atttebWsy0MAl73jq", 'numberposts' => 1]);
 //echo var_dump($dump);
  
+function aeropageGetChoices($value){
+  return $value["name"];
+}
 
 add_action("wp_ajax_aeropageSyncPosts", "aeropageSyncPosts");
 function aeropageSyncPosts($parentId)
@@ -535,6 +553,10 @@ function aeropageSyncPosts($parentId)
   $token = get_post_meta($parentId,'aero_token',true);
 
   $record_post_status = get_post_meta($parentId, 'aero_post_status', true);
+
+  $mapped_fields = get_post_meta($parentId, 'aero_mapped_post_meta_fields', true);
+
+  $mapped_post_type = get_post_meta($parentId, 'aero_mapped_post_type', true);
 
   $apiData = aeropageTokenApiCall($token);
 
@@ -579,6 +601,40 @@ function aeropageSyncPosts($parentId)
       if(is_array($apiData["status"]["content"]) && in_array($fld_id, $apiData["status"]["content"])){
         $postContentFieldNames[] = $fld_name;
       }
+
+      //
+    }
+
+    if($mapped_fields){
+      $typesWithChoices = array("select", "radio", "checkbox");
+
+      foreach($mapped_fields as $key => $value){
+        if(!in_array($value->metaValues->type, $typesWithChoices)) continue;
+
+        //
+        $airtableField = $value->airtableField;
+        $fieldData = null;
+        $label = $value->metaValues->label;
+
+        foreach($apiData["fields"] as $key => $field){
+          if($field["name"] == $airtableField){
+            $fieldData = $field;
+          }
+        }
+
+        if($fieldData){
+          $choices = array_map("aeropageGetChoices", $fieldData["options"]["choices"]);
+          
+          if(function_exists("acf_get_field")){
+            $ACFField = acf_get_field($value->metaValues->key, true);
+            foreach ($choices as $key => $choice) {
+              $ACFField["choices"][$choice] = $choice;
+            }
+            acf_update_field($ACFField);
+            $response['message'] .= "Choices for ACF Field $label updated using $airtableField Airtable field choices. <br />";
+          }
+        }
+      }
     }
     
     // echo "<pre>";
@@ -587,7 +643,8 @@ function aeropageSyncPosts($parentId)
 
     update_post_meta ($parentId,'aero_sync_fields', $fieldTypeByName); // add to the parent cpt
 	
-	  $post_type = $parent->post_name;
+    //If there is a mapped post type, we use that post type instead of the parent
+	  $post_type = $mapped_post_type ? $mapped_post_type : $parent->post_name;
     
     $dynamic = $parent->post_excerpt; //record_id or name
 	
@@ -636,8 +693,11 @@ function aeropageSyncPosts($parentId)
         else // else create a new category
         {
           $term = wp_insert_term($categoryFieldName,'category');
-          $parentTermID = $term['term_id'];
-          update_post_meta($parentId,$parentCategoryMetaKey, $parentTermID);
+
+          if(is_array($term)){
+            $parentTermID = $term['term_id'];
+            update_post_meta($parentId,$parentCategoryMetaKey, $parentTermID);
+          }
         }
         
         foreach ($categoryChoices as $key => $choice)
@@ -735,9 +795,11 @@ function aeropageSyncPosts($parentId)
       if ($existing){
         $existing_id = $existing[0]->ID;
         $post_status = "publish";
+        //We set the existing post content so that it won't be overwritten when saving/updating post
         $existing_post_content = $existing[0]->post_content;
       }else{
         $existing_id = "";
+        $existing_post_content = "";
       }
       
       
@@ -774,11 +836,14 @@ function aeropageSyncPosts($parentId)
         'post_content' => $existing_post_content
       );
 
+      //If there is a post content, then we will set the post content to the value of these fields.
       if(count($postContentFieldNames) > 0){
+        //Reset the post content
+        $record_post['post_content'] = "";
         $post_content = "<br>--> Post Content added.";
         //Concatenate all the post content fields in the records
         foreach($postContentFieldNames as $key => $field){
-          $record_post["post_content"] .= $record["fields"][$field] . " ";
+          $record_post["post_content"] .= html_entity_decode($record["fields"][$field]) . " ";
           $post_content .= "<br>------> Added Content for field $field";
         }
       }
@@ -830,7 +895,34 @@ function aeropageSyncPosts($parentId)
         //update_field( $acf_field_key, $value, $record_post_id );
       }
       // end foreach field
-    
+      if($mapped_fields){
+        //For post meta and ACF
+        foreach ($mapped_fields as $key => $mappedFieldData) {
+          $value = $record['fields'][$mappedFieldData->airtableField];
+
+          $type = $fieldTypeByName[$mappedFieldData->airtableField];
+
+          if ($type == 'select_multiple' or $type == 'lookup_text_short' or $type == 'linked' )
+          {
+            $value = implode(',',$value); // implode array into string before we add it
+          }
+
+          if (substr($type,0,11) == 'attachment_' )
+          {
+            $value = sanitize_url($value[0]['url']);
+          }
+          
+          $value = html_entity_decode($value);
+
+          //Update ACF field
+          if($mappedFieldData->metaValues->key && function_exists("update_field")){
+            update_field($mappedFieldData->metaValues->key, $value, $record_post_id);  
+          }
+
+          update_post_meta($record_post_id, $key, $value);
+          $response['message'] .= "<br> -----> Updated custom post field $key.";
+        }
+      }
 
     
       // POST MEDIA (ARRAY) DOWNLOAD

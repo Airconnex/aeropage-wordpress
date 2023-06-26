@@ -8,6 +8,7 @@ import { convertToSlug } from "./utils";
 import Toggle from "react-toggle";
 import { refreshIconBig } from "./Icons";
 import { processMedia, sleep } from "./functions";
+import PostTypeMapping from "./PostTypeMapping";
 
 export const tickIcon = (
   <svg
@@ -84,8 +85,6 @@ const EditPost = ({
   setOpenSyncRecordModal,
   setIsSyncDone
 }) => {
-  const JSON = {};
-
   const [btnState, setBtnState] = useState(true);
   const [inputValue, setInputValue] = useState("");
   const [status, setStatus] = useState(false);
@@ -101,6 +100,8 @@ const EditPost = ({
   const [postStatus, setPostStatus] = useState("publish");
   const [fetchData, setFetchData] = useState(false);
   const [syncStatus, setSyncStatus] = useState("");
+  const [mappedFields, setMappedFields] = useState({});
+  const [selectedPostType, setSelectedPostType] = useState("");
   const handleSubmit = async (e) => {
     e.preventDefault();
     // console.log(MYSCRIPT.ajaxUrl);
@@ -121,6 +122,8 @@ const EditPost = ({
     params.append("app", responseAP?.status?.app);
     params.append("table", responseAP?.status?.table);
     params.append("view", responseAP?.status?.view);
+    params.append("post_type", selectedPostType);
+    params.append("mapped_fields", JSON.stringify(mappedFields));
     // params.append("aero_page_id", responseAP?.status?.id);
     params.append("post_status", postStatus);
     setOpenSyncRecordModal(true);
@@ -229,6 +232,7 @@ const EditPost = ({
     params.append("action", "aeropageEditorMeta");
     params.append("id", id);
     axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
+      console.log({ responseAP })
       if(responseAP?.data?.token){
         // console.log("THERE'S A TOKEN");
         setInputValue(responseAP?.data?.token[0]);
@@ -241,6 +245,14 @@ const EditPost = ({
       if(responseAP?.data?.post_status){
         setPostStatus(responseAP?.data?.post_status?.[0]);
       }
+
+      if(responseAP?.data?.mapped_fields){
+        setMappedFields(responseAP?.data?.mapped_fields);
+      }
+
+      if(responseAP?.data?.mapped_post_type){
+        setSelectedPostType(responseAP?.data?.mapped_post_type);
+      }
     });
   }, []);
   // console.log(status);
@@ -249,8 +261,8 @@ const EditPost = ({
     <div
       style={{
         background: "white",
-        minHeight: "800px",
-        height: "80vh",
+        minHeight: "80vh",
+        height: "100%",
         width: "100%",
       }}
     >
@@ -323,7 +335,7 @@ const EditPost = ({
                 lineHeight: "120%",
               }}
             >
-              Create Dynamic Pages
+              Sync Dynamic Posts
             </p>
             <p
               style={{
@@ -777,6 +789,15 @@ const EditPost = ({
                 ) }
               </div>
               {/* <Link to="/"> */}
+
+              <PostTypeMapping 
+                token={inputValue}
+                tokenData={responseAP}
+                setMappedFields={setMappedFields}
+                mappedFields={mappedFields}
+                selectedPostType={selectedPostType}
+                setSelectedPostType={setSelectedPostType}
+              />
               <div style={{display: "flex"}}>
                 <button
                   disabled={

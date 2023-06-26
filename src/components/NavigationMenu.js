@@ -44,6 +44,14 @@ const logModalStyles = {
     padding: '30px'
   },
 };
+const aeropageModalStyles = {
+  content: {
+    position: "relative"
+  },
+  overlay: {
+    position: "fixed",
+  }
+};
 Modal.setAppElement('#aeroplugin');
 
 const Dashboard = () => {
@@ -63,6 +71,7 @@ const Dashboard = () => {
   const [currentMedia, setCurrentMedia] = useState(null);
   const [totalMedia, setTotalMedia] = useState(null);
   const [isSyncDone, setIsSyncDone] = useState(false);
+  const [aeropageModal, setAeropageModal] = useState(true);
   // const [isMediaCancelled, setIsMediaCancelled] = useState(false);
   let isMediaCancelled = useRef(0);
   // console.log("PLUGIN NAME: ", MYSCRIPT.plugin_name);
@@ -604,6 +613,12 @@ const Dashboard = () => {
           </div>
         </div>
       </Modal>
+      {/* <Modal
+        isOpen={aeropageModal}
+        style={aeropageModalStyles}
+      >
+        Aeropage is here
+      </Modal> */}
     </>
   );
 };
