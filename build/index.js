@@ -8522,14 +8522,6 @@ const logModalStyles = {
     padding: '30px'
   }
 };
-const aeropageModalStyles = {
-  content: {
-    position: "relative"
-  },
-  overlay: {
-    position: "fixed"
-  }
-};
 react_modal__WEBPACK_IMPORTED_MODULE_7___default().setAppElement('#aeroplugin');
 
 const Dashboard = () => {
@@ -8981,7 +8973,50 @@ const Dashboard = () => {
       isMediaCancelled.current = 1;
       setOpenMediaModal(false);
     }
-  }, (currentMedia === null || currentMedia === void 0 ? void 0 : currentMedia.index) === totalMedia ? "Close" : "Cancel")))));
+  }, (currentMedia === null || currentMedia === void 0 ? void 0 : currentMedia.index) === totalMedia ? "Close" : "Cancel")))), aeropageModal && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    style: {
+      position: "fixed",
+      bottom: "20px",
+      right: "20px",
+      maxWidth: "450px"
+    }
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    style: {
+      padding: "12px",
+      width: 'fit-content',
+      background: "#fff",
+      display: "flex",
+      flexDirection: "column",
+      gap: "20px"
+    }
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
+    href: "https://aeropage.io/",
+    target: "_blank"
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("img", {
+    src: `${MYSCRIPT.plugin_assets}/aeropage_builder.png`,
+    style: {
+      maxWidth: "450px"
+    }
+  })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    style: {
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center"
+    }
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    style: {
+      cursor: "pointer"
+    },
+    onClick: () => {
+      setAeropageModal(false);
+    }
+  }, "Dismiss"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
+    href: "https://aeropage.io/",
+    target: "_blank"
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "btn"
+  }, "Start Now"))))));
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (Dashboard);
@@ -9086,6 +9121,10 @@ const PostTypeMapping = _ref => {
       setLoadingFields(false);
     })();
   }, [selectedPostType]);
+  (0,react__WEBPACK_IMPORTED_MODULE_2__.useEffect)(() => {
+    if (!tokenData) return;
+    setFetchedTokenData(tokenData);
+  }, [tokenData]);
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "div-wrapper"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
@@ -9104,15 +9143,30 @@ const PostTypeMapping = _ref => {
 
       if (!enableMapping) {
         getRegisteredPostFields();
+      }
+
+      if (enableMapping === false) {
+        setSelectedPostType(null);
+        setRegisteredPostTypes(null);
       } //Retrieve the post types and the airtable fields from the token
 
     }
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
     className: "label-text"
-  }, "Map to a Existing Post Type")), Object.keys(registeredPostTypes).length > 0 && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("select", {
+  }, "Map to a Existing Post Type")), enableMapping && Object.keys(registeredPostTypes !== null && registeredPostTypes !== void 0 ? registeredPostTypes : {}).length > 0 && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("select", {
     value: selectedPostType,
     onChange: e => {
-      if (e.target.value === "") {
+      var _e$target, _e$target2;
+
+      if ((e === null || e === void 0 ? void 0 : (_e$target = e.target) === null || _e$target === void 0 ? void 0 : _e$target.value) === "") {
+        setSelectedPostType("");
+        setPostMetaKeys(null);
+        return;
+      }
+
+      ;
+
+      if (!(e !== null && e !== void 0 && (_e$target2 = e.target) !== null && _e$target2 !== void 0 && _e$target2.value)) {
         setSelectedPostType("");
         setPostMetaKeys(null);
         return;
@@ -9184,7 +9238,7 @@ const PostTypeMapping = _ref => {
     }, (_registeredPostTypes$5 = registeredPostTypes[postType]) === null || _registeredPostTypes$5 === void 0 ? void 0 : _registeredPostTypes$5.label);
   }))))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "div-wrapper"
-  }, !loadingFields && postMetaKeys && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, !loadingFields && enableMapping && postMetaKeys && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       width: "75%"
     }
@@ -9200,7 +9254,7 @@ const PostTypeMapping = _ref => {
       fontWeight: "bolder"
     }
   }, key), Object.keys(postMetaKeys[key]).map(metaKey => {
-    var _postMetaKeys$key$met, _postMetaKeys$key$met2, _mappedFields$metaKey, _fetchedTokenData$fie;
+    var _postMetaKeys$key$met, _postMetaKeys$key$met2, _mappedFields$metaKey;
 
     if (metaKey === "_aero_cpt" || metaKey === "_aero_id") return;
     return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
@@ -9209,7 +9263,7 @@ const PostTypeMapping = _ref => {
         flexDirection: "row",
         justifyContent: "space-between"
       }
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, "Map ", (_postMetaKeys$key$met = (_postMetaKeys$key$met2 = postMetaKeys[key][metaKey]) === null || _postMetaKeys$key$met2 === void 0 ? void 0 : _postMetaKeys$key$met2.label) !== null && _postMetaKeys$key$met !== void 0 ? _postMetaKeys$key$met : metaKey, " to \xA0"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("select", {
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, "Map ", (_postMetaKeys$key$met = (_postMetaKeys$key$met2 = postMetaKeys[key][metaKey]) === null || _postMetaKeys$key$met2 === void 0 ? void 0 : _postMetaKeys$key$met2.label) !== null && _postMetaKeys$key$met !== void 0 ? _postMetaKeys$key$met : metaKey, " from \xA0"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("select", {
       style: {
         width: "150px"
       },
@@ -9219,9 +9273,10 @@ const PostTypeMapping = _ref => {
       }
     }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {
       value: ""
-    }, "--"), fetchedTokenData === null || fetchedTokenData === void 0 ? void 0 : (_fetchedTokenData$fie = fetchedTokenData.fields) === null || _fetchedTokenData$fie === void 0 ? void 0 : _fetchedTokenData$fie.map(field => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {
-      value: field === null || field === void 0 ? void 0 : field.name
-    }, field === null || field === void 0 ? void 0 : field.name))));
+    }, "--"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(MapOptions, {
+      tokenData: fetchedTokenData,
+      fieldsToBeMapped: postMetaKeys[key][metaKey]
+    })));
   }), Object.keys(postMetaKeys[key]).length <= 0 && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, "No meta keys or fields found."))))), loadingFields && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     style: {
       display: "flex",
@@ -9251,12 +9306,35 @@ const PostTypeMapping = _ref => {
   }, "Loading Fields...")))));
 };
 
+const MapOptions = _ref2 => {
+  var _tokenData$status$med, _tokenData$status, _tokenData$fields2;
+
+  let {
+    tokenData,
+    fieldsToBeMapped
+  } = _ref2;
+  const mediaFields = (_tokenData$status$med = tokenData === null || tokenData === void 0 ? void 0 : (_tokenData$status = tokenData.status) === null || _tokenData$status === void 0 ? void 0 : _tokenData$status.media) !== null && _tokenData$status$med !== void 0 ? _tokenData$status$med : [];
+
+  if ((fieldsToBeMapped === null || fieldsToBeMapped === void 0 ? void 0 : fieldsToBeMapped.type) === "image") {
+    var _tokenData$fields;
+
+    const fields = tokenData === null || tokenData === void 0 ? void 0 : (_tokenData$fields = tokenData.fields) === null || _tokenData$fields === void 0 ? void 0 : _tokenData$fields.filter(field => mediaFields.includes(field === null || field === void 0 ? void 0 : field.id));
+    return fields.map(field => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {
+      value: field === null || field === void 0 ? void 0 : field.name
+    }, field === null || field === void 0 ? void 0 : field.name));
+  }
+
+  return tokenData === null || tokenData === void 0 ? void 0 : (_tokenData$fields2 = tokenData.fields) === null || _tokenData$fields2 === void 0 ? void 0 : _tokenData$fields2.map(field => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {
+    value: field === null || field === void 0 ? void 0 : field.name
+  }, field === null || field === void 0 ? void 0 : field.name));
+};
+
 const getFieldValue = (airtableField, tokenData) => {
-  var _tokenData$fields;
+  var _tokenData$fields3;
 
   if (!tokenData) return "";
   if (!airtableField) return "";
-  const field = tokenData === null || tokenData === void 0 ? void 0 : (_tokenData$fields = tokenData.fields) === null || _tokenData$fields === void 0 ? void 0 : _tokenData$fields.find(field => (field === null || field === void 0 ? void 0 : field.name) === airtableField);
+  const field = tokenData === null || tokenData === void 0 ? void 0 : (_tokenData$fields3 = tokenData.fields) === null || _tokenData$fields3 === void 0 ? void 0 : _tokenData$fields3.find(field => (field === null || field === void 0 ? void 0 : field.name) === airtableField);
   console.log({
     airtableField,
     name: field === null || field === void 0 ? void 0 : field.name
@@ -9304,7 +9382,7 @@ const processMedia = async _ref => {
     setTotalMedia(responseData === null || responseData === void 0 ? void 0 : (_responseData$media2 = responseData.media) === null || _responseData$media2 === void 0 ? void 0 : _responseData$media2.length);
 
     for (let i = 0; i < (responseData === null || responseData === void 0 ? void 0 : (_responseData$media3 = responseData.media) === null || _responseData$media3 === void 0 ? void 0 : _responseData$media3.length); i += 1) {
-      var _responseData$media3;
+      var _responseData$media3, _responseData$acf_med;
 
       //If the media modal is closed (cancelled), we will not proceed with the downloading
       if (isMediaCancelled.current > 0) {
@@ -9318,9 +9396,13 @@ const processMedia = async _ref => {
         index: index
       }); // console.log("LOOPING: ", media?.record_post_id, isMediaCancelled);
 
+      console.log({
+        acf_field: responseData === null || responseData === void 0 ? void 0 : responseData.acf_media_fields
+      });
       let params = new URLSearchParams();
       params.append("action", "aeropageMediaDownload");
       params.append("media", JSON.stringify(media));
+      params.append("acf_image_fields", JSON.stringify((_responseData$acf_med = responseData === null || responseData === void 0 ? void 0 : responseData.acf_media_fields) !== null && _responseData$acf_med !== void 0 ? _responseData$acf_med : []));
       await axios__WEBPACK_IMPORTED_MODULE_0___default().post(MYSCRIPT.ajaxUrl, params).then(res => {}) //console.log(res))
       .catch(err => {
         var _err$response$data$me, _err$response, _err$response$data;

@@ -24,9 +24,13 @@ export const processMedia = async ({
       setCurrentMedia({ ...media, index: index });
       // console.log("LOOPING: ", media?.record_post_id, isMediaCancelled);
       
+      console.log({ acf_field: responseData?.acf_media_fields })
+
       let params = new URLSearchParams();
       params.append("action", "aeropageMediaDownload");  
       params.append("media", JSON.stringify(media));
+      params.append("acf_image_fields", JSON.stringify(responseData?.acf_media_fields ?? []));
+
       await axios.post(MYSCRIPT.ajaxUrl, params)
         .then(res => {})//console.log(res))
         .catch(err => {

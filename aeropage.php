@@ -109,6 +109,7 @@ function aeroplugin_admin_enqueue_scripts() {
     wp_add_inline_script( 'aeroplugin-script', 'const MYSCRIPT = ' . json_encode( array(
         'ajaxUrl' => admin_url( 'admin-ajax.php' ),
         'plugin_admin_path' => parse_url(admin_url())["path"],
+        'plugin_assets' => plugin_dir_url( __FILE__ ).'assets',
         'plugin_name' => "aeropage" //This is the name of the plugin.
     ) ), 'before' );
   }
@@ -562,6 +563,8 @@ function aeropageSyncPosts($parentId)
 
   $response = array();
 
+  $acf_image_fields = array();
+
   // echo "RECEIVED TOKEN DATA...";
   // echo "<pre>";
   // print_r($apiData);
@@ -605,25 +608,31 @@ function aeropageSyncPosts($parentId)
       //
     }
 
+    //Add the choices to ACF and then retrive the fields that are image type
     if($mapped_fields){
       $typesWithChoices = array("select", "radio", "checkbox");
 
       foreach($mapped_fields as $key => $value){
+        //Check if image type
+        if($value->metaValues->type == "image" || $value->metaValues->type == "file" ){
+          $acf_image_fields[$value->airtableField] = $value;
+        }
+
         if(!in_array($value->metaValues->type, $typesWithChoices)) continue;
 
         //
         $airtableField = $value->airtableField;
-        $fieldData = null;
+        $fieldDta = null;
         $label = $value->metaValues->label;
 
         foreach($apiData["fields"] as $key => $field){
           if($field["name"] == $airtableField){
-            $fieldData = $field;
+            $fieldDta = $field;
           }
         }
 
-        if($fieldData){
-          $choices = array_map("aeropageGetChoices", $fieldData["options"]["choices"]);
+        if($fieldDta && is_array($fieldDta["options"]["choices"])){
+          $choices = array_map("aeropageGetChoices", $fieldDta["options"]["choices"]);
           
           if(function_exists("acf_get_field")){
             $ACFField = acf_get_field($value->metaValues->key, true);
@@ -635,8 +644,10 @@ function aeropageSyncPosts($parentId)
           }
         }
       }
+
+      $response["acf_media_fields"] = $acf_image_fields;
     }
-    
+
     // echo "<pre>";
     // print_r($postContentFieldNames);
     // echo "</pre>";
@@ -907,12 +918,14 @@ function aeropageSyncPosts($parentId)
             $value = implode(',',$value); // implode array into string before we add it
           }
 
-          if (substr($type,0,11) == 'attachment_' )
+          if (substr(str_replace("lookup_", "", $type) ,0,11) == 'attachment_' )
           {
             $value = sanitize_url($value[0]['url']);
           }
           
-          $value = html_entity_decode($value);
+          if(is_string($value)){
+            $value = html_entity_decode($value);
+          }
 
           //Update ACF field
           if($mappedFieldData->metaValues->key && function_exists("update_field")){
@@ -946,17 +959,28 @@ function aeropageSyncPosts($parentId)
           $mediaFieldType = $fieldData[$mediaFieldID]['type'];
           $mediaFieldValue = $record['fields'][$mediaFieldName];
           $response['message'] .= "<br>--> media field is $mediaFieldName ";
-          
+
           foreach ($mediaFieldValue as $key => $mediaObject)
           {
             $response['message'] .= "<br>------> media $mediaFieldName $key is being checked... ";
-            $mediaResponse = aeropage_media_downloader($mediaObject,$record_post_id, $count, $check);
+            //Check if media needs to be downloaded
+            $mediaResponse = aeropage_media_downloader($mediaObject,$record_post_id, $count, $check, $mediaFieldName);
             $mediaPostid = $mediaResponse[0];
             $mediaPostMsg = $mediaResponse[1];
+            $mediaToBeDownloaded = $mediaResponse[3];
 
             //If media needs to be downloaded we add it to the media array
-            if($mediaResponse[3]){
-              $response["media"][] = $mediaResponse[3];
+            if($mediaToBeDownloaded){
+              $response["media"][] = $mediaToBeDownloaded;
+            }
+
+            if(count($acf_image_fields) > 0 && $mediaPostid){
+              //Check which acf field it is in
+              $acfValues = $acf_image_fields[$mediaFieldName]->metaValues;
+
+              if($acfValues->key && function_exists("update_field")){
+                update_field($acfValues->key, $mediaPostid, $record_post_id);  
+              }
             }
             
             $response['message'] .= "<br>-------->$mediaPostMsg";
@@ -1062,6 +1086,19 @@ function aeropageMediaDownload() {
 
     if(is_array($media)){
       $response = aeropage_media_downloader($media["media"], $media["record_post_id"], $media["field_index"]);
+      $mediaPostid = $mediaResponse[0];
+      $mediaFieldName = $media["field_name"];
+      $acf_image_fields = (array) json_decode(stripslashes($_POST["acf_image_fields"]));
+
+      if(count($acf_image_fields) > 0 && $mediaPostid){
+        //Check which acf field it is in
+        $acfValues = $acf_image_fields[$mediaFieldName]->metaValues;
+
+        if($acfValues->key && function_exists("update_field")){
+          update_field($acfValues->key, $mediaPostid, $media["record_post_id"]);  
+        }
+      }
+
       die(json_encode(array("status" => "success", "message" => $response[1])));
     }else{
       throw new Exception("Invalid data type received by the request handler.");
@@ -1078,7 +1115,7 @@ function aeropageMediaDownload() {
 //$parent => wordpress post ID where the image will be attached
 //$field_index => index of the airtable field--will be used to set the featured image
 //$check => flag for checking if we add the image to an array when syncing.
-function aeropage_media_downloader($mediaObject, $parent, $field_index, $check = NULL)
+function aeropage_media_downloader($mediaObject, $parent, $field_index, $check = NULL, $fieldName = "")
 {
 
   global $wpdb;
@@ -1111,7 +1148,8 @@ function aeropage_media_downloader($mediaObject, $parent, $field_index, $check =
       $response[3] = array(
         "media" => $mediaObject,
         "record_post_id" => $parent,
-        "field_index" => $field_index
+        "field_index" => $field_index,
+        "field_name" => $fieldName
       );
     }else{
       //If the 

@@ -44,14 +44,6 @@ const logModalStyles = {
     padding: '30px'
   },
 };
-const aeropageModalStyles = {
-  content: {
-    position: "relative"
-  },
-  overlay: {
-    position: "fixed",
-  }
-};
 Modal.setAppElement('#aeroplugin');
 
 const Dashboard = () => {
@@ -613,12 +605,63 @@ const Dashboard = () => {
           </div>
         </div>
       </Modal>
-      {/* <Modal
-        isOpen={aeropageModal}
-        style={aeropageModalStyles}
-      >
-        Aeropage is here
-      </Modal> */}
+      {
+        aeropageModal && (
+          <div
+            style={{
+              position: "fixed",
+              bottom: "20px",
+              right: "20px",
+              maxWidth: "450px"
+            }}
+          >
+            <div
+              style={{
+                padding: "12px",
+                width: 'fit-content',
+                background: "#fff",
+                display: "flex",
+                flexDirection: "column",
+                gap: "20px"
+              }}
+            >
+              <a
+                  href="https://aeropage.io/"
+                  target="_blank"
+                >
+                <img 
+                  src={`${MYSCRIPT.plugin_assets}/aeropage_builder.png`}
+                  style={{ maxWidth: "450px" }}
+                />
+              </a>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center"
+                }}
+              >
+                <div 
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    setAeropageModal(false);
+                  }}
+                >Dismiss</div>
+                <a
+                  href="https://aeropage.io/"
+                  target="_blank"
+                >
+                  <div 
+                    className="btn"
+                  >Start Now</div>
+                </a>
+              </div>
+            </div>
+          </div>
+        )
+
+      }
     </>
   );
 };

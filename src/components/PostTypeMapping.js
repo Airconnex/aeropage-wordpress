@@ -68,7 +68,13 @@ const PostTypeMapping = ({
       await getPostMetaForSelectedPostType(selectedPostType);
       setLoadingFields(false);
     })()
-  }, [selectedPostType])
+  }, [selectedPostType]);
+
+  useEffect(() => {
+    if(!tokenData) return;
+
+    setFetchedTokenData(tokenData);
+  }, [tokenData])
 
   return <div>
     <div className="div-wrapper">
@@ -90,18 +96,29 @@ const PostTypeMapping = ({
               if(!enableMapping){
                 getRegisteredPostFields();
               }
+
+              if(enableMapping === false){
+                setSelectedPostType(null);
+                setRegisteredPostTypes(null);
+              }
               //Retrieve the post types and the airtable fields from the token
             }} />
           <span className="label-text">Map to a Existing Post Type</span>
         </label>
         { 
-          Object.keys(registeredPostTypes).length > 0 && 
+          enableMapping && Object.keys(registeredPostTypes ?? {}).length > 0 && 
           (
             <>
               <select
                 value={selectedPostType}
                 onChange={(e) => {
-                  if(e.target.value === ""){
+                  if(e?.target?.value === ""){
+                    setSelectedPostType("");
+                    setPostMetaKeys(null);
+                    return;
+                  };
+
+                  if(!e?.target?.value){
                     setSelectedPostType("");
                     setPostMetaKeys(null);
                     return;
@@ -185,7 +202,7 @@ const PostTypeMapping = ({
     </div>
     <div className="div-wrapper">
     {
-        !loadingFields && postMetaKeys && (
+        !loadingFields && enableMapping && postMetaKeys && (
           <div style={{ 
             width: "75%"
           }}>
@@ -210,7 +227,7 @@ const PostTypeMapping = ({
                         justifyContent: "space-between"
                       }}
                     >
-                      <span>Map {postMetaKeys[key][metaKey]?.label ?? metaKey} to &nbsp;</span>
+                      <span>Map {postMetaKeys[key][metaKey]?.label ?? metaKey} from &nbsp;</span>
                       <select
                         style={{
                           width: "150px"
@@ -221,7 +238,10 @@ const PostTypeMapping = ({
                         }}
                       >
                         <option value="">--</option>
-                        { fetchedTokenData?.fields?.map(field => (<option value={field?.name}>{field?.name}</option>)) }
+                        <MapOptions 
+                          tokenData={fetchedTokenData}
+                          fieldsToBeMapped={postMetaKeys[key][metaKey]}
+                        />
                       </select>
                     </div>
                   )
@@ -271,6 +291,21 @@ const PostTypeMapping = ({
     </div>
   </div>;
 };
+
+const MapOptions = ({
+  tokenData,
+  fieldsToBeMapped
+}) => {
+  const mediaFields = tokenData?.status?.media ?? [];
+
+  if(fieldsToBeMapped?.type === "image"){
+    const fields = tokenData?.fields?.filter(field => mediaFields.includes(field?.id));
+
+    return fields.map(field => (<option value={field?.name}>{field?.name}</option>));
+  }
+
+  return (tokenData?.fields?.map(field => (<option value={field?.name}>{field?.name}</option>)));
+}
 
 const getFieldValue = (airtableField, tokenData) => {
   if(!tokenData) return "";
