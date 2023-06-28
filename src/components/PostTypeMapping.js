@@ -90,20 +90,25 @@ const PostTypeMapping = ({
             icons={false}
             checked={enableMapping}
             onChange={(e) => {
-              setEnableMapping(!enableMapping);
+              const b = enableMapping;
+              setEnableMapping(!b);
               
+              console.log({ e })
+
               //If enableMapping is true.
-              if(!enableMapping){
+              if(!b === true){
                 getRegisteredPostFields();
               }
 
-              if(enableMapping === false){
-                setSelectedPostType(null);
+              if(!b === false){
+                console.log("SETTING TO POST TYPES TO NULL...");
+                setSelectedPostType("");
                 setRegisteredPostTypes(null);
+                setMappedFields(null);
               }
               //Retrieve the post types and the airtable fields from the token
             }} />
-          <span className="label-text">Map to a Existing Post Type</span>
+          <span className="label-text">Map to an existing Post Type</span>
         </label>
         { 
           enableMapping && Object.keys(registeredPostTypes ?? {}).length > 0 && 

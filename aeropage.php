@@ -258,7 +258,7 @@ function aeropageEditorMeta(){
       "auto_sync" => $auto_sync,
       "post_status" => $record_post_status,
       "mapped_fields" => $mapped_fields,
-      "mapped_post_type" => $mapped_post_type
+      "mapped_post_type" => $mapped_post_type ? $mapped_post_type : ""
     )
   ));
 }
@@ -414,8 +414,9 @@ function aeropageEdit() // called by ajax, adds the cpt
     $post_type = sanitize_text_field($_POST["post_type"]);
 
     //If there is a post type, we will save it to the post meta
-    if($post_type != ""){
-      update_post_meta($id, 'aero_mapped_post_type', $post_type);
+    update_post_meta($id, 'aero_mapped_post_type', $post_type);
+
+    if($post_type){
       update_post_meta($id, 'aero_mapped_post_meta_fields', json_decode(stripslashes($_POST["mapped_fields"])));
     }
 
@@ -466,6 +467,9 @@ function aeropageDeletePost()
   }
 
   $parent = get_post($post_id);
+
+  $mapped_post_type = get_post_meta($post_id, 'aero_mapped_post_type', true);
+
   $slug = $parent->post_name;
 
   //Delete all the posts for that post type
@@ -480,6 +484,20 @@ function aeropageDeletePost()
     WHERE a.post_type = %s;
     "
   , $slug));
+
+  if($mapped_post_type){
+    $wpdb->query($wpdb->prepare(
+      "
+      DELETE a,b,c
+      FROM wp_posts a
+      LEFT JOIN wp_term_relationships b
+          ON (a.ID = b.object_id)
+      LEFT JOIN wp_postmeta c
+          ON (a.ID = c.post_id AND c.meta_key = '_aero_cpt')
+      WHERE c.meta_value = %d;
+      "
+    , $post_id));
+  }
 
   // Unregister the post type first
   unregister_post_type($slug);
@@ -979,7 +997,9 @@ function aeropageSyncPosts($parentId)
               $acfValues = $acf_image_fields[$mediaFieldName]->metaValues;
 
               if($acfValues->key && function_exists("update_field")){
-                update_field($acfValues->key, $mediaPostid, $record_post_id);  
+                
+                update_field($acfValues->key, $mediaPostid, $record_post_id);
+                $response['message'] .= "<br>-------->Updated ACF field";
               }
             }
             

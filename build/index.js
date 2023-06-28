@@ -9139,21 +9139,27 @@ const PostTypeMapping = _ref => {
     icons: false,
     checked: enableMapping,
     onChange: e => {
-      setEnableMapping(!enableMapping); //If enableMapping is true.
+      const b = enableMapping;
+      setEnableMapping(!b);
+      console.log({
+        e
+      }); //If enableMapping is true.
 
-      if (!enableMapping) {
+      if (!b === true) {
         getRegisteredPostFields();
       }
 
-      if (enableMapping === false) {
-        setSelectedPostType(null);
+      if (!b === false) {
+        console.log("SETTING TO POST TYPES TO NULL...");
+        setSelectedPostType("");
         setRegisteredPostTypes(null);
+        setMappedFields(null);
       } //Retrieve the post types and the airtable fields from the token
 
     }
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
     className: "label-text"
-  }, "Map to a Existing Post Type")), enableMapping && Object.keys(registeredPostTypes !== null && registeredPostTypes !== void 0 ? registeredPostTypes : {}).length > 0 && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("select", {
+  }, "Map to an existing Post Type")), enableMapping && Object.keys(registeredPostTypes !== null && registeredPostTypes !== void 0 ? registeredPostTypes : {}).length > 0 && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("select", {
     value: selectedPostType,
     onChange: e => {
       var _e$target, _e$target2;
