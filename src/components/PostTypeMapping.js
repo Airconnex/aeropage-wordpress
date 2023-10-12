@@ -100,7 +100,7 @@ const PostTypeMapping = ({
                 getRegisteredPostFields();
               }
 
-              if(!b === false){
+              if(!b === false){ 
                 console.log("SETTING TO POST TYPES TO NULL...");
                 setSelectedPostType("");
                 setRegisteredPostTypes(null);

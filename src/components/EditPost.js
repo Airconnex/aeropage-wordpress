@@ -178,11 +178,11 @@ const EditPost = ({
   }
   const titleOnChange = (e) => {
     setTitle(e.target.value);
-    let a = convertToSlug(e.target.value);
+    let a = convertToSlug(e.target.value.slice(0, 20));
     setSlug(a);
   };
   const slugOnChange = (e) => {
-    setSlug(e.target.value);
+    setSlug(e.target.value.slice(0, 20));
   };
   const dynamicOnChange = (e) => {
     setDynamic(e.target.value);
@@ -413,6 +413,7 @@ const EditPost = ({
                   lineHeight: "150%",
                   border: "none",
                 }}
+                maxLength={20}
                 placeholder="Dynamic URL"
               ></input>{" "}
               /{" "}

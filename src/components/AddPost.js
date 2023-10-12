@@ -177,12 +177,12 @@ const AddPost = ({
 
   const titleOnChange = (e) => {
     setTitle(e.target.value);
-    let a = convertToSlug(e.target.value);
+    let a = convertToSlug(e.target.value.slice(0, 20));
     setSlug(a);
   };
 
   const slugOnChange = (e) => {
-    setSlug(e.target.value);
+    setSlug(e.target.value.slice(0, 20));
   };
 
   const dynamicOnChange = (e) => {
@@ -374,6 +374,7 @@ const AddPost = ({
                   lineHeight: "150%",
                   border: "none",
                 }}
+                maxLength={20}
                 placeholder="Dynamic URL"
               ></input>{" "}
               /{" "}
@@ -752,7 +753,7 @@ const AddPost = ({
                 to="/wordpress/wp-admin/admin.php?page=aeroplugin"
               > */}
               
-              <PostTypeMapping 
+              <PostTypeMapping  
                 token={inputValue}
                 tokenData={responseAP}
                 setMappedFields={setMappedFields}
