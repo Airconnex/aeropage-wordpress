@@ -19,7 +19,7 @@ import {
   refreshIconLarge,
   tickIconLarge
 } from "./Icons";
-import { processMedia, sleep } from "./functions";
+import { processMedia, processSync, sleep } from "./functions";
 
 const customStyles = {
   content: {
@@ -64,6 +64,8 @@ const Dashboard = () => {
   const [totalMedia, setTotalMedia] = useState(null);
   const [isSyncDone, setIsSyncDone] = useState(false);
   const [aeropageModal, setAeropageModal] = useState(true);
+  const [currentPosts, setCurrentPosts] = useState(false);
+  const [totalPosts, setTotalPosts] = useState(false);
   // const [isMediaCancelled, setIsMediaCancelled] = useState(false);
   let isMediaCancelled = useRef(0);
   // console.log("PLUGIN NAME: ", MYSCRIPT.plugin_name);
@@ -118,33 +120,47 @@ const Dashboard = () => {
     // });
   };
 
-  const handleRefresh = async (id) => {
+  const handleRefresh = async (id, token) => {
     // console.log("id: " + id);
     // console.log(MYSCRIPT.ajaxUrl);
     setIsSyncDone(false);
     setOpenSyncRecordModal(true);
-    let params = new URLSearchParams();
-    params.append("action", "aeropageSyncPosts");
-    params.append("id", id);
+    //Process the sync by batch
+    //Response data is a set of media files.
+    const responseData = await processSync({
+      token,
+      postID: id,
+      setOpenSyncRecordModal,
+      setTotalPosts,
+      setCurrentPosts,
+      setResponse,
+      response
+    });
 
-    const responseData = await axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
-      if(response){
-        const b = [...response];
-        const a = b?.find(re => re.ID === id);
+    // ------------------- THIS IS NO LONGER USED ---------------//
+    // let params = new URLSearchParams();
+    // params.append("action", "aeropageSyncPosts");
+    // params.append("id", id);
 
-        if(a){
-          a.sync_message = responseAP?.data?.message;
-        }
+    // const responseData = await axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
+    //   if(response){
+    //     const b = [...response];
+    //     const a = b?.find(re => re.ID === id);
 
-        setResponse(b);
-      }
-      return responseAP?.data;
-    })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
-    
+    //     if(a){
+    //       a.sync_message = responseAP?.data?.message;
+    //     }
+
+    //     setResponse(b);
+    //   }
+    //   return responseAP?.data;
+    // })
+    //   .catch(err => {
+    //     console.log(err);
+    //     return null;
+    //   });
+    // --------------------------------------------------------//
+
     setIsSyncDone(true);
     await sleep(750);
     setOpenSyncRecordModal(false);
@@ -468,6 +484,7 @@ const Dashboard = () => {
         setCurrentMedia={setCurrentMedia}
         setOpenSyncRecordModal={setOpenSyncRecordModal} 
         setIsSyncDone={setIsSyncDone}
+        handleRefresh={handleRefresh}
       />;
     } else if (path === "editPost") {
       console.log(response);
@@ -484,6 +501,7 @@ const Dashboard = () => {
           setCurrentMedia={setCurrentMedia}
           setOpenSyncRecordModal={setOpenSyncRecordModal}
           setIsSyncDone={setIsSyncDone}
+          handleRefresh={handleRefresh}
         />
       );
     }
@@ -546,6 +564,17 @@ const Dashboard = () => {
                 //cursor: "pointer"
               }}
             >Please wait, this can take a while... </p>
+            <div>
+            {
+              totalPosts && (<p
+                style={{ 
+                  fontSize: "20px",
+                  margin: "0",
+                  textAlign: "center"
+                }}
+              >{ currentPosts } / { totalPosts }</p>)
+            }
+          </div>
             </div>
           }
           <div></div>

@@ -83,7 +83,8 @@ const EditPost = ({
   isMediaCancelled,
   setCurrentMedia,
   setOpenSyncRecordModal,
-  setIsSyncDone
+  setIsSyncDone,
+  handleRefresh
 }) => {
   const [btnState, setBtnState] = useState(true);
   const [inputValue, setInputValue] = useState("");
@@ -126,24 +127,30 @@ const EditPost = ({
     params.append("mapped_fields", JSON.stringify(mappedFields));
     // params.append("aero_page_id", responseAP?.status?.id);
     params.append("post_status", postStatus);
-    setOpenSyncRecordModal(true);
+    // setOpenSyncRecordModal(true);
     await axios.post(MYSCRIPT.ajaxUrl, params).then(async function (responseAP) {
       setIsSyncDone(true);
       await sleep(750);
       // console.log(responseAP?.data?.response);
-      setOpenSyncRecordModal(false);
+      // setOpenSyncRecordModal(false);
       if(responseAP?.data?.status === "success"){
-        processMedia({
-          responseData: responseAP?.data?.response,
-          setOpenMediaModal,
-          setTotalMedia,
-          isMediaCancelled,
-          setCurrentMedia
+        //Show the sync modal
+        
+        handleRefresh(id, inputValue).then(res => {
+          location.reload();
+          setResponseMessage("Post updated sucessfully!");
         })
-          .then(res => {
-            location.reload()
-            setResponseMessage("Post updated sucessfully!");
-          });     
+        // processMedia({
+        //   responseData: responseAP?.data?.response,
+        //   setOpenMediaModal,
+        //   setTotalMedia,
+        //   isMediaCancelled,
+        //   setCurrentMedia
+        // })
+        //   .then(res => {
+        //     location.reload()
+        //     setResponseMessage("Post updated sucessfully!");
+        //   });     
       }else{
         setError(responseAP?.data?.message);
       }

@@ -78,7 +78,8 @@ const AddPost = ({
   isMediaCancelled,
   setCurrentMedia,
   setOpenSyncRecordModal,
-  setIsSyncDone
+  setIsSyncDone,
+  handleRefresh
 }) => {
   const [btnState, setBtnState] = useState(true);
   const [inputValue, setInputValue] = useState("");
@@ -120,7 +121,7 @@ const AddPost = ({
     params.append("mapped_fields", JSON.stringify(mappedFields));
     // params.append("aero_page_id", responseAP?.status?.id);
     params.append("post_status", postStatus);
-    setOpenSyncRecordModal(true);
+    // setOpenSyncRecordModal(true);
 
     await axios
       .post(MYSCRIPT.ajaxUrl, params)
@@ -128,20 +129,24 @@ const AddPost = ({
         console.log({responseAP});
         setIsSyncDone(true);
         await sleep(750);
-        setOpenSyncRecordModal(false);
+        // setOpenSyncRecordModal(false);
         if (responseAP?.data?.status === "success") {
-          // console.log("YES THIS WORKS...");
-          processMedia({
-            responseData: responseAP?.data?.response,
-            setOpenMediaModal,
-            setTotalMedia,
-            isMediaCancelled,
-            setCurrentMedia
+          handleRefresh(responseAP?.data?.post_id, inputValue).then(res => {
+            window.location = `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}`;
+            setResponseMessage("Post updated sucessfully!");
           })
-            .then(res => {
-              window.location = `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}`;
-              setResponseMessage("Post was added sucessfully!");
-            });     
+          // console.log("YES THIS WORKS...");
+          // processMedia({
+          //   responseData: responseAP?.data?.response,
+          //   setOpenMediaModal,
+          //   setTotalMedia,
+          //   isMediaCancelled,
+          //   setCurrentMedia
+          // })
+          //   .then(res => {
+          //     window.location = `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}`;
+          //     setResponseMessage("Post was added sucessfully!");
+          //   });     
           // setResponseMessage("Post was added sucessfully!");
           // window.location = `${MYSCRIPT.plugin_admin_path}admin.php?page=${MYSCRIPT.plugin_name}`;
         } else {

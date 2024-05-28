@@ -283,7 +283,7 @@ const Card = ({
             }}
             onClick={() => {
               setRefreshState(true);
-              handleRefresh(el?.ID).then((data) => {
+              handleRefresh(el?.ID, el?.token).then((data) => {
                 console.log("HANDLE REFRESH DATA: ", data);
                 setSyncTime(data?.sync_time);
                 setSyncStatus(data?.status);

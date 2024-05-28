@@ -3,7 +3,7 @@
  * Plugin Name: Aeropage Sync for Airtable
  * Plugin URI: https://tools.aeropage.io/api-connector/dashboard
  * Description: Airtable to Wordpress Custom Post Type Sync Plugin
- * Version: 3.0.0
+ * Version: 3.1.0
  * Author: Aeropage
  * Author URI: https://tools.aeropage.io/
  * License: GPL2
@@ -128,6 +128,7 @@ function aeropageList()
     $post->sync_message = get_post_meta($post->ID, "aero_sync_message",true);
     $post->connection = get_post_meta($post->ID, "aero_connection", true);
     $post->aero_page_id = get_post_meta($post->ID, "aero_page_id", true);
+    $post->token = get_post_meta($post->ID, "aero_token", true);
 	}
 	
   // this is for react...
@@ -420,14 +421,17 @@ function aeropageEdit() // called by ajax, adds the cpt
       update_post_meta($id, 'aero_mapped_post_meta_fields', json_decode(stripslashes($_POST["mapped_fields"])));
     }
 
-    $response = aeropageSyncPosts($id);
+    // Removed this since we are already doing the sync process in the frontend when saving the settings and when manually syncing...
+    // This is so that it will prevent 504 issues when syncing and updating posts in the database.
+    // $response = aeropageSyncPosts($id);
 
-    if($response['status'] === "error"){
-      header('Status: 503 Service Temporarily Unavailable');
-      die(json_encode(array("status" => "error", "message" => $response["message"])));
-    }else{
-      die(json_encode(array("status" => "success", "post_id" => $id, "response" => $response)));
-    }
+    // if($response['status'] === "error"){
+    //   header('Status: 503 Service Temporarily Unavailable');
+    //   die(json_encode(array("status" => "error", "message" => $response["message"])));
+    // }else{
+    //   die(json_encode(array("status" => "success", "post_id" => $id, "response" => $response)));
+    // }
+    die(json_encode(array("status" => "success", "post_id" => $id)));
   }
   die(json_encode(array("status" => "error", "message" => "No ID found in the database.")));
 }
@@ -577,16 +581,21 @@ function aeropageSyncPosts($parentId)
 
   $mapped_post_type = get_post_meta($parentId, 'aero_mapped_post_type', true);
 
-  $apiData = aeropageTokenApiCall($token);
+  $callFromBackend = false;
+
+  if($_POST["noCall"] != "1"){
+    $apiData = aeropageTokenApiCall($token);
+    $callFromBackend = true;
+  }else{
+    //Use the data from the frontend
+    //it has the same data structure from the tools response
+    //except that the records are in batches of 100
+    $apiData = json_decode(wp_unslash($_POST["apiData"]), true);
+  }
 
   $response = array();
 
   $acf_image_fields = array();
-
-  // echo "RECEIVED TOKEN DATA...";
-  // echo "<pre>";
-  // print_r($apiData);
-  // echo "</pre>";
 
   if ( 
     isset($apiData['status']['type']) && 
@@ -596,6 +605,13 @@ function aeropageSyncPosts($parentId)
   {
     $response['status'] = 'success';
 	  $response['message'] = "";
+
+    // If it's not the first batch of sync and the api call did not come from the backend
+    // We will just append the message so that we can still see the whole sync
+    if($_POST["firstBatch"] == 0 && !$callFromBackend){
+      $response['message'] = get_post_meta ($parentId,'aero_sync_message', true);
+    }
+
     update_post_meta ($parentId,'aero_sync_status','success');
     $sync_time = time();
     update_post_meta ($parentId,'aero_sync_time', $sync_time);
@@ -783,14 +799,17 @@ function aeropageSyncPosts($parentId)
       // end foreach categories
     }
     //end if categories ------------------------------------------------------------------
-	
-
-    $trash = "
-      UPDATE $wpdb->posts p
-          INNER JOIN $wpdb->postmeta pm ON (p.ID = pm.post_id AND pm.meta_key = '_aero_cpt') 
-      SET p.post_status = 'trash' 
-      WHERE pm.meta_value = %d";
-    $results = $wpdb->get_results($wpdb->prepare($trash, $parentId));
+    
+    //execute only on first batch or when in hourly sync.
+    if($_POST["firstBatch"] == 1 || $callFromBackend){
+      $trash = "
+        UPDATE $wpdb->posts p
+            INNER JOIN $wpdb->postmeta pm ON (p.ID = pm.post_id AND pm.meta_key = '_aero_cpt') 
+        SET p.post_status = 'trash' 
+        WHERE pm.meta_value = %d";
+      $results = $wpdb->get_results($wpdb->prepare($trash, $parentId));
+    }
+    
     $count = 1;
     
     //Media array of the records to be downloaded.
@@ -823,7 +842,8 @@ function aeropageSyncPosts($parentId)
       //If there's a post, use that post ID otherwise just left it empty
       if ($existing){
         $existing_id = $existing[0]->ID;
-        $post_status = "publish";
+        // $post_status = "publish";
+        $post_status = $record_post_status;
         //We set the existing post content so that it won't be overwritten when saving/updating post
         $existing_post_content = $existing[0]->post_content;
       }else{
@@ -1089,6 +1109,11 @@ function aeropageSyncPosts($parentId)
   if($isAjax)
   {
     $response["sync_time"] = $sync_time;
+    $response["check"] = !$_POST["firstBatch"] && !$callFromBackend;
+    $response["trash_check"] = $_POST["firstBatch"] == 1 || $callFromBackend;
+    $response['$_POST["firstBatch"]'] = $_POST["firstBatch"];
+    $response['$callFromBackend'] = $callFromBackend;
+    $response["results"] = $results;
     die(json_encode($response));
   }
   else
