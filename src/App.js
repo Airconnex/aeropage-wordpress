@@ -11,7 +11,7 @@ import {
   Routes,
 } from "react-router-dom";
 
-const App = () => {
+const App = () => { 
   return (
     <Router>
       <div>

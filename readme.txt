@@ -3,7 +3,7 @@
 Contributors: Aeropage
 Tags: Airtable, Sync, CPT, Custom Post Type, Divi, Elementor, Dynamic Tags, Metadata
 Requires at least: 6.0.2
-Tested up to: 6.5.3
+Tested up to: 6.6
 Stable tag: 3.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -133,6 +133,15 @@ Requires PHP: 7.0.0
 2. Adding a Post. 
 
 === Changelog ===
+
+3.1.0
+* Sync by batch to avoid the 504 errors
+
+3.0.0 
+* Mapping an Aeropage project to a post type 
+* Mapping Airtable Fields to a registered post meta and ACF support 
+* Setting an Airtable field as Post Content 
+* HTML support in Airtable fields for WYSIWYG editors
 
 2.0.3
 * Fixed bugs
