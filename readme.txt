@@ -35,7 +35,7 @@ Requires PHP: 7.0.0
 <p>If you have an access to the hosting server settings, you can update it like so:</p>
 <p>Disable WordPress Cron in wp-config.php:</p>
 <code>define('DISABLE_WP_CRON', true);</code>
-<p>Set up a server cron job to run wp_cron.php every 10 minutes:</p>
+<p>Set up a server cron job to run wp_cron.php every hour:</p>
 <code>*/5 * * * * curl http://example.com/wp-cron.php?doing_wp_cron</code>
 <p>When submitted this will create a custom post type and automatically add a new post for every record in your connected Airtable</p>
 <p><strong>To complete the form you will need an API token (below)...</strong></p>
