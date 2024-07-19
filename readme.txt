@@ -4,7 +4,7 @@ Contributors: Aeropage
 Tags: Airtable, Sync, CPT, Custom Post Type, Divi, Elementor, Dynamic Tags, Metadata
 Requires at least: 6.0.2
 Tested up to: 6.6
-Stable tag: 3.1.0
+Stable tag: 3.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Requires PHP: 7.0.0
@@ -30,7 +30,13 @@ Requires PHP: 7.0.0
 <p><strong>API Token</strong></p>
 <p><strong>Continue to the next steps</strong> to create a token to use with the api connector.</p>
 <p><strong>Auto Sync</strong></p>
-<p>Will check for changes every 10 minutes and automatically import them to Wordpress.</p>
+<p>A cron task that is executed in an hourly interval which is based on Wordpress Cron implementation. WordPress Cron is WordPress's task scheduler that runs on site visits to handle tasks like publishing posts and checking for updates. </p>
+<p><b>Wordpress Cron, and to an extent auto sync, relies on site traffic, so on low-traffic sites, tasks may not run on time.</b></p>
+<p>If you have an access to the hosting server settings, you can update it like so:</p>
+<p>Disable WordPress Cron in wp-config.php:</p>
+<code>define('DISABLE_WP_CRON', true);</code>
+<p>Set up a server cron job to run wp_cron.php every 10 minutes:</p>
+<code>*/5 * * * * curl http://example.com/wp-cron.php?doing_wp_cron</code>
 <p>When submitted this will create a custom post type and automatically add a new post for every record in your connected Airtable</p>
 <p><strong>To complete the form you will need an API token (below)...</strong></p>
 <h2 id="create-api-connector-token">Create API Connector &amp; Token</h2>
@@ -70,7 +76,7 @@ Requires PHP: 7.0.0
 <li>Paste your token into the API Token field.</li>
 </ul>
 <aside>
-ðŸ’¡ Auto sync can be toggled on to check for new and changed data every 10 minutes.
+ðŸ’¡ Auto sync can be toggled on to check for new and changed data.
 
 </aside>
 
@@ -109,7 +115,7 @@ Requires PHP: 7.0.0
 <p>Make changes to the configuration</p>
 <p><img src="assets/Untitled%2016.png" alt="Resyncronize your data manually."></p>
 <p>Resyncronize your data manually.</p>
-<p><strong>If you have auto sync toggled on, your posts will be updated automatically every 10 minutes.</strong></p>
+<p><strong>If you have auto sync toggled on, your posts will be updated automatically after running the cron job.</strong></p>
 
 
   
@@ -133,6 +139,8 @@ Requires PHP: 7.0.0
 2. Adding a Post. 
 
 === Changelog ===
+3.1.1
+* Changed the 10-min auto sync to hourly sync
 
 3.1.0
 * Sync by batch to avoid the 504 errors
