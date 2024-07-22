@@ -11,7 +11,7 @@
 */
 
 //Add the cron job to the list of cron jobs upon activation of the function
-//Cron job has an hourly schedule
+//Cron job has an hourly schedule changed from the 10 minute schedule
 register_activation_hook( __FILE__, "aero_plugin_activate" );
 function aero_plugin_activate()
 {
@@ -205,7 +205,7 @@ function aeroRecordLink( $admin_bar ){
         'meta' => array(
           'target' => '_blank'
         )
-      ) 
+      )
     );
   }
 }

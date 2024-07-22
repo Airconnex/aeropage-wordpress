@@ -30,7 +30,7 @@ Requires PHP: 7.0.0
 <p><strong>API Token</strong></p>
 <p><strong>Continue to the next steps</strong> to create a token to use with the api connector.</p>
 <p><strong>Auto Sync</strong></p>
-<p>A cron task that is executed in an hourly interval which is based on Wordpress Cron implementation. WordPress Cron is WordPress's task scheduler that runs on site visits to handle tasks like publishing posts and checking for updates. </p>
+<p>A cron job that is executed in an hourly interval which is based on Wordpress Cron implementation. WordPress Cron is WordPress's task scheduler that runs on site visits to handle tasks like publishing posts and checking for updates. </p>
 <p><b>Wordpress Cron, and to an extent auto sync, relies on site traffic, so on low-traffic sites, tasks may not run on time.</b></p>
 <p>If you have an access to the hosting server settings, you can update it like so:</p>
 <p>Disable WordPress Cron in wp-config.php:</p>
@@ -140,7 +140,7 @@ Requires PHP: 7.0.0
 
 === Changelog ===
 3.1.1
-* Changed the 10-min auto sync to hourly sync
+* Updates to the Auto Sync interval
 
 3.1.0
 * Sync by batch to avoid the 504 errors
