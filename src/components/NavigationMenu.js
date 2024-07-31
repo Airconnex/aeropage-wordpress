@@ -160,7 +160,6 @@ const Dashboard = () => {
     //     return null;
     //   });
     // --------------------------------------------------------//
-
     setIsSyncDone(true);
     await sleep(750);
     setOpenSyncRecordModal(false);

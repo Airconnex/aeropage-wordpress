@@ -3,7 +3,7 @@
  * Plugin Name: Aeropage Sync for Airtable
  * Plugin URI: https://tools.aeropage.io/api-connector/dashboard
  * Description: Airtable to Wordpress Custom Post Type Sync Plugin
- * Version: 3.1.2
+ * Version: 3.1.3
  * Author: Aeropage
  * Author URI: https://tools.aeropage.io/
  * License: GPL2
@@ -554,575 +554,621 @@ function aeropageGetChoices($value){
 add_action("wp_ajax_aeropageSyncPosts", "aeropageSyncPosts");
 function aeropageSyncPosts($parentId)
 {
-
   $isAjax = false;
 
-  if(!$parentId)
-  {
-    $isAjax = true;
-    $parentId = intval($_POST["id"]);
-  }
-
-  if(!$parentId)
-  {
-    die(json_encode(array("status" => "error", "message" => "No parent ID was passed.")));
-  }
- 
-
-  global $wpdb;
-
-  $parent = get_post($parentId);
-
-  $token = get_post_meta($parentId,'aero_token',true);
-
-  $record_post_status = get_post_meta($parentId, 'aero_post_status', true);
-
-  $mapped_fields = get_post_meta($parentId, 'aero_mapped_post_meta_fields', true);
-
-  $mapped_post_type = get_post_meta($parentId, 'aero_mapped_post_type', true);
-
-  $callFromBackend = false;
-
-  if($_POST["noCall"] != "1"){
-    $apiData = aeropageTokenApiCall($token);
-    $callFromBackend = true;
-  }else{
-    //Use the data from the frontend
-    //it has the same data structure from the tools response
-    //except that the records are in batches of 100
-    $apiData = json_decode(wp_unslash($_POST["apiData"]), true);
-  }
-
-  $response = array();
-
-  $acf_image_fields = array();
-
-  if ( 
-    isset($apiData['status']['type']) && 
-    $apiData['status']['type'] == 'success' && 
-    $apiData['records']
-  )
-  {
-    $response['status'] = 'success';
-	  $response['message'] = "";
-
-    // If it's not the first batch of sync and the api call did not come from the backend
-    // We will just append the message so that we can still see the whole sync
-    if($_POST["firstBatch"] == 0 && !$callFromBackend){
-      $response['message'] = get_post_meta ($parentId,'aero_sync_message', true);
+  try{
+    if(!$parentId)
+    {
+      $isAjax = true;
+      $parentId = intval($_POST["id"]);
     }
 
-    update_post_meta ($parentId,'aero_sync_status','success');
-    $sync_time = time();
-    update_post_meta ($parentId,'aero_sync_time', $sync_time);
-    // trash posts 
-    
-    
-    // fields are indexed numerically - iterate to create an array of types and sanitize
-    
-    $fieldData = array();
-    $fieldTypeByName = array();
-    $postContentFieldNames = array();
-	
-    foreach ($apiData['fields'] as $key=>$datafield)
+    if(!$parentId)
     {
-      $fld_id = sanitize_text_field($datafield['id']);
-      $fld_name = sanitize_text_field($datafield['name']);
-      $fld_type = sanitize_text_field($datafield['type']);
-      $fieldData[$fld_id] = $datafield; //add the whole object
-      $fieldData[$fld_id]['id'] = $fld_id;
-      $fieldData[$fld_id]['name'] = $fld_name;
-      $fieldData[$fld_id]['type'] = $fld_type;
-      $fieldTypeByName[$fld_name] = $fld_type;
+      die(json_encode(array("status" => "error", "message" => "No parent ID was passed.")));
+    }
+  
 
-      if(is_array($apiData["status"]["content"]) && in_array($fld_id, $apiData["status"]["content"])){
-        $postContentFieldNames[] = $fld_name;
+    global $wpdb;
+
+    $parent = get_post($parentId);
+
+    $token = get_post_meta($parentId,'aero_token',true);
+
+    $record_post_status = get_post_meta($parentId, 'aero_post_status', true);
+
+    $mapped_fields = get_post_meta($parentId, 'aero_mapped_post_meta_fields', true);
+
+    $mapped_post_type = get_post_meta($parentId, 'aero_mapped_post_type', true);
+
+    $callFromBackend = false;
+
+    if($_POST["noCall"] != "1"){
+      $apiData = aeropageTokenApiCall($token);
+      $callFromBackend = true;
+    }else{
+      //Use the data from the frontend
+      //it has the same data structure from the tools response
+      //except that the records are in batches of 100
+      $apiData = json_decode(wp_unslash($_POST["apiData"]), true);
+    }
+
+    $response = array();
+
+    $acf_image_fields = array();
+
+    if ( 
+      isset($apiData['status']['type']) && 
+      $apiData['status']['type'] == 'success' && 
+      $apiData['records']
+    )
+    {
+      $response['status'] = 'success';
+      $response['message'] = "";
+
+      // If it's not the first batch of sync and the api call did not come from the backend
+      // We will just append the message so that we can still see the whole sync
+      if($_POST["firstBatch"] == 0 && !$callFromBackend){
+        $response['message'] = get_post_meta ($parentId,'aero_sync_message', true);
       }
 
-      //
-    }
+      update_post_meta ($parentId,'aero_sync_status','success');
+      $sync_time = time();
+      update_post_meta ($parentId,'aero_sync_time', $sync_time);
+      // trash posts 
+      
+      
+      // fields are indexed numerically - iterate to create an array of types and sanitize
+      
+      $fieldData = array();
+      $fieldTypeByName = array();
+      $postContentFieldNames = array();
+    
+      foreach ($apiData['fields'] as $key=>$datafield)
+      {
+        $fld_id = sanitize_text_field($datafield['id']);
+        $fld_name = sanitize_text_field($datafield['name']);
+        $fld_type = sanitize_text_field($datafield['type']);
+        $fieldData[$fld_id] = $datafield; //add the whole object
+        $fieldData[$fld_id]['id'] = $fld_id;
+        $fieldData[$fld_id]['name'] = $fld_name;
+        $fieldData[$fld_id]['type'] = $fld_type;
+        $fieldTypeByName[$fld_name] = $fld_type;
 
-    //Add the choices to ACF and then retrive the fields that are image type
-    if($mapped_fields){
-      $typesWithChoices = array("select", "radio", "checkbox");
-
-      foreach($mapped_fields as $key => $value){
-        //Check if image type
-        if($value->metaValues->type == "image" || $value->metaValues->type == "file" ){
-          $acf_image_fields[$value->airtableField] = $value;
+        if(is_array($apiData["status"]["content"]) && in_array($fld_id, $apiData["status"]["content"])){
+          $postContentFieldNames[] = $fld_name;
         }
-
-        if(!in_array($value->metaValues->type, $typesWithChoices)) continue;
 
         //
-        $airtableField = $value->airtableField;
-        $fieldDta = null;
-        $label = $value->metaValues->label;
-
-        foreach($apiData["fields"] as $key => $field){
-          if($field["name"] == $airtableField){
-            $fieldDta = $field;
-          }
-        }
-
-        if($fieldDta && is_array($fieldDta["options"]["choices"])){
-          $choices = array_map("aeropageGetChoices", $fieldDta["options"]["choices"]);
-          
-          if(function_exists("acf_get_field")){
-            $ACFField = acf_get_field($value->metaValues->key, true);
-            foreach ($choices as $key => $choice) {
-              $ACFField["choices"][$choice] = $choice;
-            }
-            acf_update_field($ACFField);
-            $response['message'] .= "Choices for ACF Field $label updated using $airtableField Airtable field choices. <br />";
-          }
-        }
       }
 
-      $response["acf_media_fields"] = $acf_image_fields;
-    }
+      //Add the choices to ACF and then retrive the fields that are image type
+      if($mapped_fields){
+        $typesWithChoices = array("select", "radio", "checkbox");
 
-    // echo "<pre>";
-    // print_r($postContentFieldNames);
-    // echo "</pre>";
+        foreach($mapped_fields as $key => $value){
+          //Check if image type
+          if($value->metaValues->type == "image" || $value->metaValues->type == "file" ){
+            $acf_image_fields[$value->airtableField] = $value;
+          }
 
-    update_post_meta ($parentId,'aero_sync_fields', $fieldTypeByName); // add to the parent cpt
-	
-    //If there is a mapped post type, we use that post type instead of the parent
-	  $post_type = $mapped_post_type ? $mapped_post_type : $parent->post_name;
+          if(!in_array($value->metaValues->type, $typesWithChoices)) continue;
+
+          //
+          $airtableField = $value->airtableField;
+          $fieldDta = null;
+          $label = $value->metaValues->label;
+
+          foreach($apiData["fields"] as $key => $field){
+            if($field["name"] == $airtableField){
+              $fieldDta = $field;
+            }
+          }
+
+          if($fieldDta && is_array($fieldDta["options"]["choices"])){
+            $choices = array_map("aeropageGetChoices", $fieldDta["options"]["choices"]);
+            
+            if(function_exists("acf_get_field")){
+              $ACFField = acf_get_field($value->metaValues->key, true);
+              foreach ($choices as $key => $choice) {
+                $ACFField["choices"][$choice] = $choice;
+              }
+              acf_update_field($ACFField);
+              $response['message'] .= "Choices for ACF Field $label updated using $airtableField Airtable field choices. <br />";
+            }
+          }
+        }
+
+        $response["acf_media_fields"] = $acf_image_fields;
+      }
+
+      // echo "<pre>";
+      // print_r($postContentFieldNames);
+      // echo "</pre>";
+
+      update_post_meta ($parentId,'aero_sync_fields', $fieldTypeByName); // add to the parent cpt
     
-    $dynamic = $parent->post_excerpt; //record_id or name
-	
-	
-    // ACF FUNCTION - ON HOLD PENDING ACF UPDATES
-    
-    //$response['message'] .= aeropageACF($parentId,$post_type,$apiData['fields']);
-    
-    
-    // CATEGORY MAPPING --------------------------------------------------
-    
-    if (isset($apiData['status']['categories']))
-    {
-    
-      $categoryArray = array();
+      //If there is a mapped post type, we use that post type instead of the parent
+      $post_type = $mapped_post_type ? $mapped_post_type : $parent->post_name;
       
-      // build one array with all categories
+      $dynamic = $parent->post_excerpt; //record_id or name
+    
+    
+      // ACF FUNCTION - ON HOLD PENDING ACF UPDATES
       
-      foreach ($apiData['status']['categories'] as $categoryFieldID)
+      //$response['message'] .= aeropageACF($parentId,$post_type,$apiData['fields']);
+      
+      
+      // CATEGORY MAPPING --------------------------------------------------
+      
+      if (isset($apiData['status']['categories']))
       {
       
-        $categoryFieldName = $fieldData[$categoryFieldID]['name'];
-        $response['message'] .= " categories field is $categoryFieldName<br>";
-        $categoryChoices = $fieldData[$categoryFieldID]['options']['choices'];
+        $categoryArray = array();
         
-        // create a parent category using the field name -----------
+        // build one array with all categories
+        
+        foreach ($apiData['status']['categories'] as $categoryFieldID)
+        {
+        
+          $categoryFieldName = $fieldData[$categoryFieldID]['name'];
+          $response['message'] .= " categories field is $categoryFieldName<br>";
+          $categoryChoices = $fieldData[$categoryFieldID]['options']['choices'];
           
-        $parentTerm = get_term_by('name', $categoryFieldName, 'category'); // does a term with this name exist
-        $parentTermID = $parentTerm->term_id;
-        
-        $parentCategoryMetaKey = "aero_category_$categoryFieldID";
-        
-        if (is_int($parentTermID)) // if yes, update the choice with the existing term
-        {
-          update_post_meta($parentId,$parentCategoryMetaKey, $parentTermID);
-        }
-        else // if no, check if the choice had a category but was renamed
-        {
-          $parentTermID = get_post_meta ($parentId,$parentCategoryMetaKey);
-        }
-        
-        if (is_int($parentTermID)) // if yes, rename the existing category
-        {
-          wp_update_term($parentTermID,'category', array('name' => $categoryFieldName ));
-        }
-        else // else create a new category
-        {
-          $term = wp_insert_term($categoryFieldName,'category');
-
-          if(is_array($term)){
-            $parentTermID = $term['term_id'];
+          // create a parent category using the field name -----------
+            
+          $parentTerm = get_term_by('name', $categoryFieldName, 'category'); // does a term with this name exist
+          $parentTermID = $parentTerm->term_id;
+          
+          $parentCategoryMetaKey = "aero_category_$categoryFieldID";
+          
+          if (is_int($parentTermID)) // if yes, update the choice with the existing term
+          {
             update_post_meta($parentId,$parentCategoryMetaKey, $parentTermID);
           }
-        }
-        
-        foreach ($categoryChoices as $key => $choice)
-        {
-        
-          if (isset($choice['id']) && isset($choice['name']))
+          else // if no, check if the choice had a category but was renamed
           {
-            $choiceID = $choice['id'];
-            $choiceName = $choice['name'];
-            $choiceName = trim($choiceName);// get rid of spaces!
-            
-            //$response['message'] .= "category $choiceID has a name : $choiceName <br>";
+            $parentTermID = get_post_meta ($parentId,$parentCategoryMetaKey);
+          }
+          
+          if (is_int($parentTermID)) // if yes, rename the existing category
+          {
+            wp_update_term($parentTermID,'category', array('name' => $categoryFieldName ));
+          }
+          else // else create a new category
+          {
+            $term = wp_insert_term($categoryFieldName,'category');
 
-            if (strlen($choiceName > 0 ))
-            {
-            
-              $response['message'] .= "category $choiceID is : $choiceName <br>";
-              
-              $term = get_term_by('name', $choiceName, 'category'); // does a term with this name exist
-              $termID = $term->term_id;
-              
-              if (is_int($termID)) // if yes, update the choice with the existing term
-              {
-                update_post_meta($parentId,"aero_terms_$choiceID", $termID);
-              }
-              else // if no, check if the choice had a category but was renamed
-              {
-                $termID = get_post_meta ($parentId,"aero_terms_$choiceID");
-              }
-
-              if (is_int($termID)) // if yes, rename the existing category
-              {
-                wp_update_term($termID,'category', array('name' => $choiceName,'parent' => $parentTermID  ));
-              }
-              else // else create a new category
-              {
-                $term = wp_insert_term($choiceName,'category',array('name' => $choiceName,'parent' => $parentTermID  ));
-                $termID = $term['term_id'];
-                update_post_meta($parentId,"aero_terms_$choiceID", $termID);
-              }
-              
-              if (is_int($termID))
-              {
-                $categoryArray[$choiceName] = $termID; // build the array for reference in posts loop
-              }
-              
-              unset($termID);
+            if(is_array($term)){
+              $parentTermID = $term['term_id'];
+              update_post_meta($parentId,$parentCategoryMetaKey, $parentTermID);
             }
           }
-        // end if choices are set.
+          
+          foreach ($categoryChoices as $key => $choice)
+          {
+          
+            if (isset($choice['id']) && isset($choice['name']))
+            {
+              $choiceID = $choice['id'];
+              $choiceName = $choice['name'];
+              $choiceName = trim($choiceName);// get rid of spaces!
+              
+              //$response['message'] .= "category $choiceID has a name : $choiceName <br>";
+
+              if (strlen($choiceName > 0 ))
+              {
+              
+                $response['message'] .= "category $choiceID is : $choiceName <br>";
+                
+                $term = get_term_by('name', $choiceName, 'category'); // does a term with this name exist
+                $termID = $term->term_id;
+                
+                if (is_int($termID)) // if yes, update the choice with the existing term
+                {
+                  update_post_meta($parentId,"aero_terms_$choiceID", $termID);
+                }
+                else // if no, check if the choice had a category but was renamed
+                {
+                  $termID = get_post_meta ($parentId,"aero_terms_$choiceID");
+                }
+
+                if (is_int($termID)) // if yes, rename the existing category
+                {
+                  wp_update_term($termID,'category', array('name' => $choiceName,'parent' => $parentTermID  ));
+                }
+                else // else create a new category
+                {
+                  $term = wp_insert_term($choiceName,'category',array('name' => $choiceName,'parent' => $parentTermID  ));
+                  $termID = $term['term_id'];
+                  update_post_meta($parentId,"aero_terms_$choiceID", $termID);
+                }
+                
+                if (is_int($termID))
+                {
+                  $categoryArray[$choiceName] = $termID; // build the array for reference in posts loop
+                }
+                
+                unset($termID);
+              }
+            }
+          // end if choices are set.
+          }
+          // end foreach choices
         }
-        // end foreach choices
+        // end foreach categories
       }
-      // end foreach categories
-    }
-    //end if categories ------------------------------------------------------------------
-    
-    //execute only on first batch or when in hourly sync.
-    if($_POST["firstBatch"] == 1 || $callFromBackend){
-      $trash = "
-        UPDATE $wpdb->posts p
-            INNER JOIN $wpdb->postmeta pm ON (p.ID = pm.post_id AND pm.meta_key = '_aero_cpt') 
-        SET p.post_status = 'trash' 
-        WHERE pm.meta_value = %d";
-      $results = $wpdb->get_results($wpdb->prepare($trash, $parentId));
-    }
-    
-    $count = 1;
-    
-    //Media array of the records to be downloaded.
-    $response["media"] = array();
-    foreach ($apiData['records'] as $record)
-    {
-      $record_id = sanitize_text_field($record['id']);
-      $record_name = sanitize_text_field($record['name']); 
-      $record_slug = sanitize_text_field($record['slug']); 
+      //end if categories ------------------------------------------------------------------
       
+      //execute only on first batch or when in hourly sync.
+      if($_POST["firstBatch"] == 1 || $callFromBackend){
+        $trash = "
+          UPDATE $wpdb->posts p
+              INNER JOIN $wpdb->postmeta pm ON (p.ID = pm.post_id AND pm.meta_key = '_aero_cpt') 
+          SET p.post_status = 'trash' 
+          WHERE pm.meta_value = %d";
+        $results = $wpdb->get_results($wpdb->prepare($trash, $parentId));
+      }
       
+      $count = 1;
       
-      if ($dynamic !== 'name')
+      //Media array of the records to be downloaded.
+      $response["media"] = array();
+      foreach ($apiData['records'] as $record)
       {
-      $record_slug = $record_id;
-      }
-      
-      // find if theres a trashed post with this record id already
+        $record_id = sanitize_text_field($record['id']);
+        $record_name = sanitize_text_field($record['name']); 
+        $record_slug = sanitize_text_field($record['slug']); 
+        
+        
+        
+        if ($dynamic !== 'name')
+        {
+        $record_slug = $record_id;
+        }
+        
+        // find if theres a trashed post with this record id already
 
-      $existing = get_posts([
-        'post_type'=> $post_type,
-        'post_status' => 'trash',
-        'numberposts' => 1,
-        'meta_key' => '_aero_id', 
-        'meta_value' => $record_id 
-      ]);
-      
-      $post_status = $record_post_status;
-
-      //If there's a post, use that post ID otherwise just left it empty
-      if ($existing){
-        $existing_id = $existing[0]->ID;
-        // $post_status = "publish";
+        $existing = get_posts([
+          'post_type'=> $post_type,
+          'post_status' => 'trash',
+          'numberposts' => 1,
+          'meta_key' => '_aero_id', 
+          'meta_value' => $record_id 
+        ]);
+        
         $post_status = $record_post_status;
-        //We set the existing post content so that it won't be overwritten when saving/updating post
-        $existing_post_content = $existing[0]->post_content;
-      }else{
-        $existing_id = "";
-        $existing_post_content = "";
-      }
-      
-      
-      if (strlen($record['post_title']) > 0)
-      {
-      $post_title = sanitize_text_field($record['post_title']);
-      $post_title_msg = "<br>--> adding custom post_title as $post_title.";
-      }
-      else
-      {
-      $post_title = $record_name;
-      $post_title_msg = "<br>--> no custom post title.";
-      }
-      
-      if (strlen($record['post_excerpt']) > 0)
-      {
-      $post_excerpt = sanitize_text_field($record['post_excerpt']);
-      $post_excerpt_msg = "<br>--> adding custom post_excerpt as $post_excerpt.";
-      }
-      else
-      {
-      $post_excerpt = $record_name;
-      $post_excerpt_msg = "<br>--> no custom post excerpt.";
-      }
 
-      $record_post = array(
-        'ID' => $existing_id,
-        'post_title' => $post_title,
-        'post_excerpt' => $post_excerpt,
-        'post_name' => $record_slug,
-        'post_parent' => '',
-        'post_type' => $post_type,
-        'post_status' => $post_status,
-        'post_content' => $existing_post_content
-      );
-
-      //If there is a post content, then we will set the post content to the value of these fields.
-      if(count($postContentFieldNames) > 0){
-        //Reset the post content
-        $record_post['post_content'] = "";
-        $post_content = "<br>--> Post Content added.";
-        //Concatenate all the post content fields in the records
-        foreach($postContentFieldNames as $key => $field){
-          $record_post["post_content"] .= html_entity_decode($record["fields"][$field]) . " ";
-          $post_content .= "<br>------> Added Content for field $field";
+        //If there's a post, use that post ID otherwise just left it empty
+        if ($existing){
+          $existing_id = $existing[0]->ID;
+          // $post_status = "publish";
+          $post_status = $record_post_status;
+          //We set the existing post content so that it won't be overwritten when saving/updating post
+          $existing_post_content = $existing[0]->post_content;
+        }else{
+          $existing_id = "";
+          $existing_post_content = "";
         }
-      }
         
-      $record_post_id = wp_insert_post($record_post);
-      
-      $count++;
-
-      update_post_meta ($record_post_id, '_aero_cpt', $parentId);
-      update_post_meta ($record_post_id, '_aero_id', $record_id);
-
-
-      if ($existing)
-      {
-        $response['message'] .= "<br>record $record_id : $record_name already exists as $record_post_id and is being updated.".$post_title_msg.$post_excerpt_msg.$post_content;
-      }
-      else
-      {
-        $response['message'] .= "<br>record $record_id : $record_name has been created as $record_post_id.".$post_title_msg.$post_excerpt_msg.$post_content;
-      }
-
-
-
-      foreach ($record['fields'] as $key=>$value)
-      {
-    
-        $type = $fieldTypeByName[$key]; // get the type
         
-        if ($type == 'select_multiple' or $type == 'lookup_text_short' or $type == 'linked' )
+        if (strlen($record['post_title']) > 0)
         {
-          $value = implode(',',$value); // implode array into string before we add it
-          $response['message'] .= "<br> ---> field $key array to csv is $value.";
+        $post_title = sanitize_text_field($record['post_title']);
+        $post_title_msg = "<br>--> adding custom post_title as $post_title.";
+        }
+        else
+        {
+        $post_title = $record_name;
+        $post_title_msg = "<br>--> no custom post title.";
         }
         
-        if (substr($type,0,11) == 'attachment_' )
+        if (strlen($record['post_excerpt']) > 0)
         {
-          $value = sanitize_url($value[0]['url']);
+        $post_excerpt = sanitize_text_field($record['post_excerpt']);
+        $post_excerpt_msg = "<br>--> adding custom post_excerpt as $post_excerpt.";
         }
+        else
+        {
+        $post_excerpt = $record_name;
+        $post_excerpt_msg = "<br>--> no custom post excerpt.";
+        }
+
+        $record_post = array(
+          'ID' => $existing_id,
+          'post_title' => $post_title,
+          'post_excerpt' => $post_excerpt,
+          'post_name' => $record_slug,
+          'post_parent' => '',
+          'post_type' => $post_type,
+          'post_status' => $post_status,
+          'post_content' => $existing_post_content
+        );
+
+        //If there is a post content, then we will set the post content to the value of these fields.
+        if(count($postContentFieldNames) > 0){
+          //Reset the post content
+          $record_post['post_content'] = "";
+          $post_content = "<br>--> Post Content added.";
+          //Concatenate all the post content fields in the records
+          foreach($postContentFieldNames as $key => $field){
+            $record_post["post_content"] .= html_entity_decode($record["fields"][$field]) . " ";
+            $post_content .= "<br>------> Added Content for field $field";
+          }
+        }
+          
+        $record_post_id = wp_insert_post($record_post);
         
-        if ($value)
+        $count++;
+
+        update_post_meta ($record_post_id, '_aero_cpt', $parentId);
+        update_post_meta ($record_post_id, '_aero_id', $record_id);
+
+
+        if ($existing)
         {
-          $value = sanitize_text_field($value);  
-          update_post_meta ($record_post_id, "aero_$key", $value);
-          $response['message'] .= "<br> ---> field $key of type $type has been added.";
+          $response['message'] .= "<br>record $record_id : $record_name already exists as $record_post_id and is being updated.".$post_title_msg.$post_excerpt_msg.$post_content;
         }
-        //for ACF --> update_field using the field key
-        //$field_id = $fieldIDByName[$key]; // get the field id
-        //$acf_field_key = 'field_'.$parentId.$field_id;
-        //update_field( $acf_field_key, $value, $record_post_id );
-      }
-      // end foreach field
-      if($mapped_fields){
-        //For post meta and ACF
-        foreach ($mapped_fields as $key => $mappedFieldData) {
-          $value = $record['fields'][$mappedFieldData->airtableField];
+        else
+        {
+          $response['message'] .= "<br>record $record_id : $record_name has been created as $record_post_id.".$post_title_msg.$post_excerpt_msg.$post_content;
+        }
 
-          $type = $fieldTypeByName[$mappedFieldData->airtableField];
 
+
+        foreach ($record['fields'] as $key=>$value)
+        {
+      
+          $type = $fieldTypeByName[$key]; // get the type
+          
           if ($type == 'select_multiple' or $type == 'lookup_text_short' or $type == 'linked' )
           {
             $value = implode(',',$value); // implode array into string before we add it
+            $response['message'] .= "<br> ---> field $key array to csv is $value.";
           }
-
-          if (substr(str_replace("lookup_", "", $type) ,0,11) == 'attachment_' )
+          
+          if (substr($type,0,11) == 'attachment_' )
           {
             $value = sanitize_url($value[0]['url']);
           }
           
-          if(is_string($value)){
-            $value = html_entity_decode($value);
-          }
-
-          //Update ACF field
-          if($mappedFieldData->metaValues->key && function_exists("update_field")){
-            update_field($mappedFieldData->metaValues->key, $value, $record_post_id);  
-          }
-
-          update_post_meta($record_post_id, $key, $value);
-          $response['message'] .= "<br> -----> Updated custom post field $key.";
-        }
-      }
-
-    
-      // POST MEDIA (ARRAY) DOWNLOAD
-    
-      if (is_array($apiData['status']['media']))
-      {
-      
-        $check = true; 
-
-        if ( defined( 'DOING_CRON' ) )
-        {
-          $check = false;
-        }
-
-        $count = 0;
-        $mediaArray = array();
-        
-        foreach ($apiData['status']['media'] as $mediaFieldID)
-        {
-          $mediaFieldName = $fieldData[$mediaFieldID]['name'];
-          $mediaFieldType = $fieldData[$mediaFieldID]['type'];
-          $mediaFieldValue = $record['fields'][$mediaFieldName];
-          $response['message'] .= "<br>--> media field is $mediaFieldName ";
-
-          foreach ($mediaFieldValue as $key => $mediaObject)
+          if ($value)
           {
-            $response['message'] .= "<br>------> media $mediaFieldName $key is being checked... ";
-            //Check if media needs to be downloaded
-            $mediaResponse = aeropage_media_downloader($mediaObject,$record_post_id, $count, $check, $mediaFieldName);
-            $mediaPostid = $mediaResponse[0];
-            $mediaPostMsg = $mediaResponse[1];
-            $mediaToBeDownloaded = $mediaResponse[3];
+            $value = sanitize_text_field($value);  
+            update_post_meta ($record_post_id, "aero_$key", $value);
+            $response['message'] .= "<br> ---> field $key of type $type has been added.";
+          }
+          //for ACF --> update_field using the field key
+          //$field_id = $fieldIDByName[$key]; // get the field id
+          //$acf_field_key = 'field_'.$parentId.$field_id;
+          //update_field( $acf_field_key, $value, $record_post_id );
+        }
+        // end foreach field
+        if($mapped_fields){
+          //For post meta and ACF
+          foreach ($mapped_fields as $key => $mappedFieldData) {
+            $value = $record['fields'][$mappedFieldData->airtableField];
 
-            //If media needs to be downloaded we add it to the media array
-            if($mediaToBeDownloaded){
-              $response["media"][] = $mediaToBeDownloaded;
+            $type = $fieldTypeByName[$mappedFieldData->airtableField];
+
+            if (($type == 'select_multiple' or $type == 'lookup_text_short' or $type == 'linked') && $value)
+            {
+              $value = implode(',',$value); // implode array into string before we add it
             }
 
-            if(count($acf_image_fields) > 0 && $mediaPostid){
-              //Check which acf field it is in
-              $acfValues = $acf_image_fields[$mediaFieldName]->metaValues;
-
-              if($acfValues->key && function_exists("update_field")){
-                
-                update_field($acfValues->key, $mediaPostid, $record_post_id);
-                $response['message'] .= "<br>-------->Updated ACF field";
-              }
+            if (substr(str_replace("lookup_", "", $type) ,0,11) == 'attachment_' && $value)
+            {
+              $value = sanitize_url($value[0]['url']);
             }
             
-            $response['message'] .= "<br>-------->$mediaPostMsg";
-            $count++;
+            if(is_string($value)){
+              $value = html_entity_decode($value);
+            }
+
+            //Update ACF field
+            if($mappedFieldData->metaValues->key && function_exists("update_field")){
+              update_field($mappedFieldData->metaValues->key, $value, $record_post_id);  
+            }
+
+            update_post_meta($record_post_id, $key, $value);
+            $response['message'] .= "<br> -----> Updated custom post field $key.";
           }
         }
-          // end foreach media field
-      }
-      elseif (strlen($record['post_image']) > 0) // this was using url, superceded by the above
-      {
-        $image_value = sanitize_url($record['post_image']);
-        $thumbnail_id = get_post_meta( $record_post_id, '_thumbnail_id', true ); // check if this post already has thumbnails...
 
-        if (!$thumbnail_id) // if we dont already have the thumb for this post
+      
+        // POST MEDIA (ARRAY) DOWNLOAD
+      
+        if (is_array($apiData['status']['media']))
         {
-          $response['message'] .= "<br>--> There is a post_image, but no thumbnail found. downloading now.";
-          $thumbnail_id = aeropage_external_image($image_value,$record_post_id,$record_name);
-
-          //Set the attachment as featured image.
-          delete_post_meta( $record_post_id, '_thumbnail_id' );
-          add_post_meta( $record_post_id , '_thumbnail_id' , $thumbnail_id, true );
-        }
-        unset($thumbnail_id);
-      }
-
-
-      //----------------------
-    // CATEGORY ASSIGNMENTS --------
-    
-      if (is_array($categoryArray) && count($categoryArray) > 0)
-      {
-        $postCategories = array(); //make an array
         
-        foreach ($apiData['status']['categories'] as $categoryFieldID)
-        {
-          $categoryFieldName = $fieldData[$categoryFieldID]['name'];
-          $categoryValue = $record['fields'][$categoryFieldName]; // get the csv
+          $check = true; 
+
+          if ( defined( 'DOING_CRON' ) )
+          {
+            $check = false;
+          }
+
+          $count = 0;
+          $mediaArray = array();
           
-          if (is_array($categoryValue)) // already an array
+          foreach ($apiData['status']['media'] as $mediaFieldID)
           {
-            $categoryValueArray = $categoryValue;
+            $mediaFieldName = $fieldData[$mediaFieldID]['name'];
+            $mediaFieldType = $fieldData[$mediaFieldID]['type'];
+            $mediaFieldValue = $record['fields'][$mediaFieldName];
+            $response['message'] .= "<br>--> media field is $mediaFieldName ";
+
+            foreach ($mediaFieldValue as $key => $mediaObject)
+            {
+              $response['message'] .= "<br>------> media $mediaFieldName $key is being checked... ";
+              //Check if media needs to be downloaded
+              $mediaResponse = aeropage_media_downloader($mediaObject,$record_post_id, $count, $check, $mediaFieldName);
+              $mediaPostid = $mediaResponse[0];
+              $mediaPostMsg = $mediaResponse[1];
+              $mediaToBeDownloaded = $mediaResponse[3];
+
+              //If media needs to be downloaded we add it to the media array
+              if($mediaToBeDownloaded){
+                $response["media"][] = $mediaToBeDownloaded;
+              }
+
+              if(count($acf_image_fields) > 0 && $mediaPostid){
+                //Check which acf field it is in
+                $acfValues = $acf_image_fields[$mediaFieldName]->metaValues;
+
+                if($acfValues->key && function_exists("update_field")){
+                  
+                  update_field($acfValues->key, $mediaPostid, $record_post_id);
+                  $response['message'] .= "<br>-------->Updated ACF field";
+                }
+              }
+              
+              $response['message'] .= "<br>-------->$mediaPostMsg";
+              $count++;
+            }
           }
-          else
-          {
-            $categoryValueArray = explode(',',$categoryValue); // comma sep,  explode to array
-          }
-          
-          if (count($categoryValueArray) == 0 && strlen($categoryValue) > 0 ) // still not array and string
-          {
-            $categoryValueArray = array($categoryValue); // 
-          }
-          
-          foreach ($categoryValueArray as $categoryName)
-          {
-            $categoryName = trim($categoryName);// get rid of spaces!
-            $categoryTermId = $categoryArray[$categoryName]; // get the term id
-            if (is_int($categoryTermId)){$postCategories[] = $categoryTermId;} // add to array if valid
-          }
-            //end foreach category	
-          if (is_array($postCategories)){
-            $response['message'] .= "<br> -----> Post Categories | $categoryFieldName : $categoryName";
-            wp_set_post_categories($record_post_id,$postCategories);
-          } // set the post categories    
+            // end foreach media field
         }
-        // end foreach category field
+        elseif (strlen($record['post_image']) > 0) // this was using url, superceded by the above
+        {
+          $image_value = sanitize_url($record['post_image']);
+          $thumbnail_id = get_post_meta( $record_post_id, '_thumbnail_id', true ); // check if this post already has thumbnails...
+
+          if (!$thumbnail_id) // if we dont already have the thumb for this post
+          {
+            $response['message'] .= "<br>--> There is a post_image, but no thumbnail found. downloading now.";
+            $thumbnail_id = aeropage_external_image($image_value,$record_post_id,$record_name);
+
+            //Set the attachment as featured image.
+            delete_post_meta( $record_post_id, '_thumbnail_id' );
+            add_post_meta( $record_post_id , '_thumbnail_id' , $thumbnail_id, true );
+          }
+          unset($thumbnail_id);
+        }
+
+
+        //----------------------
+      // CATEGORY ASSIGNMENTS --------
+      
+        if (is_array($categoryArray) && count($categoryArray) > 0)
+        {
+          $postCategories = array(); //make an array
+          
+          foreach ($apiData['status']['categories'] as $categoryFieldID)
+          {
+            $categoryFieldName = $fieldData[$categoryFieldID]['name'];
+            $categoryValue = $record['fields'][$categoryFieldName]; // get the csv
+            
+            if (is_array($categoryValue)) // already an array
+            {
+              $categoryValueArray = $categoryValue;
+            }
+            else
+            {
+              $categoryValueArray = explode(',',$categoryValue); // comma sep,  explode to array
+            }
+            
+            if (count($categoryValueArray) == 0 && strlen($categoryValue) > 0 ) // still not array and string
+            {
+              $categoryValueArray = array($categoryValue); // 
+            }
+            
+            foreach ($categoryValueArray as $categoryName)
+            {
+              $categoryName = trim($categoryName);// get rid of spaces!
+              $categoryTermId = $categoryArray[$categoryName]; // get the term id
+              if (is_int($categoryTermId)){$postCategories[] = $categoryTermId;} // add to array if valid
+            }
+              //end foreach category	
+            if (is_array($postCategories)){
+              $response['message'] .= "<br> -----> Post Categories | $categoryFieldName : $categoryName";
+              wp_set_post_categories($record_post_id,$postCategories);
+            } // set the post categories    
+          }
+          // end foreach category field
+        }
+    // end if categories ----------
       }
-	// end if categories ----------
+      
+      // end foreach record
+      update_post_meta ($parentId,'aero_sync_message', trimStrings($response['message']));
+      update_post_meta ($parentId,'aero_page_id', sanitize_text_field($apiData['status']['id']));
+      update_post_meta ($parentId,'aero_connection', sanitize_text_field($apiData['status']["app"])."/".sanitize_text_field($apiData['status']["table"])."/".sanitize_text_field($apiData['status']["view"]));
     }
-    
-    // end foreach record
-    update_post_meta ($parentId,'aero_sync_message', $response['message']);
-    update_post_meta ($parentId,'aero_page_id', sanitize_text_field($apiData['status']['id']));
-    update_post_meta ($parentId,'aero_connection', sanitize_text_field($apiData['status']["app"])."/".sanitize_text_field($apiData['status']["table"])."/".sanitize_text_field($apiData['status']["view"]));
-  }
-  else // some problem with api
-  {
-    $response['status'] = 'error';
-    update_post_meta ($parentId,'aero_sync_status','error');
-    $message = sanitize_text_field($apiData['message']);
-    update_post_meta ($parentId,'aero_sync_message',$message);
-    $response['message'] = $message;
-  }
+    else // some problem with api
+    {
+      $response['status'] = 'error';
+      update_post_meta ($parentId,'aero_sync_status','error');
+      $message = sanitize_text_field($apiData['message']);
+      update_post_meta ($parentId,'aero_sync_message',$message);
+      $response['message'] = $message;
+    }
 
-  //If doing AJAX
+    //If doing AJAX
 
-  if($isAjax)
-  {
-    $response["sync_time"] = $sync_time;
-    $response["check"] = !$_POST["firstBatch"] && !$callFromBackend;
-    $response["trash_check"] = $_POST["firstBatch"] == 1 || $callFromBackend;
-    $response['$_POST["firstBatch"]'] = $_POST["firstBatch"];
-    $response['$callFromBackend'] = $callFromBackend;
-    $response["results"] = $results;
-    die(json_encode($response));
+    if($isAjax)
+    {
+      $response["sync_time"] = $sync_time;
+      $response["check"] = !$_POST["firstBatch"] && !$callFromBackend;
+      $response["trash_check"] = $_POST["firstBatch"] == 1 || $callFromBackend;
+      $response['$_POST["firstBatch"]'] = $_POST["firstBatch"];
+      $response['$callFromBackend'] = $callFromBackend;
+      $response["results"] = $results;
+      die(json_encode($response));
+    }
+    else{
+      return $response;
+    }
+  }catch(Exception $e){
+    if($isAjax){
+      http_response_code(500);
+      echo json_encode(array("status" => "error", "message" => $e->getMessage()));
+      die(0);
+    }else{
+      echo $e->getMessage();
+    }
+  }catch (Error $e) {
+    if($isAjax){
+      http_response_code(500);
+      echo json_encode(array("status" => "error", "message" => $e->getMessage()));
+      die(0);
+    }else{
+      echo $e->getMessage();
+    }
+  }catch (Throwable $e) {
+    if($isAjax){
+      http_response_code(500);
+      echo json_encode(array("status" => "error", "message" => $e->getMessage()));
+      die(0);
+    }else{
+      echo $e->getMessage();
+    }
   }
-  else
-  {
-  return $response;
-  }
-
 }
 // end function
+
+/**
+ * Trims a string to ensure it is less than 1MB.
+ *
+ * @param string $string The input string.
+ * @return string The trimmed string if it exceeds 1MB, otherwise the original string.
+ */
+function trimStrings($string) {
+  // Define the 1MB size limit
+  // $maxSize = 1048576; // 1MB in bytes
+  $maxSize = 900000; // Around 900KB in bytes
+
+  // Check the size of the string in bytes
+  $stringSize = strlen($string);
+
+  // If the string exceeds the 1MB size limit, truncate it
+  if ($stringSize > $maxSize) {
+      // Truncate the string to the maximum allowed size
+      $string = substr($string, 0, $maxSize);
+  }
+
+  return $string;
+}
 
 add_action("wp_ajax_aeropageMediaDownload", "aeropageMediaDownload");
 function aeropageMediaDownload() {

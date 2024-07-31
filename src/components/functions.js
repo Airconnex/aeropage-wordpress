@@ -114,9 +114,15 @@ export const processSync = async ({
     })
       .catch(err => {
         console.error(err)
-        alert(err?.message);
+        alert(`Server Error: ${err?.response?.data?.message ?? err?.message}`);
         return null;
       });
+
+    if(!responseData){
+      setTotalPosts(null);
+      setCurrentPosts(null);
+      return null;
+    }
 
     responseMedia["media"] = [
       ...(responseMedia["media"] ?? []),
@@ -132,6 +138,5 @@ export const processSync = async ({
 
   setTotalPosts(null);
   setCurrentPosts(null);
-
   return responseMedia;
 }
