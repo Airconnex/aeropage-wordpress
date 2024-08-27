@@ -3,7 +3,7 @@
  * Plugin Name: Aeropage Sync for Airtable
  * Plugin URI: https://tools.aeropage.io/api-connector/dashboard
  * Description: Airtable to Wordpress Custom Post Type Sync Plugin
- * Version: 3.1.3
+ * Version: 3.1.4
  * Author: Aeropage
  * Author URI: https://tools.aeropage.io/
  * License: GPL2
@@ -320,7 +320,7 @@ function aeroRegisterTypes()
 					"show_in_nav_menus" => true, // Should it show up in Appearance > Menus?
 					"show_in_menu" => true, // This inherits from show_ui, and determines *where* it should be displayed in the admin
 					"show_in_admin_bar" => true, // Should it show up in the toolbar when a user is logged in?
-					'taxonomies' => array('category'), // add taxonomies //,'post_tag'
+					'taxonomies' => array('category', 'post_tag'), // add taxonomies //,'post_tag'
 				)
 				
 			);
@@ -799,7 +799,7 @@ function aeropageSyncPosts($parentId)
         // end foreach categories
       }
       //end if categories ------------------------------------------------------------------
-      
+
       //execute only on first batch or when in hourly sync.
       if($_POST["firstBatch"] == 1 || $callFromBackend){
         $trash = "
@@ -1087,8 +1087,28 @@ function aeropageSyncPosts($parentId)
           }
           // end foreach category field
         }
-    // end if categories ----------
+        // end if categories ----------
+        //---------- TAGS ASSIGNMENT --------------------------------
+        if (isset($apiData['status']['tags'])){
+          $postTags = array(); //make an array
+          foreach ($apiData['status']['tags'] as $tagsFieldID){
+            $tagFieldName = $fieldData[$tagsFieldID]['name'];
+            $tagValue = $record['fields'][$tagFieldName]; // get the value
+
+            if (is_array($tagValue)){ // already an array merge it with the current elements of the array
+              $postTags = array_merge($postTags, $tagValue);
+            }else{
+              $postTags = array_merge($postTags, explode(',',$tagValue));
+            }
+          }
+
+          wp_set_post_tags($record_post_id, $postTags, false);
+        }else{
+          //If it is not set, just set it to empty array to reset the tags.
+          wp_set_post_tags($record_post_id, array(), false);
+        }
       }
+      //-----------------------------------------------------------
       
       // end foreach record
       update_post_meta ($parentId,'aero_sync_message', trimStrings($response['message']));
