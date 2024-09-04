@@ -170,7 +170,15 @@ const AddPost = ({
       const url = new URL(e.target.value);
       const path = url.pathname;
       const parsed = path.split("/");
-      token = parsed[3];
+
+      //If the token comes from api.aeropage.io and doesn't start with aero, add a prefix
+      if(url.host.includes("api.aeropage.io") && !parsed[parsed.length - 1].startsWith("aero")){
+        token = `aero-${parsed[parsed.length - 1]}`;
+      }else if(url.host.includes("tools.aeropage.io")){
+        token = parsed[3]
+      }else{
+        token = parsed[parsed.length - 1]
+      }
 
       console.log("PARSED: ", parsed);
     }catch(err){
@@ -204,10 +212,16 @@ const AddPost = ({
   // console.log(title);
   // console.log(dynamic);
 
+  let url = `https://tools.aeropage.io/api/token/${inputValue}`;
+
+  if(inputValue?.split("-").length > 1){
+    url = `https://api.aeropage.io/api/v5/tools/connector/${inputValue.split("-")[1]}`;
+  }
+
   useEffect(() => {
     if(!fetchData) return;
     setStatus(true);
-    fetch("https://tools.aeropage.io/api/token/" + inputValue, { redirect: "follow" })
+    fetch(url, { redirect: "follow" })
       .then((responseAP) => responseAP.json())
       .then((data) => {
         setResponseAP(data);
@@ -253,7 +267,7 @@ const AddPost = ({
           ></Header>
           <div>
             <a 
-              href="https://tools.aeropage.io/api-connector/dashboard?notion=true" 
+              href="https://builder.aeropage.io/" 
               target={"_blank"}
               style={{
                 textDecoration: "none"
@@ -460,10 +474,24 @@ const AddPost = ({
                 <a
                   style={{ textDecoration: "none" }}
                   target="_blank"
-                  href="https://tools.aeropage.io/api-connector/dashboard"
+                  href="https://builder.aeropage.io/"
                 >
                   click here...
                 </a>
+              </p>
+              <p
+                style={{
+                  color: "#595B5C",
+                  fontFamily: "'Inter', sans-serif",
+                  fontStyle: "normal",
+                  fontWeight: "400",
+                  fontSize: "10px",
+                  lineHeight: "175%",
+                  marginTop: "0",
+                  marginBottom: "6px",
+                }}
+              >
+                Please don't delete the "aero-" if it is showing at the beginning of the token.
               </p>
               <input
                 value={inputValue}
@@ -485,7 +513,7 @@ const AddPost = ({
                 placeholder="Token"
               ></input>
               <a
-                href={responseAP?.status?.type !== "success" ? "" : `https://tools.aeropage.io/api-connector/editor/${responseAP?.status?.id}`}
+                href={responseAP?.status?.type !== "success" ? "" : `${responseAP?.status?.websiteID ? `https://builder.aeropage.io/${responseAP?.status?.websiteID}/dashboard?tool=` : `https://tools.aeropage.io/api-connector/editor/`}${responseAP?.status?.id}`}
                 target="_blank"
                 style={{
                   fontFamily: "'Inter', sans-serif",

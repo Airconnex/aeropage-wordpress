@@ -128,6 +128,7 @@ function aeropageList()
     $post->sync_message = get_post_meta($post->ID, "aero_sync_message",true);
     $post->connection = get_post_meta($post->ID, "aero_connection", true);
     $post->aero_page_id = get_post_meta($post->ID, "aero_page_id", true);
+    $post->aero_website_id = get_post_meta($post->ID, "aero_website_id", true);
     $post->token = get_post_meta($post->ID, "aero_token", true);
 	}
 	
@@ -444,7 +445,14 @@ function aeropageEdit() // called by ajax, adds the cpt
 
 function aeropageTokenApiCall($token)
 {
-	$api_url = "https://tools.aeropage.io/api/token/$token/";
+  $split = explode('-', $token);
+
+  if(count($split) > 1){
+    $api_url = "https://api.aeropage.io/api/v5/tools/connector/$split[1]";
+  }else{
+    $api_url = "https://tools.aeropage.io/api/token/$token/";
+  }
+	
   $response = wp_remote_get($api_url, array("timeout" => 30));
   $result = json_decode( wp_remote_retrieve_body($response), true);
   return $result;
@@ -452,7 +460,14 @@ function aeropageTokenApiCall($token)
 
 function aeropageModCheckApiCall($token)
 {
-	$api_url = "https://tools.aeropage.io/api/modcheck/$token/";
+  $split = explode('-', $token);
+
+  if(count($split) > 1){
+    $api_url = "https://api.aeropage.io/api/v5/modtime/check/$split[1]";
+  }else{
+    $api_url = "https://tools.aeropage.io/api/modcheck/$token/";
+  }
+
   $result = json_decode(wp_remote_retrieve_body(wp_remote_get($api_url, array("timeout" => 30))), true);
   return $result;
 }
@@ -1097,7 +1112,7 @@ function aeropageSyncPosts($parentId)
 
             if (is_array($tagValue)){ // already an array merge it with the current elements of the array
               $postTags = array_merge($postTags, $tagValue);
-            }else{
+            }else{ //Is a string so explode and add to array
               $postTags = array_merge($postTags, explode(',',$tagValue));
             }
           }
@@ -1113,6 +1128,12 @@ function aeropageSyncPosts($parentId)
       // end foreach record
       update_post_meta ($parentId,'aero_sync_message', trimStrings($response['message']));
       update_post_meta ($parentId,'aero_page_id', sanitize_text_field($apiData['status']['id']));
+
+      //If there's a website ID in the data, save it.
+      if($apiData['status']['websiteID']){
+        update_post_meta ($parentId,'aero_website_id', sanitize_text_field($apiData['status']['websiteID']));
+      }
+
       update_post_meta ($parentId,'aero_connection', sanitize_text_field($apiData['status']["app"])."/".sanitize_text_field($apiData['status']["table"])."/".sanitize_text_field($apiData['status']["view"]));
     }
     else // some problem with api

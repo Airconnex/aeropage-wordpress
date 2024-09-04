@@ -16,6 +16,13 @@ export const convertToSlug = (text) => {
 };
 
 export const fetchToken = async (token) => {
-  return fetch("https://tools.aeropage.io/api/token/" + token, { redirect: "follow" })
+  let url = `https://tools.aeropage.io/api/token/${token}`;
+
+  if(token?.split("-").length > 1){
+    url = `https://api.aeropage.io/api/v5/tools/connector/${token.split("-")[1]}`;
+  }
+
+  //Get the token
+  return fetch(url, { redirect: "follow" })
       .then((responseAP) => responseAP.json())
 }

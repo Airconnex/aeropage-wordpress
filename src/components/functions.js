@@ -59,8 +59,14 @@ export const processSync = async ({
   setResponse = null,
   response = null
 }) => {
+  let url = `https://tools.aeropage.io/api/token/${token}`;
+
+  if(token?.split("-").length > 1){
+    url = `https://api.aeropage.io/api/v5/tools/connector/${token.split("-")[1]}`;
+  }
+
   //Get the token
-  const tokenResponse = await fetch("https://tools.aeropage.io/api/token/" + token, { redirect: "follow" })
+  const tokenResponse = await fetch(url, { redirect: "follow" })
     .then((responseAP) => responseAP.json())
     .then((data) => data);
 
