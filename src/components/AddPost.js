@@ -121,6 +121,7 @@ const AddPost = ({
     params.append("mapped_fields", JSON.stringify(mappedFields));
     // params.append("aero_page_id", responseAP?.status?.id);
     params.append("post_status", postStatus);
+    params.append("_ajax_nonce", MYSCRIPT.wp_nonce);
     // setOpenSyncRecordModal(true);
 
     await axios

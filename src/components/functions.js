@@ -32,6 +32,7 @@ export const processMedia = async ({
       params.append("action", "aeropageMediaDownload");  
       params.append("media", JSON.stringify(media));
       params.append("acf_image_fields", JSON.stringify(responseData?.acf_media_fields ?? []));
+      params.append("_ajax_nonce", MYSCRIPT.wp_nonce); 
 
       await axios.post(MYSCRIPT.ajaxUrl, params)
         .then(res => {})//console.log(res))
@@ -99,6 +100,7 @@ export const processSync = async ({
     }));
     params.append("firstBatch", i === 0 ? 1 : 0);
     params.append("noCall", 1);
+    params.append("_ajax_nonce", MYSCRIPT.wp_nonce); 
     currentTotal += (chunked?.[i]?.length ?? 0)
     setCurrentPosts(currentTotal);
     const responseData = await axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {

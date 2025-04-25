@@ -20,7 +20,7 @@ const PostTypeMapping = ({
   const getRegisteredPostFields = async () => {
     var params = new URLSearchParams();
     params.append("action", "aeropageGetRegisteredPostTypes");
-
+    params.append("_ajax_nonce", MYSCRIPT.wp_nonce); 
     await axios
       .post(MYSCRIPT.ajaxUrl, params)
       .then(response => {

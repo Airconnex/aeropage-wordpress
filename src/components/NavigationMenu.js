@@ -93,6 +93,8 @@ const Dashboard = () => {
     //
     params.append("action", "aeropageList");
     params.append("title", "test");
+    params.append("_ajax_nonce", MYSCRIPT.wp_nonce); 
+
     axios.post(MYSCRIPT.ajaxUrl, params).then(function (response) {
       // console.log(response.data);
       // let newString = response.data.slice(0, -1);
@@ -186,7 +188,8 @@ const Dashboard = () => {
     let params = new URLSearchParams();
     params.append("action", "aeropageDeletePost");
     params.append("id", toBeDeleted);
-
+    params.append("_ajax_nonce", MYSCRIPT.wp_nonce);
+    
     return await axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
       console.log("DELETE RESPONSE: ", responseAP?.data);
       // listAeropagePages();

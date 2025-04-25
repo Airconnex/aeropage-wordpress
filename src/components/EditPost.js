@@ -127,6 +127,7 @@ const EditPost = ({
     params.append("mapped_fields", JSON.stringify(mappedFields));
     // params.append("aero_page_id", responseAP?.status?.id);
     params.append("post_status", postStatus);
+    params.append("_ajax_nonce", MYSCRIPT.wp_nonce); 
     // setOpenSyncRecordModal(true);
     await axios.post(MYSCRIPT.ajaxUrl, params).then(async function (responseAP) {
       setIsSyncDone(true);
@@ -254,6 +255,8 @@ const EditPost = ({
     var params = new URLSearchParams();
     params.append("action", "aeropageEditorMeta");
     params.append("id", id);
+    params.append("_ajax_nonce", MYSCRIPT.wp_nonce); 
+    
     axios.post(MYSCRIPT.ajaxUrl, params).then(function (responseAP) {
       console.log({ responseAP })
       if(responseAP?.data?.token){

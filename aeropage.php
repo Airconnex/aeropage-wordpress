@@ -3,7 +3,7 @@
  * Plugin Name: Aeropage Sync for Airtable
  * Plugin URI: https://tools.aeropage.io/api-connector/dashboard
  * Description: Airtable to Wordpress Custom Post Type Sync Plugin
- * Version: 3.2.0
+ * Version: 3.3.0
  * Author: Aeropage
  * Author URI: https://tools.aeropage.io/
  * License: GPL2
@@ -29,7 +29,7 @@ function aero_plugin_deactivate()
 
 //Function that runs hourly
 add_action("aero_hourly_sync", "aero_hourly_sync");
-add_action("wp_ajax_testCronFunction", "aero_hourly_sync");
+// add_action("wp_ajax_testCronFunction", "aero_hourly_sync");
 function aero_hourly_sync()
 {
   try{
@@ -110,7 +110,8 @@ function aeroplugin_admin_enqueue_scripts() {
         'ajaxUrl' => admin_url( 'admin-ajax.php' ),
         'plugin_admin_path' => parse_url(admin_url())["path"],
         'plugin_assets' => plugin_dir_url( __FILE__ ).'assets',
-        'plugin_name' => "aeropage" //This is the name of the plugin.
+        'plugin_name' => "aeropage", //This is the name of the plugin.
+        'wp_nonce' => wp_create_nonce( 'aeropage_nonce' ),
     ) ), 'before' );
   }
 }
@@ -118,7 +119,8 @@ function aeroplugin_admin_enqueue_scripts() {
 add_action("wp_ajax_aeropageList", "aeropageList");
 function aeropageList()
 {
-
+  aeropageRefererChecker();
+  aeropageCheckUserCapabilities();
   $aeroPosts = get_posts(['post_type' => 'aero-template','post_status' => 'private','numberposts' => -1]);
 	
 	foreach ($aeroPosts as $post)
@@ -244,6 +246,9 @@ function aeroSyncScript() {
 add_action( 'wp_ajax_aeropageEditorMeta', 'aeropageEditorMeta');
 //Gets the aero page token when in the edit post
 function aeropageEditorMeta(){
+  aeropageRefererChecker();
+  aeropageCheckUserCapabilities();
+
   $pid = intval($_POST["id"]);
   $token = get_post_meta($pid, "aero_token");
   $status = get_post_meta($pid, "aero_sync_status");
@@ -267,6 +272,9 @@ function aeropageEditorMeta(){
 
 add_action("wp_ajax_aeropageGetRegisteredPostTypes", "aeropageGetRegisteredPostTypes");
 function aeropageGetRegisteredPostTypes(){
+  aeropageRefererChecker();
+  aeropageCheckUserCapabilities();
+
   $registeredPostTypes = get_post_types(array(), "objects");
   die(json_encode(array(
     "status" => "success",
@@ -380,6 +388,9 @@ function aeroRegisterTypes()
 add_action("wp_ajax_aeropageEdit", "aeropageEdit");
 function aeropageEdit() // called by ajax, adds the cpt
 {
+  aeropageRefererChecker();
+  aeropageCheckUserCapabilities();
+
   $post_id = null;
 
   if($_POST['id'])
@@ -475,36 +486,25 @@ function aeropageModCheckApiCall($token)
 add_action("wp_ajax_aeropageDeletePost", "aeropageDeletePost");
 function aeropageDeletePost() 
 {
+  try{
+    aeropageRefererChecker();
+    aeropageCheckUserCapabilities();
+    global $wpdb;
 
-  global $wpdb;
+    $post_id = null;
 
-  $post_id = null;
+    if($_POST['id'])
+    {
+      $post_id = intval($_POST['id']);
+    }
 
-  if($_POST['id'])
-  {
-    $post_id = intval($_POST['id']);
-  }
+    $parent = get_post($post_id);
 
-  $parent = get_post($post_id);
+    $mapped_post_type = get_post_meta($post_id, 'aero_mapped_post_type', true);
 
-  $mapped_post_type = get_post_meta($post_id, 'aero_mapped_post_type', true);
+    $slug = $parent->post_name;
 
-  $slug = $parent->post_name;
-
-  //Delete all the posts for that post type
-  $wpdb->query($wpdb->prepare(
-    "
-    DELETE a,b,c
-    FROM wp_posts a
-    LEFT JOIN wp_term_relationships b
-        ON (a.ID = b.object_id)
-    LEFT JOIN wp_postmeta c
-        ON (a.ID = c.post_id)
-    WHERE a.post_type = %s;
-    "
-  , $slug));
-
-  if($mapped_post_type){
+    //Delete all the posts for that post type
     $wpdb->query($wpdb->prepare(
       "
       DELETE a,b,c
@@ -512,19 +512,35 @@ function aeropageDeletePost()
       LEFT JOIN wp_term_relationships b
           ON (a.ID = b.object_id)
       LEFT JOIN wp_postmeta c
-          ON (a.ID = c.post_id AND c.meta_key = '_aero_cpt')
-      WHERE c.meta_value = %d;
+          ON (a.ID = c.post_id)
+      WHERE a.post_type = %s;
       "
-    , $post_id));
+    , $slug));
+
+    if($mapped_post_type){
+      $wpdb->query($wpdb->prepare(
+        "
+        DELETE a,b,c
+        FROM wp_posts a
+        LEFT JOIN wp_term_relationships b
+            ON (a.ID = b.object_id)
+        LEFT JOIN wp_postmeta c
+            ON (a.ID = c.post_id AND c.meta_key = '_aero_cpt')
+        WHERE c.meta_value = %d;
+        "
+      , $post_id));
+    }
+
+    // Unregister the post type first
+    unregister_post_type($slug);
+
+    // Remove the post
+    wp_delete_post($post_id, true);
+
+    die(json_encode(array("status" => "success"))); 
+  }catch(Exception $e){
+    die(json_encode(array("status" => "error", "message" => $e->getMessage())));
   }
-
-  // Unregister the post type first
-  unregister_post_type($slug);
-
-  // Remove the post
-  wp_delete_post($post_id, true);
-
-  die(json_encode(array("status" => "success"))); 
 }
 
 add_action("wp_ajax_aeropageGetPostMetaForSelectedPostType", "aeropageGetPostMetaForSelectedPostType");
@@ -576,6 +592,9 @@ function aeropageSyncPosts($parentId)
     {
       $isAjax = true;
       $parentId = intval($_POST["id"]);
+      //If ajax, check for nonce.
+      aeropageRefererChecker();
+      aeropageCheckUserCapabilities();
     }
 
     if(!$parentId)
@@ -1211,9 +1230,19 @@ function trimStrings($string) {
   return $string;
 }
 
+function aeropageCheckUserCapabilities(){
+  //Only allow for editors and above to perform this action.
+  //This is to prevent unauthorized access to the and other actions.
+  if(current_user_can("edit_pages") == false){
+    throw new Exception("You do not have permission to perform this action.");
+  }
+}
+
 add_action("wp_ajax_aeropageMediaDownload", "aeropageMediaDownload");
 function aeropageMediaDownload() {
   try{
+    aeropageRefererChecker();
+    aeropageCheckUserCapabilities();
     $media = json_decode(stripslashes($_POST["media"]), true);
 
     if(is_array($media)){
@@ -1241,6 +1270,75 @@ function aeropageMediaDownload() {
   }
 }
 
+function aeropageGetSupportedMimeTypes() {
+  //Supported MIME types for Airtable attachments
+  $supportedAirtableMimeTypes = [
+    // Images
+    'image/jpeg',
+    'image/png',
+    'image/gif',
+    'image/bmp',
+    'image/svg+xml',
+    'image/webp',
+
+    // PDF
+    'application/pdf',
+
+    // Word Documents
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+
+    // Excel Spreadsheets
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+
+    // Text and Data Files
+    'text/plain',
+    'text/csv',
+    'text/tab-separated-values',
+    'text/markdown',
+    'application/json',
+
+    // PowerPoint
+    'application/vnd.ms-powerpoint',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+
+    // Audio
+    'audio/mpeg',
+    'audio/wav',
+    'audio/ogg',
+    'audio/mp4',
+
+    // Video
+    'video/mp4',
+    'video/quicktime',
+    'video/x-msvideo',
+    'video/webm',
+    'video/x-matroska'
+  ];
+
+  return $supportedAirtableMimeTypes;
+}
+
+function aeroppageValidateMediaType($mediaType, $mimeTypes = null) {
+  return in_array($mediaType, $mimeTypes);
+}
+
+function aeropageRefererChecker(){
+  if(!check_ajax_referer("aeropage_nonce", false)){
+    throw new Exception("Invalid request. Please try again.");
+  }
+}
+
+function aeropageIsPathSafe($input) {
+  // Prevent directory traversal and enforce safe characters
+  return (
+      strpos($input, '..') === false &&
+      strpos($input, '/') === false &&
+      strpos($input, '\\') === false &&
+      preg_match('/^[a-zA-Z0-9_\-\.]+$/', $input)
+  );
+}
 // MEDIA DOWNLOADER  --------------------------------------
 
 //$mediaObject => Airtable Media structure
@@ -1251,7 +1349,7 @@ function aeropage_media_downloader($mediaObject, $parent, $field_index, $check =
 {
 
   global $wpdb;
-
+  $mimeTypes = aeropageGetSupportedMimeTypes();
   $response = array();
   $attachmentURL = sanitize_url($mediaObject['url']);
   $attachmentID = sanitize_text_field($mediaObject['id']);
@@ -1267,12 +1365,11 @@ function aeropage_media_downloader($mediaObject, $parent, $field_index, $check =
   $uploadPathWithAttachmentID = $uploadFolder.$attachmentID.'_'.$attachmentFileName.'.'.$fileTypeExploded[1];
   //$check is a flag that tells us if we are just adding to media array, if true we will add the media object to an array along with the record post ID
   //This will be used for the media download in the second step.
- 
-    //Otherwise if we are not checking the image
-    if (!file_exists($uploadFolder)) wp_mkdir_p($uploadFolder); // if no folder, create.
 
-    // CHECK IF FILE NEEDS TO BE DOWNLOADED
+  //Otherwise if we are not checking the image
+  if (!file_exists($uploadFolder)) wp_mkdir_p($uploadFolder); // if no folder, create.
 
+  // CHECK IF FILE NEEDS TO BE DOWNLOADED
   if (!file_exists($uploadPathWithAttachmentID)) // file doesnt already exist in folder, download it
   {
     if($check){
@@ -1284,11 +1381,29 @@ function aeropage_media_downloader($mediaObject, $parent, $field_index, $check =
         "field_name" => $fieldName
       );
     }else{
-      //If the 
+      // ----------- UPLOAD VALUES VALIDATION ------------------
+      //Check for any traversal characters in the filename and attachment ID
+      if(aeropageIsPathSafe($attachmentFileName) == false || aeropageIsPathSafe($attachmentID) == false){
+        throw new Exception("The file name or attachment ID contains invalid characters. Please check the file name and try again.");
+      }
+
+      //validate the $mediaObject['type'] against the list of supported mime types as well
+      if(aeroppageValidateMediaType($mediaObject['type'], $mimeTypes) == false){
+        throw new Exception("The file type is not supported. Please check the file type and try again.");
+      }
+
+      //------------------------------------------------
+      //Fetch the file.
       $checkURL = wp_remote_get( $attachmentURL ); // check the url to make sure its valid
 
       if (! is_wp_error( $checkURL ) ) 
       {
+        // Validate Content-Type since the URL doesn't have any file extension in it.
+        $content_type = wp_remote_retrieve_header($checkURL, 'content-type'); // get the content type of the file
+        if (!in_array($content_type, $mimeTypes)) {
+          throw new Exception("The file type is not supported. Please check the file type and try again.");
+        }
+
         $response[1] .= "File doesnt exist and url is valid. Downloading.";
         $downloadedFile = wp_remote_retrieve_body( $checkURL ); // get the image file
         $fp = fopen($uploadPathWithAttachmentID , 'w' ); // set the path to save
